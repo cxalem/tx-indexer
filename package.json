@@ -1,5 +1,5 @@
 {
-  "name": "lucas-wallet",
+  "name": "tx-indexer",
   "private": true,
   "scripts": {
     "build": "turbo run build",

@@ -16,7 +16,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("🚀 Lucas Wallet Indexer - Phase 3\n");
+  console.log("🚀 TX Indexer - Phase 3\n");
   console.log(`Wallet: ${WALLET_ADDRESS}`);
   console.log(`RPC: ${RPC_URL}\n`);
 
