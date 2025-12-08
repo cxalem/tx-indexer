@@ -1,135 +1,170 @@
-# Turborepo starter
+# TX Indexer
 
-This Turborepo starter is maintained by the Turborepo core team.
+> **Note:** This project is currently under active development.
 
-## Using this example
+A modular Solana transaction indexer and classifier built for tracking, analyzing, and categorizing blockchain transactions with personal finance-like semantics.
 
-Run the following command:
+## Overview
 
-```sh
-npx create-turbo@latest
+TX Indexer fetches transactions from Solana wallets, detects the protocols involved (Jupiter, Raydium, Orca, etc.), and provides a foundation for categorizing transactions similar to traditional financial tracking apps. The project is designed to transform raw blockchain data into meaningful financial insights.
+
+## Architecture
+
+This is a monorepo built with [Turborepo](https://turborepo.com) and [Bun](https://bun.com), organized into apps and shared packages.
+
+### Apps
+
+- **indexer** - CLI tool for fetching and analyzing Solana transactions
+- **web** - Next.js web application (frontend)
+- **docs** - Documentation site built with Next.js
+
+### Packages
+
+- **@repo/domain** - Core domain types and schemas for transactions, money, counterparties, and categorization
+- **@repo/solana** - Solana-specific adapters for RPC communication, transaction fetching, and data mapping
+- **@repo/classification** - Protocol detection and transaction classification logic
+- **@repo/ui** - Shared React component library
+- **@repo/eslint-config** - Shared ESLint configurations
+- **@repo/typescript-config** - Shared TypeScript configurations
+
+## Features
+
+- **Transaction Fetching** - Retrieve transaction history for any Solana wallet address
+- **Protocol Detection** - Automatically identify known protocols (Jupiter, Raydium, Orca, Metaplex, etc.)
+- **Type-Safe Domain Models** - Zod schemas for transactions, tokens, counterparties, and categorization
+- **Batch Processing** - Efficient parallel fetching of multiple transactions
+- **Extensible Architecture** - Clean separation between blockchain adapters and domain logic
+
+## Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.com) v1.3.4 or higher
+- Node.js 18+ (for compatibility)
+
+### Installation
+
+```bash
+# Install dependencies
+bun install
 ```
 
-## What's inside?
+### Running the Indexer
 
-This Turborepo includes the following packages/apps:
+```bash
+# Fetch transactions for a wallet
+WALLET_ADDRESS=<your-solana-address> bun run apps/indexer/index.ts
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+# Optional: Use a custom RPC endpoint
+RPC_URL=https://api.mainnet-beta.solana.com WALLET_ADDRESS=<address> bun run apps/indexer/index.ts
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### Development
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+```bash
+# Run all apps in development mode
+bun run dev
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+# Run specific app
+bun run dev --filter=web
 
-### Develop
+# Type checking
+bun run check-types
 
-To develop all apps and packages, run the following command:
+# Linting
+bun run lint
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+# Format code
+bun run format
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### Building
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+```bash
+# Build all packages and apps
+bun run build
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+# Build specific package
+bun run build --filter=solana
 ```
 
-### Remote Caching
+## Domain Model
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+The project uses a rich domain model with the following key concepts:
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+### Transactions
+- **RawTransaction** - Low-level blockchain transaction data
+- **TxPrimaryType** - Transfer, swap, NFT operations, staking, bridging, etc.
+- **TxDirection** - Incoming, outgoing, self, or neutral
+- **TxCategory** - Income, expense, transfer, investment, savings, fee, etc.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+### Money & Tokens
+- **TokenInfo** - Token metadata (mint, symbol, decimals)
+- **MoneyAmount** - Amounts with both raw and UI-friendly representations
+- **FiatValue** - Optional fiat conversion (USD, EUR)
+
+### Counterparties
+- **Counterparty** - Transaction counterparty (person, merchant, exchange, protocol, own wallet)
+- **ProtocolInfo** - Detected protocol information
+- **Categorization** - Budget categories, tags, and merchant associations
+
+## Protocol Support
+
+Currently detects the following Solana protocols:
+
+- Jupiter & Jupiter V4 (DEX aggregator)
+- Raydium (AMM)
+- Orca Whirlpool (AMM)
+- Metaplex (NFT standard)
+- Token Program (SPL)
+- System Program
+- Associated Token Program
+- Stake Program
+- Compute Budget Program
+
+## Technology Stack
+
+- **Runtime** - Bun
+- **Language** - TypeScript
+- **Validation** - Zod
+- **Blockchain** - Solana (@solana/kit)
+- **Frontend** - Next.js 16, React 19
+- **Monorepo** - Turborepo
+
+## Project Structure
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+tx-indexer/
+├── apps/
+│   ├── indexer/       # CLI transaction indexer
+│   ├── web/           # Web application
+│   └── docs/          # Documentation site
+├── packages/
+│   ├── domain/        # Core domain types
+│   ├── solana/        # Solana adapters
+│   ├── classification/ # Protocol detection
+│   ├── ui/            # Shared components
+│   ├── eslint-config/ # Linting config
+│   └── typescript-config/ # TypeScript config
+└── README.md
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## Roadmap
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+Future enhancements may include:
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+- Token balance tracking
+- Fiat price integration
+- Advanced categorization rules
+- Multi-chain support
+- Historical analysis and reporting
+- Budget tracking features
+- Export capabilities (CSV, JSON)
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+## Contributing
 
-## Useful Links
+This is a monorepo managed by Turborepo. Each package is independently typed and follows strict TypeScript configurations.
 
-Learn more about the power of Turborepo:
+## License
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+Private project - all rights reserved.
