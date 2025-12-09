@@ -174,15 +174,52 @@ Transaction Legs (4 total):
 ✅ **Transaction Classification** - Automatically categorizes as transfer, swap, airdrop, or Solana Pay  
 ✅ **Solana Pay Support** - Extracts merchant, order, and payment metadata from memos  
 ✅ **Token Balance Tracking** - Real-time SOL and SPL token balances  
+✅ **Spam/Dust Filtering** - Automatically filters irrelevant transactions  
+✅ **REST API** - Full-featured API with caching and pagination  
+✅ **Facilitator Detection** - Identifies PayAI and other payment facilitators  
 ✅ **Type-Safe** - Full TypeScript + Zod validation throughout  
 
 ### Coming Soon
-🔜 REST API endpoints  
 🔜 Database persistence (transaction cache)  
-🔜 Spam/dust filtering  
 🔜 Real-time transaction subscriptions  
 🔜 NFT mint/sale classification  
 🔜 CSV export  
+🔜 Webhook notifications  
+
+## REST API
+
+A production-ready Cloudflare Workers API for accessing enriched transaction data.
+
+### Quick Start
+
+```bash
+# Get wallet balance
+curl https://your-worker.workers.dev/api/v1/wallet/{address}/balance
+
+# Get transaction history
+curl https://your-worker.workers.dev/api/v1/wallet/{address}/transactions?limit=10
+
+# Get single transaction
+curl https://your-worker.workers.dev/api/v1/transaction/{signature}
+```
+
+### Features
+
+- ✅ Real-time balance queries (SOL + all SPL tokens)
+- ✅ Transaction classification with confidence scores
+- ✅ Cursor-based pagination
+- ✅ Automatic spam filtering
+- ✅ KV caching for performance
+- ✅ CORS enabled for browser apps
+- ✅ Facilitator detection (PayAI, etc.)
+
+### API Documentation
+
+See [apps/api/README.md](apps/api/README.md) for complete API documentation including:
+- Endpoint specifications
+- Request/response examples
+- Error handling
+- Deployment guide
 
 ## Technology
 
@@ -191,6 +228,7 @@ Transaction Legs (4 total):
 - **Blockchain:** Solana (@solana/kit v5)
 - **Validation:** Zod
 - **Monorepo:** Turborepo
+- **API:** Hono + Cloudflare Workers
 
 ---
 
