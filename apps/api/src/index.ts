@@ -4,6 +4,8 @@ import type { Bindings } from "./types";
 import { error } from "./lib/response";
 import health from "./routes/health";
 import wallet from "./routes/wallet";
+import transactions from "./routes/transactions";
+import transaction from "./routes/transaction";
 
 const app = new Hono<{ Bindings: Bindings }>();
 
@@ -34,6 +36,8 @@ app.onError((err, c) => {
 
 app.route("/api/v1/health", health);
 app.route("/api/v1/wallet", wallet);
+app.route("/api/v1/wallet", transactions);
+app.route("/api/v1/transaction", transaction);
 
 export default app;
 

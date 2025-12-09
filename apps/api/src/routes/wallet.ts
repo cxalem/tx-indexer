@@ -4,7 +4,6 @@ import type { Bindings } from "../types";
 import { success, error } from "../lib/response";
 import { createSolanaClient, parseAddress } from "@solana/rpc/client";
 import { fetchWalletBalance } from "@solana/fetcher/balances";
-import { TRACKED_TOKENS } from "@domain/money/token-registry";
 
 const wallet = new Hono<{ Bindings: Bindings }>();
 
