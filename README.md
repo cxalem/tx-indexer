@@ -125,10 +125,7 @@ Recent Transactions
      Confidence: 0.85
      Relevant: Yes
 
-   Transaction Legs (5 total):
-     fee: -0.002049281 SOL
-     received: +0.010000 USDC
-     ...
+   Accounting: 5 legs (✓ balanced)
 ```
 
 ### Single Transaction Classification
@@ -139,13 +136,14 @@ Status: Success
 Protocol: Token Program
 Time: 12/3/2025, 2:15:21 PM
 
-Memo: [binary reference data]
+Memo: Order #67705369: 2:L:black:1
 
 Classification:
   Type: transfer
   Direction: incoming
   Amount: 0.120000 USDC
   Payment Type: Solana Pay
+  Payment Memo: Order #67705369: 2:L:black:1
   Confidence: 0.98
   Relevant: Yes
 
@@ -169,17 +167,22 @@ Transaction Legs (4 total):
 
 ## Features
 
-✅ Transaction fetching and parsing  
-✅ Double-entry bookkeeping validation  
-✅ Automatic protocol detection  
-✅ Transaction classification (5 types)  
-✅ Solana Pay memo extraction  
-✅ Token balance tracking  
-✅ Type-safe (TypeScript + Zod)  
+### Current Implementation
+✅ **Smart Memo Decoding** - Extracts human-readable text from program logs and binary data (UTF-8, JSON, base58, UUID)  
+✅ **Double-Entry Accounting** - Validates all transactions balance (debits = credits)  
+✅ **Protocol Detection** - Identifies Jupiter, Raydium, Orca, and other major protocols  
+✅ **Transaction Classification** - Automatically categorizes as transfer, swap, airdrop, or Solana Pay  
+✅ **Solana Pay Support** - Extracts merchant, order, and payment metadata from memos  
+✅ **Token Balance Tracking** - Real-time SOL and SPL token balances  
+✅ **Type-Safe** - Full TypeScript + Zod validation throughout  
 
-🔜 REST API  
-🔜 Database persistence  
-🔜 Real-time subscriptions  
+### Coming Soon
+🔜 REST API endpoints  
+🔜 Database persistence (transaction cache)  
+🔜 Spam/dust filtering  
+🔜 Real-time transaction subscriptions  
+🔜 NFT mint/sale classification  
+🔜 CSV export for accounting  
 
 ## Technology
 
