@@ -1,57 +1,22 @@
 # TX Indexer
 
-A Solana transaction indexer and classifier that transforms raw blockchain transactions into user-friendly, categorized financial data.
+A Solana transaction indexer that transforms raw blockchain transactions into categorized, user-friendly financial data.
 
-**Status:** 🚧 Under active development
+> 🚧 Under active development
 
-## Features
+## Overview
 
-### ✅ Current Features
-
-- **Transaction Classification Engine** - Automatically categorize transactions into meaningful types
-  - Solana Pay payments with merchant metadata
-  - Token swaps (Jupiter, Raydium, Orca)
-  - Airdrops and token distributions
-  - Simple transfers (incoming/outgoing)
-  - Fee-only transactions
-- **Double-Entry Bookkeeping** - TxLeg model for accurate financial tracking
-- **Protocol Detection** - Identify Jupiter, Raydium, Orca, Metaplex, and more
-- **Token Balance Tracking** - SOL and SPL token balances with real-time updates
-- **Memo Extraction** - Parse Solana Pay memos and payment metadata
-- **Wallet Transaction History** - Fetch and classify transaction history
-- **Type-Safe** - Full TypeScript with Zod validation
-
-### 🔜 Coming Soon
-
-- REST API endpoints
-- Database persistence (PostgreSQL)
-- WebSocket subscriptions for real-time updates
-- Enhanced NFT transaction support
-- DeFi protocol-specific classifiers
-
-## Architecture
-
-### Data Flow
+TX Indexer fetches Solana transactions and converts them into meaningful financial insights through a three-layer architecture:
 
 ```
-RawTransaction (from Solana RPC)
-    ↓
-TxLeg[] (double-entry bookkeeping)
-    ↓
-TransactionClassification (user-friendly)
-    ↓
-API Response / UI Display
+RawTransaction → TxLeg[] → TransactionClassification
 ```
 
-### Core Data Models
+## Core Data Models
 
-#### 1. RawTransaction
-Raw transaction data fetched from Solana RPC, including:
-- Transaction signature and metadata
-- Program IDs and accounts
-- Token balance changes (pre/post)
-- SOL balance changes
-- Memo instructions (for Solana Pay)
+### 1. RawTransaction (Blockchain Layer)
+
+Raw transaction data from Solana RPC including balance changes, program IDs, and optional memo instructions.
 
 ```typescript
 {
@@ -59,52 +24,57 @@ Raw transaction data fetched from Solana RPC, including:
   slot: number;
   blockTime: number;
   programIds: string[];
-  protocol: ProtocolInfo | null;
-  memo?: string;
-  // ... balance data
+  protocol: { name: "Jupiter", type: "dex" } | null;
+  preTokenBalances: TokenBalance[];
+  postTokenBalances: TokenBalance[];
+  memo?: string;  // Solana Pay support
 }
 ```
 
-#### 2. TxLeg (Transaction Leg)
-Double-entry bookkeeping representation of money movement:
+### 2. TxLeg (Accounting Layer)
+
+Double-entry bookkeeping representation with structured account identifiers:
 
 ```typescript
 {
-  accountId: string;        // "wallet:address" or "protocol:jupiter:SOL:address"
+  accountId: string;        // "wallet:addr", "protocol:jupiter:USDC:addr", "fee:network"
   side: "debit" | "credit";
   amount: MoneyAmount;
-  role: "sent" | "received" | "fee" | "protocol_deposit" | ...;
+  role: "sent" | "received" | "fee" | "protocol_deposit" | "protocol_withdraw";
 }
 ```
 
-**Example - Token Transfer:**
+**Example - Token Swap:**
 ```typescript
 [
-  { accountId: "wallet:ABC...", side: "debit", amount: { token: USDC, amountUi: 100 }, role: "sent" },
-  { accountId: "wallet:XYZ...", side: "credit", amount: { token: USDC, amountUi: 100 }, role: "received" },
-  { accountId: "fee:network", side: "credit", amount: { token: SOL, amountUi: 0.00001 }, role: "fee" }
+  { accountId: "wallet:user", side: "debit", amount: 100 USDC, role: "sent" },
+  { accountId: "protocol:jupiter:USDC", side: "credit", amount: 100 USDC, role: "protocol_deposit" },
+  { accountId: "protocol:jupiter:SOL", side: "debit", amount: 0.5 SOL, role: "protocol_withdraw" },
+  { accountId: "wallet:user", side: "credit", amount: 0.5 SOL, role: "received" },
+  { accountId: "fee:network", side: "credit", amount: 0.000005 SOL, role: "fee" }
 ]
 ```
 
-#### 3. TransactionClassification
-User-friendly transaction classification:
+### 3. TransactionClassification (UX Layer)
+
+User-friendly categorization with confidence scoring:
 
 ```typescript
 {
-  primaryType: "transfer" | "swap" | "airdrop" | ...,
-  direction: "incoming" | "outgoing" | "neutral",
-  primaryAmount: MoneyAmount,
-  secondaryAmount?: MoneyAmount,  // For swaps
+  primaryType: "transfer" | "swap" | "airdrop" | "fee_only";
+  direction: "incoming" | "outgoing" | "neutral";
+  primaryAmount: MoneyAmount;
+  secondaryAmount?: MoneyAmount;  // For swaps
   counterparty?: {
     name: string;
     address: string;
     type: "wallet" | "protocol" | "merchant";
-  },
-  confidence: 0.98,
-  isRelevant: true,
+  };
+  confidence: number;  // 0.0 - 1.0
+  isRelevant: boolean;
   metadata: {
-    payment_type?: "solana_pay",
-    merchant?: string,
+    payment_type?: "solana_pay";
+    merchant?: string;
     // ... additional context
   }
 }
@@ -112,53 +82,22 @@ User-friendly transaction classification:
 
 ## Classification Engine
 
-### Available Classifiers
+Automatic transaction categorization using priority-based classifiers:
 
-| Classifier | Priority | Purpose |
-|------------|----------|---------|
-| **SolanaPayClassifier** | 95 | Detects Solana Pay payments with merchant metadata |
-| **SwapClassifier** | 80 | Identifies token-to-token exchanges |
-| **AirdropClassifier** | 70 | Detects token distributions (no send, only receive) |
-| **TransferClassifier** | 50 | Classifies simple transfers between wallets |
-| **FeeOnlyClassifier** | 60 | Identifies transactions with only network fees |
+| Priority | Classifier | Detects |
+|----------|------------|---------|
+| 95 | Solana Pay | Payments with merchant metadata in memo |
+| 80 | Swap | Token exchanges (Jupiter, Raydium, Orca) |
+| 70 | Airdrop | Token distributions (receive only) |
+| 50 | Transfer | Simple wallet-to-wallet transfers |
+| 60 | Fee Only | Transactions with only network fees |
 
-Classifiers run in priority order (highest first). The first classifier that matches determines the transaction type.
+Classifiers run in priority order. The first match determines the transaction type.
 
-### Adding Custom Classifiers
+## Output Examples
 
-```typescript
-import type { Classifier, ClassifierContext } from "@classification/engine/classifier.interface";
+### Wallet Transaction History
 
-export class MyCustomClassifier implements Classifier {
-  name = "my-custom";
-  priority = 85;  // Higher = runs first
-
-  classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, walletAddress, tx } = context;
-    
-    // Your classification logic
-    
-    return {
-      primaryType: "custom_type",
-      direction: "incoming",
-      confidence: 0.9,
-      // ...
-    };
-  }
-}
-```
-
-## CLI Tools
-
-### 1. Transaction History Viewer
-
-View wallet transaction history with automatic classification:
-
-```bash
-WALLET_ADDRESS=<your-wallet> bun apps/indexer/index.ts
-```
-
-Output:
 ```
 TX Indexer
 ============================================
@@ -176,6 +115,8 @@ Recent Transactions
    Status: Success
    Protocol: Associated Token Program
    Time: 11/4/2025, 12:31:59 AM
+   Balance Changes:
+     USDC: +0.010000
 
    Classification:
      Type: airdrop
@@ -190,145 +131,64 @@ Recent Transactions
      ...
 ```
 
-### 2. Single Transaction Classifier
-
-Classify any transaction by signature:
-
-```bash
-SIGNATURE=<tx-signature> WALLET_ADDRESS=<wallet> bun apps/indexer/classify-tx.ts
-```
-
-## Project Structure
+### Single Transaction Classification
 
 ```
-tx-indexer/
-├── apps/
-│   ├── indexer/          # CLI tools and scripts
-│   ├── web/              # Next.js web app (planned)
-│   └── docs/             # Documentation site
-├── packages/
-│   ├── domain/           # Core domain types and business logic
-│   ├── solana/           # Solana RPC client and mappers
-│   ├── classification/   # Transaction classification engine
-│   ├── ui/               # Shared UI components
-│   ├── eslint-config/    # Shared ESLint configuration
-│   └── typescript-config/# Shared TypeScript configuration
+Transaction: 32UwwoheTh3NUzdy...
+Status: Success
+Protocol: Token Program
+Time: 12/3/2025, 2:15:21 PM
+
+Memo: [binary reference data]
+
+Classification:
+  Type: transfer
+  Direction: incoming
+  Amount: 0.120000 USDC
+  Payment Type: Solana Pay
+  Confidence: 0.98
+  Relevant: Yes
+
+Transaction Legs (4 total):
+  fee: -0.000005000 SOL
+    Account: external:Hb6dzd4p...
+  received: +0.120000 USDC
+    Account: wallet:CmGgLQL3...
+  protocol_deposit: -0.120000 USDC
+    Account: protocol:spl-token:USDC:Hb6dzd4p...
+
+✓ Legs are balanced
 ```
 
-## Development
+## Supported Protocols
 
-### Prerequisites
+- **DEX:** Jupiter, Raydium, Orca Whirlpool
+- **NFT:** Metaplex
+- **Core:** Token Program, System Program, Associated Token Program, Stake Program
+- **Payments:** Solana Pay (SPL Memo)
 
-- Bun 1.3.4+
-- TypeScript 5.9+
+## Features
 
-### Setup
+✅ Transaction fetching and parsing  
+✅ Double-entry bookkeeping validation  
+✅ Automatic protocol detection  
+✅ Transaction classification (5 types)  
+✅ Solana Pay memo extraction  
+✅ Token balance tracking  
+✅ Type-safe (TypeScript + Zod)  
 
-```bash
-# Install dependencies
-bun install
+🔜 REST API  
+🔜 Database persistence  
+🔜 Real-time subscriptions  
 
-# Type check all packages
-bun run check-types
-
-# Lint all packages
-bun run lint
-
-# Run indexer
-WALLET_ADDRESS=<address> bun apps/indexer/index.ts
-```
-
-### Key Commands
-
-```bash
-# Type checking
-bun run check-types                    # All packages
-bun run check-types --filter=domain    # Specific package
-
-# Linting
-bun run lint                           # All packages
-bun run lint --filter=solana          # Specific package
-
-# Classification
-SIGNATURE=<sig> WALLET_ADDRESS=<addr> bun apps/indexer/classify-tx.ts
-```
-
-## Technology Stack
+## Technology
 
 - **Runtime:** Bun
 - **Language:** TypeScript
 - **Blockchain:** Solana (@solana/kit v5)
 - **Validation:** Zod
-- **Build System:** Turborepo
-- **Linting:** ESLint
-- **Monorepo:** Bun workspaces
+- **Monorepo:** Turborepo
 
-## Constants & Configuration
+---
 
-### Solana Program IDs
-
-All known Solana program addresses are centralized in `packages/solana/src/constants/program-ids.ts`:
-
-```typescript
-import {
-  JUPITER_V6_PROGRAM_ID,
-  SPL_MEMO_PROGRAM_ID,
-  TOKEN_PROGRAM_ID,
-  // ... more
-} from "@solana/constants/program-ids";
-```
-
-### Tracked Tokens
-
-Configure tracked tokens in `packages/domain/src/money/token-registry.ts`:
-
-```typescript
-export const TRACKED_TOKENS = [
-  KNOWN_TOKENS.SOL,
-  KNOWN_TOKENS.USDC,
-] as const;
-```
-
-## API Endpoints (Planned)
-
-### GET /api/wallet/:address/balance
-Returns current SOL and token balances
-
-### GET /api/wallet/:address/transactions
-Returns classified transaction history with pagination
-
-### GET /api/transaction/:signature
-Returns detailed transaction classification and legs
-
-### WebSocket /ws/wallet/:address
-Real-time transaction updates and classifications
-
-## Data Validation
-
-All data structures use **Zod schemas** for:
-- ✅ Runtime validation
-- ✅ Type inference
-- ✅ API request/response validation
-- ✅ Database schema validation
-
-## Contributing
-
-This is an active development project. Key areas for contribution:
-
-1. **New Classifiers** - Add support for more transaction types
-2. **Protocol Detection** - Expand known protocol coverage
-3. **API Development** - Implement REST API endpoints
-4. **Database Layer** - Add persistence with PostgreSQL
-5. **Testing** - Add unit and integration tests
-
-## License
-
-MIT
-
-## Acknowledgments
-
-Built with:
-- [Solana Kit](https://www.solanakit.com) - Modern Solana TypeScript SDK
-- [Bun](https://bun.sh) - Fast all-in-one JavaScript runtime
-- [Turborepo](https://turbo.build/repo) - High-performance build system
-- [Zod](https://zod.dev) - TypeScript-first schema validation
+**License:** MIT
