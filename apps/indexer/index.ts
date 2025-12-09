@@ -9,6 +9,8 @@ import {
   getWalletTokenChanges,
   getWalletSolChange,
 } from "@solana/mappers/balance-parser";
+import { transactionToLegs } from "@solana/mappers/transaction-to-legs";
+import { validateLegsBalance } from "@domain/tx/leg-validation";
 import { TRACKED_TOKENS } from "@domain/money/token-registry";
 import type { Signature } from "@solana/kit";
 
@@ -94,6 +96,30 @@ async function main() {
       }
     } else {
       console.log(`   Balance Changes: None`);
+    }
+
+    const legs = transactionToLegs(tx, WALLET_ADDRESS);
+    const validation = validateLegsBalance(legs);
+
+    console.log(`\n   Transaction Legs (${legs.length} total):`);
+    for (const leg of legs) {
+      const sign = leg.side === "credit" ? "+" : "-";
+      const amount = leg.amount.amountUi.toFixed(leg.amount.token.decimals);
+      console.log(
+        `     ${leg.role}: ${sign}${amount} ${leg.amount.token.symbol}`
+      );
+      console.log(`       Account: ${leg.accountId}`);
+    }
+
+    if (!validation.isBalanced) {
+      console.log(`\n   WARNING: Legs not balanced!`);
+      for (const [token, balance] of Object.entries(validation.byToken)) {
+        if (balance.diff > 0.000001) {
+          console.log(
+            `     ${token}: Debits=${balance.debits.toFixed(6)}, Credits=${balance.credits.toFixed(6)}, Diff=${balance.diff.toFixed(6)}`
+          );
+        }
+      }
     }
   });
 

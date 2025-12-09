@@ -1,6 +1,7 @@
 import { ProtocolInfoSchema } from "@domain/actors/counterparty.types";
 import { z } from "zod";
 import type { Signature } from "@solana/kit";
+import type { MoneyAmount } from "@domain/money/money.types";
 
 const TxDirectionSchema = z.enum(["incoming", "outgoing", "self", "neutral"]);
 
@@ -60,8 +61,32 @@ export const RawTransactionSchema = z.object({
   accountKeys: z.array(z.string()).optional(),
 });
 
+const TxLegSideSchema = z.enum(["debit", "credit"]);
+
+const TxLegRoleSchema = z.enum([
+  "sent",
+  "received",
+  "fee",
+  "reward",
+  "protocol_deposit",
+  "protocol_withdraw",
+  "principal",
+  "interest",
+  "unknown",
+]);
+
+export const TxLegSchema = z.object({
+  accountId: z.string(),
+  side: TxLegSideSchema,
+  amount: z.custom<MoneyAmount>(),
+  role: TxLegRoleSchema,
+});
+
 export type TxDirection = z.infer<typeof TxDirectionSchema>;
 export type TxPrimaryType = z.infer<typeof TxPrimaryTypeSchema>;
 export type TxCategory = z.infer<typeof TxCategorySchema>;
 export type TokenBalance = z.infer<typeof TokenBalanceSchema>;
 export type RawTransaction = z.infer<typeof RawTransactionSchema>;
+export type TxLegSide = z.infer<typeof TxLegSideSchema>;
+export type TxLegRole = z.infer<typeof TxLegRoleSchema>;
+export type TxLeg = z.infer<typeof TxLegSchema>;
