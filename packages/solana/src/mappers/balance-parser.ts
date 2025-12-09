@@ -54,9 +54,14 @@ export function extractTokenBalanceChanges(
       continue;
     }
 
-    const tokenInfo = getTokenInfo(mint);
+    let tokenInfo = getTokenInfo(mint);
     if (!tokenInfo) {
-      continue;
+      tokenInfo = {
+        mint,
+        symbol: mint.slice(0, 8),
+        decimals: postBal.uiTokenAmount.decimals,
+        name: `Unknown Token (${mint.slice(0, 8)}...)`,
+      };
     }
 
     const preBal = preBalanceMap.get(accountIndex);

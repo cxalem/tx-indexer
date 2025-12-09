@@ -13,6 +13,7 @@ import { transactionToLegs } from "@solana/mappers/transaction-to-legs";
 import { validateLegsBalance } from "@domain/tx/leg-validation";
 import { TRACKED_TOKENS } from "@domain/money/token-registry";
 import { classifyTransaction } from "@classification/engine/classification-service";
+import { filterSpamTransactions } from "@domain/tx/spam-filter";
 
 const RPC_URL = process.env.RPC_URL || "https://api.devnet.solana.com";
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;
@@ -48,7 +49,7 @@ async function main() {
   console.log("--------------------------------------------");
 
   const signatures = await fetchWalletSignatures(client.rpc, address, {
-    limit: 3,
+    limit: 10,
   });
 
   const transactions = await fetchTransactionsBatch(
@@ -61,8 +62,26 @@ async function main() {
     return;
   }
 
-  transactions.forEach((tx, index) => {
+  const classifiedTransactions = transactions.map((tx) => {
     tx.protocol = detectProtocol(tx.programIds);
+    const legs = transactionToLegs(tx, WALLET_ADDRESS);
+    const classification = classifyTransaction(legs, WALLET_ADDRESS, tx);
+    return { tx, classification, legs };
+  });
+
+  const filteredTransactions = filterSpamTransactions(
+    classifiedTransactions,
+    {
+      minSolAmount: 0.001,
+      minTokenAmountUsd: 0.01,
+      minConfidence: 0.5,
+      allowFailed: false,
+    }
+  );
+
+  console.log(`\nShowing ${filteredTransactions.length} of ${transactions.length} transactions (${transactions.length - filteredTransactions.length} filtered as spam)\n`);
+
+  filteredTransactions.forEach(({ tx, classification, legs }, index) => {
 
     const date = tx.blockTime
       ? new Date(Number(tx.blockTime) * 1000).toLocaleString()
@@ -100,9 +119,7 @@ async function main() {
       console.log(`   Balance Changes: None`);
     }
 
-    const legs = transactionToLegs(tx, WALLET_ADDRESS);
     const validation = validateLegsBalance(legs);
-    const classification = classifyTransaction(legs, WALLET_ADDRESS, tx);
 
     if (tx.memo) {
       console.log(`\n   Memo: ${tx.memo}`);
