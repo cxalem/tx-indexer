@@ -34,6 +34,18 @@ export const TxCategorySchema = z.enum([
   "other",
 ]);
 
+export const TokenBalanceSchema = z.object({
+  accountIndex: z.number(),
+  mint: z.string(),
+  owner: z.string().optional(),
+  programId: z.string().optional(),
+  uiTokenAmount: z.object({
+    amount: z.string(),
+    decimals: z.number(),
+    uiAmountString: z.string(),
+  }),
+});
+
 export const RawTransactionSchema = z.object({
   signature: z.custom<Signature>((val) => typeof val === "string"),
   slot: z.union([z.number(), z.bigint()]),
@@ -41,9 +53,15 @@ export const RawTransactionSchema = z.object({
   err: z.any().nullable(),
   programIds: z.array(z.string()),
   protocol: ProtocolInfoSchema.nullable(),
+  preTokenBalances: z.array(TokenBalanceSchema).optional(),
+  postTokenBalances: z.array(TokenBalanceSchema).optional(),
+  preBalances: z.array(z.union([z.number(), z.bigint()])).optional(),
+  postBalances: z.array(z.union([z.number(), z.bigint()])).optional(),
+  accountKeys: z.array(z.string()).optional(),
 });
 
 export type TxDirection = z.infer<typeof TxDirectionSchema>;
 export type TxPrimaryType = z.infer<typeof TxPrimaryTypeSchema>;
 export type TxCategory = z.infer<typeof TxCategorySchema>;
+export type TokenBalance = z.infer<typeof TokenBalanceSchema>;
 export type RawTransaction = z.infer<typeof RawTransactionSchema>;

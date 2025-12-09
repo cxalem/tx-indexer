@@ -79,6 +79,33 @@ export async function fetchTransaction(
     err: response.meta?.err ?? null,
     programIds: extractProgramIds(response.transaction),
     protocol: null,
+    preTokenBalances: (response.meta?.preTokenBalances ?? []).map((bal) => ({
+      accountIndex: bal.accountIndex,
+      mint: bal.mint.toString(),
+      owner: bal.owner?.toString(),
+      programId: bal.programId?.toString(),
+      uiTokenAmount: {
+        amount: bal.uiTokenAmount.amount.toString(),
+        decimals: bal.uiTokenAmount.decimals,
+        uiAmountString: bal.uiTokenAmount.uiAmountString.toString(),
+      },
+    })),
+    postTokenBalances: (response.meta?.postTokenBalances ?? []).map((bal) => ({
+      accountIndex: bal.accountIndex,
+      mint: bal.mint.toString(),
+      owner: bal.owner?.toString(),
+      programId: bal.programId?.toString(),
+      uiTokenAmount: {
+        amount: bal.uiTokenAmount.amount.toString(),
+        decimals: bal.uiTokenAmount.decimals,
+        uiAmountString: bal.uiTokenAmount.uiAmountString.toString(),
+      },
+    })),
+    preBalances: (response.meta?.preBalances ?? []).map((bal) => Number(bal)),
+    postBalances: (response.meta?.postBalances ?? []).map((bal) => Number(bal)),
+    accountKeys: response.transaction.message.accountKeys.map((key) =>
+      key.toString()
+    ),
   };
 }
 

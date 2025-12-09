@@ -43,20 +43,39 @@ const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
   },
 };
 
-/**
- * Detects the primary protocol used in a transaction based on program IDs.
- * 
- * @param programIds - Array of program IDs from the transaction
- * @returns ProtocolInfo if a known protocol is detected, null otherwise
- */
+const PRIORITY_ORDER = [
+  "jupiter",
+  "jupiter-v4",
+  "raydium",
+  "orca-whirlpool",
+  "metaplex",
+  "stake",
+  "associated-token",
+  "spl-token",
+  "compute-budget",
+  "system",
+];
+
 export function detectProtocol(programIds: string[]): ProtocolInfo | null {
+  const detectedProtocols: ProtocolInfo[] = [];
+
   for (const programId of programIds) {
     const protocol = KNOWN_PROGRAMS[programId];
     if (protocol) {
-      return protocol;
+      detectedProtocols.push(protocol);
     }
   }
 
-  return null;
+  if (detectedProtocols.length === 0) {
+    return null;
+  }
+
+  detectedProtocols.sort((a, b) => {
+    const aPriority = PRIORITY_ORDER.indexOf(a.id);
+    const bPriority = PRIORITY_ORDER.indexOf(b.id);
+    return aPriority - bPriority;
+  });
+
+  return detectedProtocols[0] ?? null;
 }
 
