@@ -8,25 +8,6 @@ A modular Solana transaction indexer and classifier built for tracking, analyzin
 
 TX Indexer fetches transactions from Solana wallets, detects the protocols involved (Jupiter, Raydium, Orca, etc.), and provides a foundation for categorizing transactions similar to traditional financial tracking apps. The project is designed to transform raw blockchain data into meaningful financial insights.
 
-## Architecture
-
-This is a monorepo built with [Turborepo](https://turborepo.com) and [Bun](https://bun.com), organized into apps and shared packages.
-
-### Apps
-
-- **indexer** - CLI tool for fetching and analyzing Solana transactions
-- **web** - Next.js web application (frontend)
-- **docs** - Documentation site built with Next.js
-
-### Packages
-
-- **@repo/domain** - Core domain types and schemas for transactions, money, counterparties, and categorization
-- **@repo/solana** - Solana-specific adapters for RPC communication, transaction fetching, and data mapping
-- **@repo/classification** - Protocol detection and transaction classification logic
-- **@repo/ui** - Shared React component library
-- **@repo/eslint-config** - Shared ESLint configurations
-- **@repo/typescript-config** - Shared TypeScript configurations
-
 ## Features
 
 ### Current Implementation
@@ -48,20 +29,6 @@ This is a monorepo built with [Turborepo](https://turborepo.com) and [Bun](https
 - **Storage Layer** - Persist transactions with PostgreSQL/SQLite
 - **Dashboard UI** - Bank-style transaction list with filtering and charts
 
-## Getting Started
-
-### Prerequisites
-
-- [Bun](https://bun.com) v1.3.4 or higher
-- Node.js 18+ (for compatibility)
-
-### Installation
-
-```bash
-# Install dependencies
-bun install
-```
-
 ### Running the Indexer
 
 ```bash
@@ -70,35 +37,6 @@ WALLET_ADDRESS=<your-solana-address> bun run apps/indexer/index.ts
 
 # Optional: Use a custom RPC endpoint
 RPC_URL=https://api.mainnet-beta.solana.com WALLET_ADDRESS=<address> bun run apps/indexer/index.ts
-```
-
-### Development
-
-```bash
-# Run all apps in development mode
-bun run dev
-
-# Run specific app
-bun run dev --filter=web
-
-# Type checking
-bun run check-types
-
-# Linting
-bun run lint
-
-# Format code
-bun run format
-```
-
-### Building
-
-```bash
-# Build all packages and apps
-bun run build
-
-# Build specific package
-bun run build --filter=solana
 ```
 
 ## Data Architecture
