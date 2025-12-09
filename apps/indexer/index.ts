@@ -31,7 +31,7 @@ async function main() {
   const client = createSolanaClient(RPC_URL);
   const address = parseAddress(WALLET_ADDRESS);
 
-  const balance = await fetchWalletBalance(client.rpc, address);
+  const balance = await fetchWalletBalance(client.rpc, address, TRACKED_TOKENS);
 
   console.log("Current Balance");
   console.log("--------------------------------------------");

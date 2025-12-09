@@ -1,0 +1,25 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.0.0",
+    "@solana/kit": "^5.0.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "@repo/typescript-config": "workspace:*",
+    "classification": "workspace:*",
+    "domain": "workspace:*",
+    "solana": "workspace:*",
+    "typescript": "5.9.2",
+    "wrangler": "^4.53.0"
+  }
+}
+

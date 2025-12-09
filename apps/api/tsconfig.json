@@ -1,0 +1,16 @@
+{
+  "extends": "../../packages/typescript-config/bun.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": ["@cloudflare/workers-types"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@solana/*": ["../../packages/solana/src/*"],
+      "@domain/*": ["../../packages/domain/src/*"],
+      "@classification/*": ["../../packages/classification/src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+

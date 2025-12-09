@@ -26,16 +26,35 @@ export interface TokenAccountBalance {
   symbol: string;
 }
 
+/**
+ * Fetches wallet balance including SOL and SPL tokens
+ * 
+ * @param rpc - Solana RPC client
+ * @param walletAddress - Wallet address to query
+ * @param tokenMints - Optional array of token mint addresses to track. If omitted, returns all tokens in wallet
+ * @returns Wallet balance data with SOL and token balances
+ * 
+ * @example
+ * // Fetch all tokens
+ * const allBalances = await fetchWalletBalance(rpc, address);
+ * 
+ * @example
+ * // Fetch specific tokens only
+ * const usdcOnly = await fetchWalletBalance(rpc, address, ["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"]);
+ */
 export async function fetchWalletBalance(
   rpc: Rpc<GetBalanceApi>,
-  walletAddress: Address
+  walletAddress: Address,
+  tokenMints?: readonly string[]
 ): Promise<WalletBalance> {
   const balanceResponse = await rpc.getBalance(walletAddress).send();
   const lamports = balanceResponse.value;
 
   const tokenAccounts = await fetchTokenAccounts(rpc, walletAddress);
 
-  const allTrackedTokens = mergeWithTrackedTokens(tokenAccounts);
+  const tokens = tokenMints 
+    ? filterToTrackedTokens(tokenAccounts, tokenMints)
+    : Array.from(tokenAccounts.values());
 
   return {
     address: walletAddress,
@@ -43,7 +62,7 @@ export async function fetchWalletBalance(
       lamports,
       ui: Number(lamports) / 1e9,
     },
-    tokens: allTrackedTokens,
+    tokens,
   };
 }
 
@@ -68,21 +87,20 @@ async function fetchTokenAccounts(
       const mint = typeof mintRaw === "string" ? mintRaw : mintRaw.toString();
 
       const tokenInfo = getTokenInfo(mint);
+      const symbol = tokenInfo?.symbol || mint.substring(0, 8);
 
-      if (tokenInfo) {
-        accountsMap.set(mint, {
-          mint,
-          tokenAccount: account.pubkey.toString(),
-          amount: {
-            raw: parsedInfo.tokenAmount.amount,
-            ui: parsedInfo.tokenAmount.uiAmountString
-              ? parseFloat(parsedInfo.tokenAmount.uiAmountString)
-              : 0,
-          },
-          decimals: parsedInfo.tokenAmount.decimals,
-          symbol: tokenInfo.symbol,
-        });
-      }
+      accountsMap.set(mint, {
+        mint,
+        tokenAccount: account.pubkey.toString(),
+        amount: {
+          raw: parsedInfo.tokenAmount.amount,
+          ui: parsedInfo.tokenAmount.uiAmountString
+            ? parseFloat(parsedInfo.tokenAmount.uiAmountString)
+            : 0,
+        },
+        decimals: parsedInfo.tokenAmount.decimals,
+        symbol,
+      });
     }
   } catch (error) {
     console.error("Error fetching token accounts:", error);
@@ -91,32 +109,37 @@ async function fetchTokenAccounts(
   return accountsMap;
 }
 
-function mergeWithTrackedTokens(
-  fetchedAccounts: Map<string, TokenAccountBalance>
+/**
+ * Filters token accounts to only include specified mints, adding zero balances for missing tokens
+ * 
+ * @param fetchedAccounts - Map of mint addresses to token balances from RPC
+ * @param tokenMints - Array of token mint addresses to include in results
+ */
+function filterToTrackedTokens(
+  fetchedAccounts: Map<string, TokenAccountBalance>,
+  tokenMints: readonly string[]
 ): TokenAccountBalance[] {
   const result: TokenAccountBalance[] = [];
 
-  for (const mint of TRACKED_TOKENS) {
-    if (mint === KNOWN_TOKENS.SOL) {
-      continue;
-    }
-
-    const tokenInfo = getTokenInfo(mint);
-    if (!tokenInfo) continue;
+  for (const mint of tokenMints) {
+    if (mint === KNOWN_TOKENS.SOL) continue;
 
     const existing = fetchedAccounts.get(mint);
     if (existing) {
       result.push(existing);
     } else {
-      result.push({
-        mint,
-        amount: {
-          raw: "0",
-          ui: 0,
-        },
-        decimals: tokenInfo.decimals,
-        symbol: tokenInfo.symbol,
-      });
+      const tokenInfo = getTokenInfo(mint);
+      if (tokenInfo) {
+        result.push({
+          mint,
+          amount: {
+            raw: "0",
+            ui: 0,
+          },
+          decimals: tokenInfo.decimals,
+          symbol: tokenInfo.symbol,
+        });
+      }
     }
   }
 
