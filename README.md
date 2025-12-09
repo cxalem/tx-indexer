@@ -2,10 +2,6 @@
 
 > **Note:** This project is currently under active development.
 
-A modular Solana transaction indexer and classifier built for tracking, analyzing, and categorizing blockchain transactions with personal finance-like semantics.
-
-## Overview
-
 TX Indexer fetches transactions from Solana wallets, detects the protocols involved (Jupiter, Raydium, Orca, etc.), and provides a foundation for categorizing transactions similar to traditional financial tracking apps. The project is designed to transform raw blockchain data into meaningful financial insights.
 
 ## Features
