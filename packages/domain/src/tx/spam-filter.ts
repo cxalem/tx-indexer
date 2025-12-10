@@ -15,6 +15,20 @@ const DEFAULT_CONFIG: Required<SpamFilterConfig> = {
   allowFailed: false,
 };
 
+/**
+ * Determines if a transaction should be filtered as spam or dust.
+ * 
+ * A transaction is considered spam if it:
+ * - Failed (and allowFailed is false)
+ * - Has low classification confidence
+ * - Is not relevant to the wallet
+ * - Involves dust amounts below configured thresholds
+ * 
+ * @param tx - Raw transaction data
+ * @param classification - Transaction classification result
+ * @param config - Optional spam filter configuration (uses defaults if omitted)
+ * @returns True if the transaction should be filtered as spam
+ */
 export function isSpamTransaction(
   tx: RawTransaction,
   classification: TransactionClassification,
@@ -64,6 +78,16 @@ function isDustTransaction(
   return Math.abs(amountUi) < config.minTokenAmountUsd;
 }
 
+/**
+ * Filters an array of transactions to remove spam and dust transactions.
+ * 
+ * Applies spam detection criteria to each transaction while preserving
+ * additional properties in the returned array items.
+ * 
+ * @param transactions - Array of transaction objects with tx and classification
+ * @param config - Optional spam filter configuration
+ * @returns Filtered array with spam transactions removed
+ */
 export function filterSpamTransactions<T extends {
   tx: RawTransaction;
   classification: TransactionClassification;

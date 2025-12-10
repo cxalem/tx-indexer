@@ -3,9 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@domain/*": ["../../packages/domain/src/*"],
-      "@solana/*": ["../../packages/solana/src/*"],
-      "@classification/*": ["../../packages/classification/src/*"]
+      "@tx-indexer/core/*": ["../../packages/domain/src/*"],
+      "@tx-indexer/solana/*": ["../../packages/solana/src/*"],
+      "@tx-indexer/classification/*": ["../../packages/classification/src/*"]
     }
   }
 }

@@ -1,5 +1,5 @@
-import type { TxLeg, RawTransaction } from "@domain/tx/tx.types";
-import type { TransactionClassification } from "@domain/tx/classification.types";
+import type { TxLeg, RawTransaction } from "@tx-indexer/core/tx/tx.types";
+import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import type { Classifier, ClassifierContext } from "./classifier.interface";
 import { TransferClassifier } from "../classifiers/transfer-classifier";
 import { SwapClassifier } from "../classifiers/swap-classifier";
@@ -52,6 +52,17 @@ export class ClassificationService {
 
 export const classificationService = new ClassificationService();
 
+/**
+ * Classifies a transaction based on its accounting legs and context.
+ * 
+ * Uses a priority-ordered chain of classifiers (Solana Pay > Swap > Airdrop > Transfer > Fee-only)
+ * to determine the transaction type, direction, amounts, and counterparty from the wallet's perspective.
+ * 
+ * @param legs - Transaction legs representing all balance movements
+ * @param walletAddress - Address of the wallet for classification perspective
+ * @param tx - Raw transaction data for additional context (protocol, memo, etc.)
+ * @returns Classification result with type, amounts, counterparty, and confidence
+ */
 export function classifyTransaction(
   legs: TxLeg[],
   walletAddress: string,

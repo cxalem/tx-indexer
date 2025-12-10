@@ -5,9 +5,9 @@ import type {
   GetSignaturesForAddressApi,
   GetTransactionApi,
 } from "@solana/kit";
-import type { RawTransaction } from "@domain/tx/tx.types";
-import { extractProgramIds } from "@solana/mappers/transaction-mapper";
-import { extractMemo } from "@solana/mappers/memo-parser";
+import type { RawTransaction } from "@tx-indexer/core/tx/tx.types";
+import { extractProgramIds } from "@tx-indexer/solana/mappers/transaction-mapper";
+import { extractMemo } from "@tx-indexer/solana/mappers/memo-parser";
 
 export interface FetchTransactionsConfig {
   limit?: number;

@@ -1,4 +1,4 @@
-import type { SolanaTransaction } from "@solana/types/transaction.types";
+import type { SolanaTransaction } from "@tx-indexer/solana/types/transaction.types";
 
 /**
  * Extracts all unique program IDs from a transaction.

@@ -1,7 +1,7 @@
-import { ProtocolInfoSchema } from "@domain/actors/counterparty.types";
+import { ProtocolInfoSchema } from "@tx-indexer/core/actors/counterparty.types";
 import { z } from "zod";
 import type { Signature } from "@solana/kit";
-import type { MoneyAmount } from "@domain/money/money.types";
+import type { MoneyAmount } from "@tx-indexer/core/money/money.types";
 
 export const TxDirectionSchema = z.enum(["incoming", "outgoing", "self", "neutral"]);
 

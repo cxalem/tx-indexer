@@ -1,5 +1,5 @@
 {
-  "name": "classification",
+  "name": "@tx-indexer/classification",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -16,7 +16,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "domain": "workspace:*",
-    "solana": "workspace:*"
+    "@tx-indexer/core": "workspace:*",
+    "@tx-indexer/solana": "workspace:*"
   }
 }

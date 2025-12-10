@@ -1,9 +1,9 @@
-import { createSolanaClient, parseSignature } from "@solana/rpc/client";
-import { fetchTransaction } from "@solana/fetcher/transactions";
-import { detectProtocol } from "@classification/protocols/detector";
-import { transactionToLegs } from "@solana/mappers/transaction-to-legs";
-import { validateLegsBalance } from "@domain/tx/leg-validation";
-import { classifyTransaction } from "@classification/engine/classification-service";
+import { createSolanaClient, parseSignature } from "@tx-indexer/solana/rpc/client";
+import { fetchTransaction } from "@tx-indexer/solana/fetcher/transactions";
+import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
+import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { validateLegsBalance } from "@tx-indexer/core/tx/leg-validation";
+import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 
 const RPC_URL = process.env.RPC_URL || "https://api.devnet.solana.com";
 const SIGNATURE = process.env.SIGNATURE;

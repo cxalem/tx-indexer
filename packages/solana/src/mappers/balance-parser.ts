@@ -1,10 +1,10 @@
-import type { RawTransaction, TokenBalance } from "@domain/tx/tx.types";
-import type { MoneyAmount, TokenInfo } from "@domain/money/money.types";
+import type { RawTransaction, TokenBalance } from "@tx-indexer/core/tx/tx.types";
+import type { MoneyAmount, TokenInfo } from "@tx-indexer/core/money/money.types";
 import {
   getTokenInfo,
   KNOWN_TOKENS,
   TOKEN_INFO,
-} from "@domain/money/token-registry";
+} from "@tx-indexer/core/money/token-registry";
 
 export interface TokenBalanceChange {
   mint: string;
@@ -34,6 +34,16 @@ export interface SolBalanceChange {
   changeUi: number;
 }
 
+/**
+ * Extracts all SPL token balance changes from a transaction.
+ * 
+ * Compares pre and post token balances to calculate the change for each token account.
+ * Unknown tokens are automatically included with a generated symbol from their mint address.
+ * 
+ * @param tx - Raw transaction with token balance data
+ * @param filterMints - Optional array of mint addresses to filter to specific tokens
+ * @returns Array of token balance changes with mint, owner, and amount information
+ */
 export function extractTokenBalanceChanges(
   tx: RawTransaction,
   filterMints?: string[]
@@ -103,6 +113,15 @@ export function extractTokenBalanceChanges(
   return changes;
 }
 
+/**
+ * Extracts SOL balance changes for all accounts in a transaction.
+ * 
+ * Compares pre and post lamport balances for each account key to calculate
+ * the SOL change. Only includes accounts with non-zero changes.
+ * 
+ * @param tx - Raw transaction with SOL balance data
+ * @returns Array of SOL balance changes with account address and amounts
+ */
 export function extractSolBalanceChanges(
   tx: RawTransaction
 ): SolBalanceChange[] {

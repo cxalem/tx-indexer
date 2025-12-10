@@ -1,4 +1,4 @@
-import type { TxLeg } from "@domain/tx/tx.types";
+import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 
 export function getUserLegs(legs: TxLeg[], walletAddress: string): TxLeg[] {
   const walletPrefix = `wallet:${walletAddress}`;

@@ -1,19 +1,19 @@
-import { createSolanaClient, parseAddress } from "@solana/rpc/client";
+import { createSolanaClient, parseAddress } from "@tx-indexer/solana/rpc/client";
 import {
   fetchWalletSignatures,
   fetchTransactionsBatch,
-} from "@solana/fetcher/transactions";
-import { fetchWalletBalance } from "@solana/fetcher/balances";
-import { detectProtocol } from "@classification/protocols/detector";
+} from "@tx-indexer/solana/fetcher/transactions";
+import { fetchWalletBalance } from "@tx-indexer/solana/fetcher/balances";
+import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import {
   getWalletTokenChanges,
   getWalletSolChange,
-} from "@solana/mappers/balance-parser";
-import { transactionToLegs } from "@solana/mappers/transaction-to-legs";
-import { validateLegsBalance } from "@domain/tx/leg-validation";
-import { TRACKED_TOKENS } from "@domain/money/token-registry";
-import { classifyTransaction } from "@classification/engine/classification-service";
-import { filterSpamTransactions } from "@domain/tx/spam-filter";
+} from "@tx-indexer/solana/mappers/balance-parser";
+import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { validateLegsBalance } from "@tx-indexer/core/tx/leg-validation";
+import { TRACKED_TOKENS } from "@tx-indexer/core/money/token-registry";
+import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
+import { filterSpamTransactions } from "@tx-indexer/core/tx/spam-filter";
 
 const RPC_URL = process.env.RPC_URL || "https://api.devnet.solana.com";
 const WALLET_ADDRESS = process.env.WALLET_ADDRESS;

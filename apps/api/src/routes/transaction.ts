@@ -2,12 +2,12 @@ import { Hono } from "hono";
 import { z } from "zod";
 import type { Bindings } from "../types";
 import { success, error } from "../lib/response";
-import { createSolanaClient, parseSignature } from "@solana/rpc/client";
-import { fetchTransaction } from "@solana/fetcher/transactions";
-import { transactionToLegs } from "@solana/mappers/transaction-to-legs";
-import { classifyTransaction } from "@classification/engine/classification-service";
-import { detectProtocol } from "@classification/protocols/detector";
-import { validateLegsBalance } from "@domain/tx/leg-validation";
+import { createSolanaClient, parseSignature } from "@tx-indexer/solana/rpc/client";
+import { fetchTransaction } from "@tx-indexer/solana/fetcher/transactions";
+import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
+import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
+import { validateLegsBalance } from "@tx-indexer/core/tx/leg-validation";
 
 const transaction = new Hono<{ Bindings: Bindings }>();
 

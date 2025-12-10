@@ -3,9 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@domain/*": ["../domain/src/*"],
-      "@classification/*": ["./src/*"],
-      "@solana/*": ["../solana/src/*"]
+      "@tx-indexer/core/*": ["../domain/src/*"],
+      "@tx-indexer/classification/*": ["./src/*"],
+      "@tx-indexer/solana/*": ["../solana/src/*"]
     }
   }
 }

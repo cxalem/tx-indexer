@@ -6,7 +6,7 @@ import {
   address,
 } from "@solana/kit";
 
-import { getTokenInfo, KNOWN_TOKENS } from "@domain/money/token-registry";
+import { getTokenInfo, KNOWN_TOKENS } from "@tx-indexer/core/money/token-registry";
 
 export interface WalletBalance {
   address: string;

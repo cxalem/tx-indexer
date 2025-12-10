@@ -1,5 +1,5 @@
-import type { TxLeg, RawTransaction } from "@domain/tx/tx.types";
-import type { TransactionClassification } from "@domain/tx/classification.types";
+import type { TxLeg, RawTransaction } from "@tx-indexer/core/tx/tx.types";
+import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 
 export interface ClassifierContext {
   legs: TxLeg[];

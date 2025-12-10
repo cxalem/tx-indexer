@@ -3,8 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@domain/*": ["../domain/src/*"],
-      "@solana/*": ["./src/*"]
+      "@tx-indexer/core/*": ["../domain/src/*"],
+      "@tx-indexer/solana/*": ["./src/*"]
     }
   }
 }

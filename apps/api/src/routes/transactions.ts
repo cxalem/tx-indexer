@@ -6,15 +6,15 @@ import {
   createSolanaClient,
   parseAddress,
   parseSignature,
-} from "@solana/rpc/client";
+} from "@tx-indexer/solana/rpc/client";
 import {
   fetchWalletSignatures,
   fetchTransactionsBatch,
-} from "@solana/fetcher/transactions";
-import { transactionToLegs } from "@solana/mappers/transaction-to-legs";
-import { classifyTransaction } from "@classification/engine/classification-service";
-import { detectProtocol } from "@classification/protocols/detector";
-import { filterSpamTransactions } from "@domain/tx/spam-filter";
+} from "@tx-indexer/solana/fetcher/transactions";
+import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
+import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
+import { filterSpamTransactions } from "@tx-indexer/core/tx/spam-filter";
 
 const transactions = new Hono<{ Bindings: Bindings }>();
 

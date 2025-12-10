@@ -1,8 +1,8 @@
-import type { SolanaTransaction } from "@solana/types/transaction.types";
+import type { SolanaTransaction } from "@tx-indexer/solana/types/transaction.types";
 import {
   SPL_MEMO_PROGRAM_ID,
   MEMO_V1_PROGRAM_ID,
-} from "@solana/constants/program-ids";
+} from "@tx-indexer/solana/constants/program-ids";
 import bs58 from "bs58";
 
 interface TransactionWithLogs extends SolanaTransaction {
@@ -54,6 +54,16 @@ function decodeMemoData(base64Data: string): string {
   return bs58.encode(buffer);
 }
 
+/**
+ * Extracts memo data from a Solana transaction.
+ * 
+ * First attempts to extract human-readable memos from program logs, which contain
+ * the decoded text. Falls back to parsing memo program instructions for binary data.
+ * Handles various memo formats including UTF-8 text, public keys, and Solana Pay metadata.
+ * 
+ * @param transaction - Solana transaction with message and optional logs
+ * @returns Extracted memo string, or null if no memo is found
+ */
 export function extractMemo(transaction: TransactionWithLogs): string | null {
   if (transaction.meta?.logMessages) {
     const memoLogPattern = /Program log: Memo \(len \d+\): "(.+)"/;
@@ -94,6 +104,15 @@ export interface SolanaPayMemo {
   raw: string;
 }
 
+/**
+ * Parses a Solana Pay memo string into structured fields.
+ * 
+ * Attempts to parse the memo as JSON to extract merchant, item, reference,
+ * label, and message fields. Falls back to returning just the raw memo if parsing fails.
+ * 
+ * @param memo - Memo string to parse
+ * @returns Parsed Solana Pay memo object with raw memo included
+ */
 export function parseSolanaPayMemo(memo: string): SolanaPayMemo {
   try {
     const parsed = JSON.parse(memo);
@@ -103,6 +122,16 @@ export function parseSolanaPayMemo(memo: string): SolanaPayMemo {
   }
 }
 
+/**
+ * Determines if a transaction is a Solana Pay transaction.
+ * 
+ * A transaction is considered Solana Pay if it includes the SPL Memo program
+ * and has a non-null memo. Solana Pay uses memos to attach payment metadata.
+ * 
+ * @param programIds - Program IDs involved in the transaction
+ * @param memo - Extracted memo from the transaction
+ * @returns True if this is a Solana Pay transaction
+ */
 export function isSolanaPayTransaction(
   programIds: string[],
   memo: string | null | undefined

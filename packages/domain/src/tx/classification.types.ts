@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TxPrimaryTypeSchema, TxDirectionSchema } from "./tx.types";
-import { CounterpartySchema } from "@domain/actors/counterparty.types";
+import { CounterpartySchema } from "@tx-indexer/core/actors/counterparty.types";
 
 export const TransactionClassificationSchema = z.object({
   primaryType: TxPrimaryTypeSchema,

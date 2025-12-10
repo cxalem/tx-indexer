@@ -2,8 +2,8 @@ import { Hono } from "hono";
 import { z } from "zod";
 import type { Bindings } from "../types";
 import { success, error } from "../lib/response";
-import { createSolanaClient, parseAddress } from "@solana/rpc/client";
-import { fetchWalletBalance } from "@solana/fetcher/balances";
+import { createSolanaClient, parseAddress } from "@tx-indexer/solana/rpc/client";
+import { fetchWalletBalance } from "@tx-indexer/solana/fetcher/balances";
 
 const wallet = new Hono<{ Bindings: Bindings }>();
 

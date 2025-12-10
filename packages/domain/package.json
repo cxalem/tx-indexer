@@ -1,5 +1,5 @@
 {
-  "name": "domain",
+  "name": "@tx-indexer/core",
   "module": "index.ts",
   "type": "module",
   "private": true,

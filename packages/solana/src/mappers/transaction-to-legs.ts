@@ -1,13 +1,24 @@
-import type { RawTransaction, TxLeg, TxLegRole } from "@domain/tx/tx.types";
-import { buildAccountId } from "@domain/tx/account-id";
+import type { RawTransaction, TxLeg, TxLegRole } from "@tx-indexer/core/tx/tx.types";
+import { buildAccountId } from "@tx-indexer/core/tx/account-id";
 import {
   extractSolBalanceChanges,
   extractTokenBalanceChanges,
   type SolBalanceChange,
   type TokenBalanceChange,
 } from "./balance-parser";
-import { KNOWN_TOKENS, TOKEN_INFO } from "@domain/money/token-registry";
+import { KNOWN_TOKENS, TOKEN_INFO } from "@tx-indexer/core/money/token-registry";
 
+/**
+ * Converts a raw Solana transaction into a double-entry accounting ledger.
+ * 
+ * Creates TxLeg entries for all SOL and token balance changes, automatically
+ * detecting and accounting for network fees. Each leg represents a debit or credit
+ * for a specific account and token, enabling transaction classification and validation.
+ * 
+ * @param tx - Raw transaction data with balance changes
+ * @param walletAddress - Address of the wallet to determine perspective (wallet vs external)
+ * @returns Array of transaction legs representing all balance movements
+ */
 export function transactionToLegs(
   tx: RawTransaction,
   walletAddress: string
@@ -110,6 +121,17 @@ export function transactionToLegs(
   return legs;
 }
 
+/**
+ * Determines the role of a SOL balance change in the transaction context.
+ * 
+ * Distinguishes between fees, rewards, sent, and received based on the wallet
+ * perspective, transaction protocol, and amount.
+ * 
+ * @param change - SOL balance change for an account
+ * @param walletAddress - Address of the wallet for perspective
+ * @param tx - Raw transaction for additional context (protocol, etc.)
+ * @returns The role of this SOL balance change
+ */
 function determineSolRole(
   change: SolBalanceChange,
   walletAddress: string,
@@ -146,6 +168,17 @@ function determineSolRole(
   return "sent";
 }
 
+/**
+ * Determines the role of a token balance change in the transaction context.
+ * 
+ * Differentiates between wallet movements (sent/received) and protocol interactions
+ * (deposits/withdrawals) based on the owner and protocol context.
+ * 
+ * @param change - Token balance change for an account
+ * @param walletAddress - Address of the wallet for perspective
+ * @param tx - Raw transaction for protocol context
+ * @returns The role of this token balance change
+ */
 function determineTokenRole(
   change: TokenBalanceChange,
   walletAddress: string,

@@ -2,8 +2,8 @@ import type {
   Classifier,
   ClassifierContext,
 } from "../engine/classifier.interface";
-import type { TransactionClassification } from "@domain/tx/classification.types";
-import { detectFacilitator } from "@solana/constants/program-ids";
+import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
+import { detectFacilitator } from "@tx-indexer/solana/constants/program-ids";
 
 export class TransferClassifier implements Classifier {
   name = "transfer";

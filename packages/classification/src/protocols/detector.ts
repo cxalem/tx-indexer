@@ -1,4 +1,4 @@
-import type { ProtocolInfo } from "@domain/actors/counterparty.types";
+import type { ProtocolInfo } from "@tx-indexer/core/actors/counterparty.types";
 import {
   JUPITER_V6_PROGRAM_ID,
   JUPITER_V4_PROGRAM_ID,
@@ -10,7 +10,7 @@ import {
   ORCA_WHIRLPOOL_PROGRAM_ID,
   RAYDIUM_PROGRAM_ID,
   STAKE_PROGRAM_ID,
-} from "@solana/constants/program-ids";
+} from "@tx-indexer/solana/constants/program-ids";
 
 const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
   [JUPITER_V6_PROGRAM_ID]: {
@@ -68,6 +68,15 @@ const PRIORITY_ORDER = [
   "system",
 ];
 
+/**
+ * Detects the primary protocol used in a transaction based on its program IDs.
+ * 
+ * When multiple protocols are detected, returns the highest priority protocol
+ * according to the PRIORITY_ORDER (e.g., Jupiter > Raydium > Token Program).
+ * 
+ * @param programIds - Array of program IDs involved in the transaction
+ * @returns The detected protocol information, or null if no known protocol is found
+ */
 export function detectProtocol(programIds: string[]): ProtocolInfo | null {
   const detectedProtocols: ProtocolInfo[] = [];
 

@@ -7,6 +7,19 @@ export interface BuildAccountIdParams {
   token?: string;
 }
 
+/**
+ * Builds a standardized account identifier string for transaction legs.
+ * 
+ * Account IDs follow these formats:
+ * - Wallet: `wallet:{address}`
+ * - Protocol: `protocol:{protocol}:{token}:{address}` or `protocol:{protocol}:{address}`
+ * - External: `external:{address}`
+ * - Fee: `fee:network`
+ * 
+ * @param params - Account identifier parameters
+ * @returns Formatted account ID string
+ * @throws Error if parameters are invalid for the account type
+ */
 export function buildAccountId(params: BuildAccountIdParams): string {
   const { type, address, protocol, token } = params;
 
@@ -41,6 +54,15 @@ export interface ParsedAccountId {
   token?: string;
 }
 
+/**
+ * Parses an account identifier string into its components.
+ * 
+ * Extracts the account type, address, protocol, and token information from
+ * a formatted account ID string. Returns `unknown` type for unrecognized formats.
+ * 
+ * @param accountId - Account ID string to parse
+ * @returns Parsed account identifier with type and optional metadata
+ */
 export function parseAccountId(accountId: string): ParsedAccountId {
   const parts = accountId.split(":");
 

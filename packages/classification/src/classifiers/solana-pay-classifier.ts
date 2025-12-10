@@ -2,11 +2,11 @@ import type {
   Classifier,
   ClassifierContext,
 } from "../engine/classifier.interface";
-import type { TransactionClassification } from "@domain/tx/classification.types";
+import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import {
   isSolanaPayTransaction,
   parseSolanaPayMemo,
-} from "@solana/mappers/memo-parser";
+} from "@tx-indexer/solana/mappers/memo-parser";
 
 export class SolanaPayClassifier implements Classifier {
   name = "solana-pay";

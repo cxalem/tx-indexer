@@ -5,9 +5,9 @@
     "types": ["@cloudflare/workers-types"],
     "paths": {
       "@/*": ["./src/*"],
-      "@solana/*": ["../../packages/solana/src/*"],
-      "@domain/*": ["../../packages/domain/src/*"],
-      "@classification/*": ["../../packages/classification/src/*"]
+      "@tx-indexer/solana/*": ["../../packages/solana/src/*"],
+      "@tx-indexer/core/*": ["../../packages/domain/src/*"],
+      "@tx-indexer/classification/*": ["../../packages/classification/src/*"]
     }
   },
   "include": ["src/**/*"],

@@ -1,5 +1,5 @@
 {
-  "name": "solana",
+  "name": "@tx-indexer/solana",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@solana/kit": "^5.0.0",
-    "domain": "workspace:*",
+    "@tx-indexer/core": "workspace:*",
     "zod": "^4.1.13"
   }
 }

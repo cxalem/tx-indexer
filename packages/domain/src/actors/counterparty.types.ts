@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TxCategorySchema } from "@domain/tx/tx.types";
+import { TxCategorySchema } from "@tx-indexer/core/tx/tx.types";
 
 const CounterpartyTypeSchema = z.enum([
   "person",

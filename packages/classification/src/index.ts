@@ -9,5 +9,5 @@ export * from "./classifiers/fee-only-classifier";
 export * from "./classifiers/solana-pay-classifier";
 
 // Re-export Solana constants for convenience
-export * from "@solana/constants/program-ids";
+export * from "@tx-indexer/solana/constants/program-ids";
 

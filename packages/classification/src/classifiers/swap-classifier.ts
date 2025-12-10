@@ -2,7 +2,7 @@ import type {
   Classifier,
   ClassifierContext,
 } from "../engine/classifier.interface";
-import type { TransactionClassification } from "@domain/tx/classification.types";
+import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 
 export class SwapClassifier implements Classifier {
   name = "swap";
