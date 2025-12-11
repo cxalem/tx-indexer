@@ -4,6 +4,7 @@ export {
   type TxIndexerOptions,
   type GetTransactionsOptions,
   type ClassifiedTransaction,
+  type FetchTransactionsConfig,
 } from "./client";
 
 export type * from "./types";
@@ -26,7 +27,6 @@ export {
   fetchWalletSignatures,
   fetchTransaction,
   fetchTransactionsBatch,
-  type FetchTransactionsConfig,
 } from "@tx-indexer/solana/fetcher/transactions";
 
 export {

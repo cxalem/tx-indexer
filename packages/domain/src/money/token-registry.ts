@@ -4,6 +4,7 @@ export const KNOWN_TOKENS = {
   SOL: "So11111111111111111111111111111111111111112",
   USDC: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   USDC_BRIDGED: "A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM",
+  USDG: "2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH",
 } as const;
 
 export const TOKEN_INFO: Record<string, TokenInfo> = {
@@ -29,6 +30,12 @@ export const TOKEN_INFO: Record<string, TokenInfo> = {
     name: "USDC (Bridged)",
     decimals: 6,
   },
+  [KNOWN_TOKENS.USDG]: {
+    mint: KNOWN_TOKENS.USDG,
+    symbol: "USDG",
+    name: "USD Glitter",
+    decimals: 6,
+  },
 };
 
 export function getTokenInfo(mint: string): TokenInfo | undefined {
@@ -42,6 +49,7 @@ export function isSupportedToken(mint: string): boolean {
 export const SUPPORTED_STABLECOINS = [
   KNOWN_TOKENS.USDC,
   KNOWN_TOKENS.USDC_BRIDGED,
+  KNOWN_TOKENS.USDG,
 ] as const;
 
 export const TRACKED_TOKENS = [

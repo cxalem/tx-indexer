@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "exports": {
+    "./*": "./src/*"
+  },
   "scripts": {
     "check-types": "tsc --noEmit",
     "lint": "eslint ."
