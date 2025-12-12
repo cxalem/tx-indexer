@@ -9,8 +9,7 @@ import {
   type TokenBalanceChange,
 } from "./balance-parser";
 import { KNOWN_TOKENS, TOKEN_INFO } from "@tx-indexer/core/money/token-registry";
-
-const DEX_PROTOCOL_IDS = new Set(["jupiter", "jupiter-v4", "raydium", "orca-whirlpool"]);
+import { DEX_PROTOCOL_IDS } from "../constants/protocol-constants";
 
 function isDexProtocol(protocol: ProtocolInfo | null | undefined): boolean {
   return protocol !== null && protocol !== undefined && DEX_PROTOCOL_IDS.has(protocol.id);
@@ -69,7 +68,7 @@ export function transactionToLegs(
         amountRaw: change.change.toString().replace("-", ""),
         amountUi: Math.abs(change.changeUi),
       },
-      role: determineSolRole(change, walletAddress, tx),
+      role: determineSolRole(change, walletAddress, tx, feePayer),
     });
   }
 
@@ -112,7 +111,7 @@ export function transactionToLegs(
         type: "external",
         address: change.owner || feePayer,
       });
-    } else if (isDexProtocol(tx.protocol)) {
+    } else if (isDexProtocol(tx.protocol) && walletAddress) {
       accountId = buildAccountId({
         type: "protocol",
         address: change.owner || change.tokenInfo.mint,
@@ -147,15 +146,20 @@ export function transactionToLegs(
  * @param change - SOL balance change for an account
  * @param walletAddress - Optional wallet address for perspective
  * @param tx - Raw transaction for additional context
+ * @param feePayer - Optional fee payer address for observer mode
  * @returns The role of this SOL balance change
  */
 function determineSolRole(
   change: SolBalanceChange,
   walletAddress: Address | undefined,
-  tx: RawTransaction
+  tx: RawTransaction,
+  feePayer?: string
 ): TxLegRole {
   const isWallet = walletAddress
     ? change.address.toLowerCase() === walletAddress.toLowerCase()
+    : false;
+  const isFeePayer = !walletAddress && feePayer
+    ? change.address.toLowerCase() === feePayer
     : false;
   const isPositive = change.change > 0n;
   const amountSol = Math.abs(change.changeUi);
@@ -175,7 +179,7 @@ function determineSolRole(
     return "sent";
   }
 
-  if (!isPositive && amountSol < 0.01) {
+  if (isFeePayer && !isPositive && amountSol < 0.01) {
     return "fee";
   }
 

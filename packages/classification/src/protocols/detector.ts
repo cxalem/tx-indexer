@@ -11,6 +11,7 @@ import {
   RAYDIUM_PROGRAM_ID,
   STAKE_PROGRAM_ID,
 } from "@tx-indexer/solana/constants/program-ids";
+import { DEX_PROTOCOL_IDS } from "@tx-indexer/solana/constants/protocol-constants";
 
 const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
   [JUPITER_V6_PROGRAM_ID]: {
@@ -68,13 +69,6 @@ const PRIORITY_ORDER = [
   "system",
 ];
 
-const DEX_PROTOCOLS = new Set([
-  "jupiter",
-  "jupiter-v4",
-  "raydium",
-  "orca-whirlpool",
-]);
-
 /**
  * Checks if a protocol is a DEX (decentralized exchange) that performs swaps.
  * DEX protocols should have their legs tagged as "protocol:" with deposit/withdraw roles.
@@ -82,7 +76,15 @@ const DEX_PROTOCOLS = new Set([
  * affect leg tagging.
  */
 export function isDexProtocol(protocol: ProtocolInfo | null): boolean {
-  return protocol !== null && DEX_PROTOCOLS.has(protocol.id);
+  return protocol !== null && DEX_PROTOCOL_IDS.has(protocol.id);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a DEX protocol.
+ * Useful when you only have the protocol ID string, not the full ProtocolInfo object.
+ */
+export function isDexProtocolById(protocolId: string | undefined): boolean {
+  return protocolId !== undefined && DEX_PROTOCOL_IDS.has(protocolId);
 }
 
 /**

@@ -3,19 +3,22 @@ import type {
   ClassifierContext,
 } from "../engine/classifier.interface";
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
+import { isDexProtocolById } from "../protocols/detector";
 
 export class SwapClassifier implements Classifier {
   name = "swap";
   priority = 80;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, walletAddress } = context;
+    const { legs, walletAddress, tx } = context;
 
     const protocolLegs = legs.filter((leg) =>
       leg.accountId.startsWith("protocol:")
     );
 
-    if (protocolLegs.length === 0) {
+    const hasDexProtocol = isDexProtocolById(tx.protocol?.id);
+
+    if (protocolLegs.length === 0 && !hasDexProtocol) {
       return null;
     }
 
