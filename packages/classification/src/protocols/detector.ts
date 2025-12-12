@@ -11,7 +11,6 @@ import {
   RAYDIUM_PROGRAM_ID,
   STAKE_PROGRAM_ID,
 } from "@tx-indexer/solana/constants/program-ids";
-import { DEX_PROTOCOL_IDS } from "@tx-indexer/solana/constants/protocol-constants";
 
 const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
   [JUPITER_V6_PROGRAM_ID]: {
@@ -68,6 +67,18 @@ const PRIORITY_ORDER = [
   "compute-budget",
   "system",
 ];
+
+/**
+ * Protocol IDs that are DEX (decentralized exchange) protocols.
+ * These protocols perform swaps and should have their legs tagged as "protocol:" 
+ * with deposit/withdraw roles.
+ */
+const DEX_PROTOCOL_IDS = new Set([
+  "jupiter",
+  "jupiter-v4",
+  "raydium",
+  "orca-whirlpool",
+]);
 
 /**
  * Checks if a protocol is a DEX (decentralized exchange) that performs swaps.

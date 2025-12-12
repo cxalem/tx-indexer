@@ -11,7 +11,7 @@ export default async function Page() {
       "https://mainnet.helius-rpc.com/?api-key=5936078f-0f2f-42d4-80a6-80e8b848da9b",
   });
 
-  const transaction = await getTransaction(TX_SIGNATURE);
+  const transaction = await getTransaction(TX_SIGNATURE, WALLET_ADDRESS);
 
   return (
     <div className="w-full h-full">
