@@ -69,3 +69,8 @@ export function formatRelativeTime(timestamp: number | bigint): string {
   if (diffDay < 7) return `${diffDay}d ago`;
   return formatDate(timestamp);
 }
+
+
+export function truncate(address: string): string {
+  return address.slice(0, 4) + "..." + address.slice(-4);
+}
