@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { NoisyBackground } from "@/components/noisy-bg";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Nav } from "@/components/nav";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -58,16 +57,7 @@ export default function RootLayout({
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-neutral-100/30 rounded-full blur-3xl" />
         </div>
 
-        <nav className="border-b border-gray-300 bg-white/80">
-          <div className="flex justify-between items-center p-4 max-w-7xl mx-auto">
-            <Link href="/" className="text-2xl font-bold">
-              itx
-            </Link>
-            <Button className="lowercase bg-vibrant-red text-white shadow-md hover:bg-vibrant-red/80 duration-400">
-              Connect Wallet
-            </Button>
-          </div>
-        </nav>
+        <Nav />
         
         <main className="grow">
           {children}
