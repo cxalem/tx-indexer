@@ -1,0 +1,24 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Config files
+tsconfig*.json
+tsup.config.ts
+.eslintrc*
+eslint.config.js
+
+# Build artifacts
+.turbo
+
+# Development
+node_modules/
+.DS_Store
+*.log
+
+# Testing
+*.test.ts
+__tests__/
+coverage/
+
