@@ -15,11 +15,18 @@ const bitcountFont = localFont({
 });
 
 export default async function Page() {
-  const { getTransaction } = createIndexer({
-    rpcUrl: process.env.RPC_URL || "https://api.mainnet-beta.solana.com",
-  });
+  let transaction = null;
 
-  const transaction = await getTransaction(TX_SIGNATURE, WALLET_ADDRESS);
+  try {
+    const { getTransaction } = createIndexer({
+      rpcUrl: process.env.RPC_URL || "https://api.mainnet-beta.solana.com",
+    });
+
+    transaction = await getTransaction(TX_SIGNATURE, WALLET_ADDRESS);
+  } catch (error) {
+    // Gracefully handle RPC errors during build or runtime
+    console.error("Failed to fetch transaction:", error);
+  }
 
   return (
     <div className={`w-full h-full`}>
@@ -49,14 +56,16 @@ export default async function Page() {
           </p>
         </div>
       </div>
-      <div className="relative flex flex-col items-center justify-center">
-        <h2
-          className={`${bitcountFont.className} text-center mx-auto text-3xl text-neutral-600 mb-10`}
-        >
-          <span className="text-vibrant-red">{"//"}</span> receipt
-        </h2>
-        <TransactionReceipt transaction={transaction!} />
-      </div>
+      {transaction && (
+        <div className="relative flex flex-col items-center justify-center">
+          <h2
+            className={`${bitcountFont.className} text-center mx-auto text-3xl text-neutral-600 mb-10`}
+          >
+            <span className="text-vibrant-red">{"//"}</span> receipt
+          </h2>
+          <TransactionReceipt transaction={transaction} />
+        </div>
+      )}
     </div>
   );
 }
