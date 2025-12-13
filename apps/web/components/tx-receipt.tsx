@@ -4,7 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { Transaction } from "@/lib/types";
 import { formatAddress } from "@/lib/utils";
 import { useState } from "react";
-import { Copy, Check, ArrowDown, ArrowUp, ArrowLeftRight, ArrowRight, RefreshCw } from "lucide-react";
+import {
+  Copy,
+  Check,
+  ArrowDown,
+  ArrowUp,
+  ArrowLeftRight,
+  ArrowRight,
+  RefreshCw,
+} from "lucide-react";
 
 interface TransactionReceiptProps {
   transaction: Transaction;
@@ -67,7 +75,7 @@ export function TransactionReceipt({ transaction }: TransactionReceiptProps) {
   };
 
   return (
-    <Card className="border-[#242424]/30 bg-white w-full max-w-md mx-auto my-20">
+    <Card className="border-neutral-800/30 bg-white w-full max-w-md">
       <CardContent className="space-y-6 p-6">
         <div className="flex items-start justify-between border-b border-gray-200 pb-4">
           <div>
@@ -88,7 +96,10 @@ export function TransactionReceipt({ transaction }: TransactionReceiptProps) {
         <div className="space-y-4">
           <div className="text-center flex flex-col items-center justify-center py-4">
             <div className="flex items-center justify-center gap-3 mb-1">
-              {getDirectionIcon(classification.direction, classification.primaryType)}
+              {getDirectionIcon(
+                classification.direction,
+                classification.primaryType
+              )}
               <h3 className="text-3xl font-bold text-foreground">
                 {classification.primaryType
                   .replace(/_/g, " ")
