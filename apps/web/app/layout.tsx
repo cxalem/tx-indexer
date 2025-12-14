@@ -43,6 +43,8 @@ export const metadata: Metadata = {
     title: "itx - Solana Transaction Classifier SDK",
     description:
       "Transform raw Solana transactions into human-readable financial data with automatic classification and protocol detection.",
+    creator: "@cxalem",
+    site: "@cxalem",
   },
 };
 

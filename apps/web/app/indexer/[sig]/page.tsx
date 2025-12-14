@@ -64,6 +64,8 @@ export async function generateMetadata({
         title: `${classification.primaryType.replace("_", " ")} Transaction`,
         description,
         images: [`/indexer/${sig}/opengraph-image`],
+        creator: "@cxalem",
+        site: "@cxalem",
       },
     };
   } catch {
