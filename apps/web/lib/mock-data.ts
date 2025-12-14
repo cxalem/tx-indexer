@@ -298,6 +298,94 @@ export const mockTransactions = [
     },
     legs: [],
   },
+
+  // 8. NFT Mint
+  {
+    tx: {
+      signature: "4pT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2uV3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6",
+      slot: 234567680n,
+      blockTime: 1702345150n,
+      err: null,
+      programIds: ["metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s", "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+      protocol: {
+        id: "metaplex",
+        name: "Metaplex",
+        iconUrl: "https://metaplex.com/icon.png",
+      },
+      memo: null,
+    },
+    classification: {
+      primaryType: "nft_mint" as const,
+      direction: "incoming" as const,
+      primaryAmount: {
+        token: {
+          mint: "5nftMintAddress1234567890abcdefghijklmnopqrst",
+          symbol: "NFT",
+          name: "Cool NFT #1234",
+          decimals: 0,
+        },
+        amountRaw: "1",
+        amountUi: 1,
+      },
+      secondaryAmount: null,
+      counterparty: {
+        type: "protocol" as const,
+        address: "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
+        name: "Metaplex",
+      },
+      confidence: 0.95,
+      isRelevant: true,
+      metadata: {
+        nft_name: "Cool NFT #1234",
+        collection: "Cool Collection",
+      },
+    },
+    legs: [],
+  },
+
+  // 9. NFT Sale (outgoing NFT transfer)
+  {
+    tx: {
+      signature: "6wX5yZ4aB3cD2eF1gH0iJ9kL8mN7oP6qR5sT4uV3wX2yZ1aB0cD9eF8gH7iJ6kL5mN4oP3qR2sT1uV0wX9yZ8",
+      slot: 234567620n,
+      blockTime: 1702345050n,
+      err: null,
+      programIds: ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"],
+      protocol: {
+        id: "magic-eden",
+        name: "Magic Eden",
+        iconUrl: "https://magiceden.io/icon.png",
+      },
+      memo: null,
+    },
+    classification: {
+      primaryType: "nft_sale" as const,
+      direction: "outgoing" as const,
+      primaryAmount: {
+        token: {
+          mint: "7nftTransferAddress1234567890abcdefghijklmno",
+          symbol: "NFT",
+          name: "Rare NFT #5678",
+          decimals: 0,
+        },
+        amountRaw: "1",
+        amountUi: 1,
+      },
+      secondaryAmount: null,
+      counterparty: {
+        type: "unknown" as const,
+        address: "BuyerAddress1234567890abcdefghijklmnopqrstuv",
+        name: "BuyerAd1...",
+      },
+      confidence: 0.9,
+      isRelevant: true,
+      metadata: {
+        nft_name: "Rare NFT #5678",
+        marketplace: "Magic Eden",
+      },
+    },
+    legs: [],
+  },
 ];
 
 // Summary stats for the showcase

@@ -113,8 +113,7 @@ export function TransactionReceipt({ transaction }: TransactionReceiptProps) {
             classification.metadata?.sender ? (
               <div className="flex items-center justify-center gap-2 text-sm mt-2">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                  <span className="text-muted-foreground font-mono">
+                  <span className="text-muted-foreground opacity-70 font-mono">
                     {formatAddress(classification.metadata.sender as string)}
                   </span>
                 </div>
@@ -128,8 +127,7 @@ export function TransactionReceipt({ transaction }: TransactionReceiptProps) {
                 </span>
                 <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                  <span className="text-muted-foreground font-mono">
+                  <span className="text-muted-foreground opacity-70 font-mono">
                     {formatAddress(classification.counterparty?.address || "")}
                   </span>
                 </div>

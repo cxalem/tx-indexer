@@ -24,7 +24,6 @@ export default async function Page() {
 
     transaction = await getTransaction(TX_SIGNATURE, WALLET_ADDRESS);
   } catch (error) {
-    // Gracefully handle RPC errors during build or runtime
     console.error("Failed to fetch transaction:", error);
   }
 

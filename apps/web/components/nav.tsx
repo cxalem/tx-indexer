@@ -8,7 +8,21 @@ export function Nav() {
         <Link href="/" className="text-2xl font-bold">
           itx
         </Link>
-        <ConnectWalletButton />
+        <div className="flex items-center gap-4">
+          <Link
+            href="/indexer"
+            className="lowercase text-neutral-600 hover:text-black transition-colors"
+          >
+            Indexer
+          </Link>
+          <Link
+            href="/"
+            className="lowercase text-neutral-600 hover:text-black transition-colors"
+          >
+            Docs
+          </Link>
+          <ConnectWalletButton />
+        </div>
       </div>
     </nav>
   );
