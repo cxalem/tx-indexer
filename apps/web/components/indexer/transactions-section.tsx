@@ -34,7 +34,7 @@ export function TransactionsSection() {
     <section className="px-4 max-w-4xl mx-auto">
       <TransactionTable
         transactions={transactions}
-        title={`transactions (${transactions.length})`}
+        title={`transactions`}
       />
     </section>
   );
