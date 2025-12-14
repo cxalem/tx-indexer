@@ -13,13 +13,19 @@ export function Nav() {
             href="/indexer"
             className="lowercase text-neutral-600 hover:text-black transition-colors"
           >
-            Indexer
+            indexer
           </Link>
           <Link
-            href="/"
+            href="/dashboard"
             className="lowercase text-neutral-600 hover:text-black transition-colors"
           >
-            Docs
+            dashboard
+          </Link>
+          <Link
+            href="/docs"
+            className="lowercase text-neutral-600 hover:text-black transition-colors"
+          >
+            docs
           </Link>
           <ConnectWalletButton />
         </div>
