@@ -14,13 +14,13 @@ export function TransactionsSection() {
   const address = isConnected ? wallet.session.account.address : null;
 
   const indexer = createIndexer({ rpcUrl: process.env.RPC_URL! });
-  
+
   useEffect(() => {
     if (!address) return;
 
     const fetchTransactions = async () => {
       const fetchedTransactions = await indexer.getTransactions(address, {
-        limit: 5,
+        limit: 10,
       });
       setTransactions(fetchedTransactions);
     };
