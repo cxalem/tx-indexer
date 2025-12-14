@@ -31,6 +31,7 @@
     "prepublishOnly": "bun run build",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
+    "test": "bun test",
     "size": "size-limit",
     "size:why": "size-limit --why"
   },

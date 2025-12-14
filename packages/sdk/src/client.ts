@@ -162,36 +162,83 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
     ): Promise<ClassifiedTransaction[]> {
       const { limit = 10, before, until, filterSpam = true, spamConfig } = options;
 
-      const signatures = await fetchWalletSignatures(client.rpc, walletAddress, {
-        limit,
-        before,
-        until,
-      });
+      // If spam filtering is disabled, use original behavior (single fetch)
+      if (!filterSpam) {
+        const signatures = await fetchWalletSignatures(client.rpc, walletAddress, {
+          limit,
+          before,
+          until,
+        });
 
-      if (signatures.length === 0) {
-        return [];
+        if (signatures.length === 0) {
+          return [];
+        }
+
+        const signatureObjects = signatures.map((sig) =>
+          parseSignature(sig.signature)
+        );
+        const transactions = await fetchTransactionsBatch(
+          client.rpc,
+          signatureObjects
+        );
+
+        const classified = transactions.map((tx) => {
+          tx.protocol = detectProtocol(tx.programIds);
+          const legs = transactionToLegs(tx, walletAddress);
+          const classification = classifyTransaction(legs, walletAddress, tx);
+          return { tx, classification, legs };
+        });
+
+        return classified;
       }
 
-      const signatureObjects = signatures.map((sig) =>
-        parseSignature(sig.signature)
-      );
-      const transactions = await fetchTransactionsBatch(
-        client.rpc,
-        signatureObjects
-      );
+      const accumulated: ClassifiedTransaction[] = [];
+      let currentBefore = before;
+      const MAX_ITERATIONS = 10;
+      let iteration = 0;
 
-      const classified = transactions.map((tx) => {
-        tx.protocol = detectProtocol(tx.programIds);
-        const legs = transactionToLegs(tx, walletAddress);
-        const classification = classifyTransaction(legs, walletAddress, tx);
-        return { tx, classification, legs };
-      });
+      while (accumulated.length < limit && iteration < MAX_ITERATIONS) {
+        iteration++;
 
-      if (filterSpam) {
-        return filterSpamTransactions(classified, spamConfig);
+        const batchSize = iteration === 1 ? limit : limit * 2;
+
+        const signatures = await fetchWalletSignatures(client.rpc, walletAddress, {
+          limit: batchSize,
+          before: currentBefore,
+          until,
+        });
+
+        if (signatures.length === 0) {
+          break;
+        }
+
+        const signatureObjects = signatures.map((sig) =>
+          parseSignature(sig.signature)
+        );
+        const transactions = await fetchTransactionsBatch(
+          client.rpc,
+          signatureObjects
+        );
+
+        const classified = transactions.map((tx) => {
+          tx.protocol = detectProtocol(tx.programIds);
+          const legs = transactionToLegs(tx, walletAddress);
+          const classification = classifyTransaction(legs, walletAddress, tx);
+          return { tx, classification, legs };
+        });
+
+        const nonSpam = filterSpamTransactions(classified, spamConfig);
+        accumulated.push(...nonSpam);
+
+        const lastSignature = signatures[signatures.length - 1];
+        if (lastSignature) {
+          currentBefore = parseSignature(lastSignature.signature);
+        } else {
+          break;
+        }
       }
 
-      return classified;
+      return accumulated.slice(0, limit);
     },
 
     async getTransaction(
