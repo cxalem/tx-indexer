@@ -8,7 +8,6 @@ const bitcountFont = localFont({
 });
 
 export default async function IndexerPage() {
-  console.log(process.env.RPC_URL);
   return (
     <div className="w-full pb-20">
       <section className="max-w-4xl mx-auto text-center py-16 px-4">
