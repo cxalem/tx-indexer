@@ -16,7 +16,7 @@ const bitcountFont = localFont({
 
 export default async function Page() {
   const { getTransaction } = createIndexer({
-    rpcUrl: process.env.RPC_URL || "https://api.mainnet-beta.solana.com",
+    rpcUrl: process.env.RPC_URL!,
   });
 
   const transaction = await getTransaction(TX_SIGNATURE, WALLET_ADDRESS);

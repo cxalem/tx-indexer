@@ -13,10 +13,8 @@ export function TransactionsSection() {
 
   const address = isConnected ? wallet.session.account.address : null;
 
-  const indexer = useMemo(
-    () => createIndexer({ rpcUrl: process.env.RPC_URL! }),
-    []
-  );
+  const indexer = createIndexer({ rpcUrl: process.env.RPC_URL! });
+  
   useEffect(() => {
     if (!address) return;
 
@@ -28,14 +26,11 @@ export function TransactionsSection() {
     };
 
     fetchTransactions();
-  }, [address, indexer]);
+  }, [address]);
 
   return (
     <section className="px-4 max-w-4xl mx-auto">
-      <TransactionTable
-        transactions={transactions}
-        title={`transactions`}
-      />
+      <TransactionTable transactions={transactions} title={`transactions`} />
     </section>
   );
 }
