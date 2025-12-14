@@ -20,7 +20,7 @@ export function TransactionsSection() {
 
     const fetchTransactions = async () => {
       const fetchedTransactions = await indexer.getTransactions(address, {
-        limit: 10,
+        limit: 5,
       });
       setTransactions(fetchedTransactions);
     };
