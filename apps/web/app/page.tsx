@@ -15,17 +15,11 @@ const bitcountFont = localFont({
 });
 
 export default async function Page() {
-  let transaction = null;
+  const { getTransaction } = createIndexer({
+    rpcUrl: process.env.RPC_URL || "https://api.mainnet-beta.solana.com",
+  });
 
-  try {
-    const { getTransaction } = createIndexer({
-      rpcUrl: process.env.RPC_URL || "https://api.mainnet-beta.solana.com",
-    });
-
-    transaction = await getTransaction(TX_SIGNATURE, WALLET_ADDRESS);
-  } catch (error) {
-    console.error("Failed to fetch transaction:", error);
-  }
+  const transaction = await getTransaction(TX_SIGNATURE, WALLET_ADDRESS);
 
   return (
     <div className={`w-full h-full`}>
