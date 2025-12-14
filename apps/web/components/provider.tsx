@@ -5,7 +5,7 @@ import { SolanaProvider } from '@solana/react-hooks';
 import type { PropsWithChildren } from 'react';
 
 const defaultConfig: SolanaClientConfig = {
-	cluster: 'mainnet-beta',
+	endpoint: process.env.RPC_URL || 'https://api.mainnet-beta.solana.com',
 };
 
 export function Providers({ children }: PropsWithChildren) {
