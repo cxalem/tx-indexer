@@ -20,7 +20,9 @@ export function TransactionReceiptSection({
   return (
     <div className="border border-neutral-200 rounded-lg bg-white p-6 print:border-0 print:p-0">
       <div className="flex items-center justify-between mb-6" data-print-hide>
-        <h2 className={`${bitcountFont.className} lowercase text-2xl text-neutral-600`}>
+        <h2
+          className={`${bitcountFont.className} lowercase text-2xl text-neutral-600`}
+        >
           <span className="text-vibrant-red">{"//"}</span> RECEIPT
         </h2>
         <div className="flex items-center gap-2">
@@ -44,9 +46,8 @@ export function TransactionReceiptSection({
           </button>
         </div>
       </div>
-      
+
       <TransactionReceipt transaction={transaction} />
     </div>
   );
 }
-
