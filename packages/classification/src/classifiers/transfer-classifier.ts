@@ -10,115 +10,51 @@ export class TransferClassifier implements Classifier {
   priority = 20;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, walletAddress, tx } = context;
+    const { legs, tx } = context;
 
     const facilitator = tx.accountKeys
       ? detectFacilitator(tx.accountKeys)
       : null;
 
-    const isObserverMode = !walletAddress;
-
-    let participantAddress: string;
-    let participantPrefix: string;
-
-    if (walletAddress) {
-      participantAddress = walletAddress.toLowerCase();
-      participantPrefix = `wallet:${participantAddress}`;
-    } else {
-      const feeLeg = legs.find(
-        (leg) => leg.role === "fee" && leg.accountId.startsWith("external:")
-      );
-      if (!feeLeg) return null;
-      participantAddress = feeLeg.accountId.replace("external:", "").toLowerCase();
-      participantPrefix = `external:${participantAddress}`;
-    }
-
-    const participantSent = legs.filter(
+    const senderLeg = legs.find(
       (l) =>
-        l.accountId.toLowerCase().startsWith(participantPrefix.toLowerCase()) &&
-        l.side === "debit" &&
-        l.role === "sent"
-    );
-
-    const participantReceived = legs.filter(
-      (l) =>
-        l.accountId.toLowerCase().startsWith(participantPrefix.toLowerCase()) &&
-        l.side === "credit" &&
-        l.role === "received"
-    );
-
-    const otherReceived = legs.filter(
-      (l) =>
-        !l.accountId.toLowerCase().startsWith(participantPrefix.toLowerCase()) &&
-        l.accountId.startsWith("external:") &&
-        l.side === "credit" &&
-        l.role === "received"
-    );
-
-    const otherSent = legs.filter(
-      (l) =>
-        !l.accountId.toLowerCase().startsWith(participantPrefix.toLowerCase()) &&
         l.accountId.startsWith("external:") &&
         l.side === "debit" &&
         l.role === "sent"
     );
 
-    for (const sent of participantSent) {
-      const matchingReceived = otherReceived.find(
-        (r) => r.amount.token.mint === sent.amount.token.mint
-      );
+    if (!senderLeg) return null;
 
-      if (matchingReceived) {
-        const receiverAddress = matchingReceived.accountId.replace("external:", "");
+    const sender = senderLeg.accountId.replace("external:", "");
 
-        return {
-          primaryType: "transfer",
-          direction: isObserverMode ? "neutral" : "outgoing",
-          primaryAmount: sent.amount,
-          secondaryAmount: null,
-          counterparty: {
-            type: "unknown",
-            address: receiverAddress,
-            name: `${receiverAddress.slice(0, 8)}...`,
-          },
-          confidence: isObserverMode ? 0.9 : 0.95,
-          isRelevant: true,
-          metadata: {
-            ...(isObserverMode && { observer_mode: true, sender: participantAddress }),
-            ...(facilitator && { facilitator, payment_type: "facilitated" }),
-          },
-        };
-      }
-    }
+    const receiverLeg = legs.find(
+      (l) =>
+        l.accountId.startsWith("external:") &&
+        l.side === "credit" &&
+        l.role === "received" &&
+        l.amount.token.mint === senderLeg.amount.token.mint
+    );
 
-    for (const received of participantReceived) {
-      const matchingSent = otherSent.find(
-        (s) => s.amount.token.mint === received.amount.token.mint
-      );
+    if (!receiverLeg) return null;
 
-      if (matchingSent) {
-        const senderAddress = matchingSent.accountId.replace("external:", "");
+    const receiver = receiverLeg.accountId.replace("external:", "");
 
-        return {
-          primaryType: "transfer",
-          direction: isObserverMode ? "neutral" : "incoming",
-          primaryAmount: received.amount,
-          secondaryAmount: null,
-          counterparty: {
-            type: "unknown",
-            address: senderAddress,
-            name: `${senderAddress.slice(0, 8)}...`,
-          },
-          confidence: isObserverMode ? 0.9 : 0.95,
-          isRelevant: true,
-          metadata: {
-            ...(isObserverMode && { observer_mode: true, receiver: participantAddress }),
-            ...(facilitator && { facilitator, payment_type: "facilitated" }),
-          },
-        };
-      }
-    }
-
-    return null;
+    return {
+      primaryType: "transfer",
+      primaryAmount: senderLeg.amount,
+      secondaryAmount: null,
+      sender,
+      receiver,
+      counterparty: {
+        type: "wallet",
+        address: receiver,
+        name: `${receiver.slice(0, 8)}...`,
+      },
+      confidence: 0.95,
+      isRelevant: true,
+      metadata: {
+        ...(facilitator && { facilitator, payment_type: "facilitated" }),
+      },
+    };
   }
 }

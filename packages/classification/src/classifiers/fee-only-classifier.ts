@@ -9,15 +9,14 @@ export class FeeOnlyClassifier implements Classifier {
   priority = 60;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, walletAddress } = context;
+    const { legs } = context;
 
-    const isObserverMode = !walletAddress;
-    const accountPrefix = walletAddress ? `wallet:${walletAddress}` : "external:";
+    const externalLegs = legs.filter((leg) =>
+      leg.accountId.startsWith("external:")
+    );
+    const nonFeeLegs = externalLegs.filter((leg) => leg.role !== "fee");
 
-    const participantLegs = legs.filter((leg) => leg.accountId.startsWith(accountPrefix));
-    const nonFeeParticipantLegs = participantLegs.filter((leg) => leg.role !== "fee");
-
-    if (nonFeeParticipantLegs.length > 0) {
+    if (nonFeeLegs.length > 0) {
       return null;
     }
 
@@ -27,19 +26,24 @@ export class FeeOnlyClassifier implements Classifier {
       return null;
     }
 
+    const feePayerLeg = feeLegs.find(
+      (leg) => leg.side === "debit" && leg.amount.token.symbol === "SOL"
+    );
+
+    const feePayer = feePayerLeg?.accountId.replace("external:", "") ?? null;
     const totalFee = feeLegs.find((leg) => leg.amount.token.symbol === "SOL");
 
     return {
       primaryType: "fee_only",
-      direction: "outgoing",
       primaryAmount: totalFee?.amount ?? null,
       secondaryAmount: null,
+      sender: feePayer,
+      receiver: null,
       counterparty: null,
-      confidence: isObserverMode ? 0.9 : 0.95,
+      confidence: 0.95,
       isRelevant: false,
       metadata: {
         fee_type: "network",
-        ...(isObserverMode && { observer_mode: true }),
       },
     };
   }

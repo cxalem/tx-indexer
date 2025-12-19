@@ -9,7 +9,17 @@ import {
   METAPLEX_PROGRAM_ID,
   ORCA_WHIRLPOOL_PROGRAM_ID,
   RAYDIUM_PROGRAM_ID,
+  CANDY_GUARD_PROGRAM_ID,
+  CANDY_MACHINE_V3_PROGRAM_ID,
+  BUBBLEGUM_PROGRAM_ID,
+  MAGIC_EDEN_CANDY_MACHINE_ID,
+  STAKE_POOL_PROGRAM_ID,
   STAKE_PROGRAM_ID,
+  WORMHOLE_PROGRAM_ID,
+  WORMHOLE_TOKEN_BRIDGE_ID,
+  DEGODS_BRIDGE_PROGRAM_ID,
+  DEBRIDGE_PROGRAM_ID,
+  ALLBRIDGE_PROGRAM_ID,
 } from "@tx-indexer/solana/constants/program-ids";
 
 const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
@@ -53,9 +63,54 @@ const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
     id: "stake",
     name: "Stake Program",
   },
+  [STAKE_POOL_PROGRAM_ID]: {
+    id: "stake-pool",
+    name: "Stake Pool Program",
+  },
+  [CANDY_GUARD_PROGRAM_ID]: {
+    id: "candy-guard",
+    name: "Metaplex Candy Guard Program",
+  },
+  [CANDY_MACHINE_V3_PROGRAM_ID]: {
+    id: "candy-machine-v3",
+    name: "Metaplex Candy Machine Core Program",
+  },
+  [BUBBLEGUM_PROGRAM_ID]: {
+    id: "bubblegum",
+    name: "Bubblegum Program",
+  },
+  [MAGIC_EDEN_CANDY_MACHINE_ID]: {
+    id: "magic-eden-candy-machine",
+    name: "Nft Candy Machine Program (Magic Eden)",
+  },
+  [WORMHOLE_PROGRAM_ID]: {
+    id: "wormhole",
+    name: "Wormhole",
+  },
+  [WORMHOLE_TOKEN_BRIDGE_ID]: {
+    id: "wormhole-token-bridge",
+    name: "Wormhole Token Bridge",
+  },
+  [DEGODS_BRIDGE_PROGRAM_ID]: {
+    id: "degods-bridge",
+    name: "DeGods Bridge",
+  },
+  [DEBRIDGE_PROGRAM_ID]: {
+    id: "debridge",
+    name: "deBridge",
+  },
+  [ALLBRIDGE_PROGRAM_ID]: {
+    id: "allbridge",
+    name: "Allbridge",
+  },
 };
 
 const PRIORITY_ORDER = [
+  "wormhole",
+  "wormhole-token-bridge",
+  "degods-bridge",
+  "debridge",
+  "allbridge",
   "jupiter",
   "jupiter-v4",
   "raydium",
@@ -70,7 +125,7 @@ const PRIORITY_ORDER = [
 
 /**
  * Protocol IDs that are DEX (decentralized exchange) protocols.
- * These protocols perform swaps and should have their legs tagged as "protocol:" 
+ * These protocols perform swaps and should have their legs tagged as "protocol:"
  * with deposit/withdraw roles.
  */
 const DEX_PROTOCOL_IDS = new Set([
@@ -78,6 +133,24 @@ const DEX_PROTOCOL_IDS = new Set([
   "jupiter-v4",
   "raydium",
   "orca-whirlpool",
+]);
+
+const NFT_MINT_PROTOCOL_IDS = new Set([
+  "metaplex",
+  "candy-machine-v3",
+  "candy-guard",
+  "bubblegum",
+  "magic-eden-candy-machine",
+]);
+
+const STAKE_PROTOCOL_IDS = new Set(["stake", "stake-pool"]);
+
+const BRIDGE_PROTOCOL_IDS = new Set([
+  "wormhole",
+  "wormhole-token-bridge",
+  "degods-bridge",
+  "debridge",
+  "allbridge",
 ]);
 
 /**
@@ -99,11 +172,33 @@ export function isDexProtocolById(protocolId: string | undefined): boolean {
 }
 
 /**
+ * Checks if a protocol ID string corresponds to a NFT Mint
+ */
+export function isNftMintProtocolById(protocolId: string | undefined): boolean {
+  return protocolId !== undefined && NFT_MINT_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a stake
+ */
+
+export function isStakeProtocolById(protocolId: string | undefined): boolean {
+  return protocolId !== undefined && STAKE_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a bridge protocol
+ */
+export function isBridgeProtocolById(protocolId: string | undefined): boolean {
+  return protocolId !== undefined && BRIDGE_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
  * Detects the primary protocol used in a transaction based on its program IDs.
- * 
+ *
  * When multiple protocols are detected, returns the highest priority protocol
  * according to the PRIORITY_ORDER (e.g., Jupiter > Raydium > Token Program).
- * 
+ *
  * @param programIds - Array of program IDs involved in the transaction
  * @returns The detected protocol information, or null if no known protocol is found
  */
@@ -129,4 +224,3 @@ export function detectProtocol(programIds: string[]): ProtocolInfo | null {
 
   return detectedProtocols[0] ?? null;
 }
-

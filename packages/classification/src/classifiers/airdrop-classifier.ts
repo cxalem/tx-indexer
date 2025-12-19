@@ -10,10 +10,10 @@ export class AirdropClassifier implements Classifier {
   priority = 70;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, walletAddress, tx } = context;
-    
-    const facilitator = tx.accountKeys 
-      ? detectFacilitator(tx.accountKeys) 
+    const { legs, tx } = context;
+
+    const facilitator = tx.accountKeys
+      ? detectFacilitator(tx.accountKeys)
       : null;
 
     const protocolLegs = legs.filter((leg) =>
@@ -24,27 +24,24 @@ export class AirdropClassifier implements Classifier {
       return null;
     }
 
-    const isObserverMode = !walletAddress;
-    const accountPrefix = walletAddress ? `wallet:${walletAddress}` : "external:";
-
-    const participantCredits = legs.filter(
-      (leg) => leg.accountId.startsWith(accountPrefix) && leg.side === "credit"
-    );
-
-    const participantDebits = legs.filter(
-      (leg) => leg.accountId.startsWith(accountPrefix) && leg.side === "debit"
-    );
-
-    const tokenReceived = participantCredits.filter(
-      (leg) => leg.role === "received" && leg.amount.token.symbol !== "SOL"
+    const tokenReceived = legs.filter(
+      (leg) =>
+        leg.accountId.startsWith("external:") &&
+        leg.side === "credit" &&
+        leg.role === "received" &&
+        leg.amount.token.symbol !== "SOL"
     );
 
     if (tokenReceived.length === 0) {
       return null;
     }
 
-    const tokenSent = participantDebits.filter(
-      (leg) => leg.role === "sent" && leg.amount.token.symbol !== "SOL"
+    const tokenSent = legs.filter(
+      (leg) =>
+        leg.accountId.startsWith("external:") &&
+        leg.side === "debit" &&
+        leg.role === "sent" &&
+        leg.amount.token.symbol !== "SOL"
     );
 
     if (tokenSent.length > 0) {
@@ -52,36 +49,37 @@ export class AirdropClassifier implements Classifier {
     }
 
     const mainToken = tokenReceived[0]!;
+    const receiver = mainToken.accountId.replace("external:", "");
 
-    const senderLegs = legs.filter(
+    const senderLeg = legs.find(
       (leg) =>
         leg.side === "debit" &&
-        leg.amount.token.mint === mainToken.amount.token.mint &&
-        !leg.accountId.startsWith(accountPrefix)
+        leg.amount.token.mint === mainToken.amount.token.mint
     );
 
-    const sender = senderLegs.length > 0 ? senderLegs[0] : null;
-    const receiverAddress = mainToken.accountId.replace(/^(external:|wallet:)/, "");
+    const sender = senderLeg
+      ? senderLeg.accountId.replace(/^(external:|protocol:)/, "")
+      : null;
 
     return {
       primaryType: "airdrop",
-      direction: isObserverMode ? "neutral" : "incoming",
       primaryAmount: mainToken.amount,
       secondaryAmount: null,
+      sender,
+      receiver,
       counterparty: sender
         ? {
-            type: "unknown",
-            address: sender.accountId.replace(/^(external:|protocol:|wallet:)/, ""),
+            type: "protocol",
+            address: sender,
           }
         : null,
-      confidence: isObserverMode ? 0.8 : 0.85,
+      confidence: 0.85,
       isRelevant: true,
       metadata: {
         airdrop_type: "token",
         token: mainToken.amount.token.symbol,
         amount: mainToken.amount.amountUi,
-        ...(isObserverMode && { observer_mode: true, receiver: receiverAddress }),
-        ...(facilitator && { facilitator, payment_type: "facilitated" }),
+        ...(facilitator && { facilitator }),
       },
     };
   }

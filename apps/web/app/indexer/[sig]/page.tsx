@@ -1,5 +1,5 @@
 import { indexer } from "@/lib/indexer";
-import { signature, address } from "@solana/kit";
+import { signature } from "@solana/kit";
 import { TransactionSummary } from "@/components/transaction/transaction-summary";
 import { TransactionReceiptSection } from "@/components/transaction/transaction-receipt-section";
 import { TransactionTechnical } from "@/components/transaction/transaction-technical";
@@ -10,19 +10,13 @@ import type { Metadata } from "next";
 
 export async function generateMetadata({
   params,
-  searchParams,
 }: {
   params: Promise<{ sig: string }>;
-  searchParams: Promise<{ add?: string }>;
 }): Promise<Metadata> {
   const { sig } = await params;
-  const { add } = await searchParams;
 
   try {
-    const transaction = await indexer.getTransaction(
-      signature(sig),
-      add ? address(add) : undefined
-    );
+    const transaction = await indexer.getTransaction(signature(sig));
 
     if (!transaction) {
       return {
@@ -31,6 +25,8 @@ export async function generateMetadata({
           "The transaction you're looking for doesn't exist or hasn't been indexed yet.",
       };
     }
+
+    console.log(transaction)
 
     const { classification } = transaction;
     const primaryAmount = classification.primaryAmount;
@@ -79,18 +75,12 @@ export async function generateMetadata({
 
 export default async function TransactionPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ sig: string }>;
-  searchParams: Promise<{ add?: string }>;
 }) {
   const { sig } = await params;
-  const { add } = await searchParams;
 
-  const transaction = await indexer.getTransaction(
-    signature(sig),
-    add ? address(add) : undefined
-  );
+  const transaction = await indexer.getTransaction(signature(sig));
 
   if (!transaction) {
     return (

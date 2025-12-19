@@ -12,6 +12,7 @@
 export const SYSTEM_PROGRAM_ID = "11111111111111111111111111111111";
 export const COMPUTE_BUDGET_PROGRAM_ID = "ComputeBudget111111111111111111111111111111";
 export const STAKE_PROGRAM_ID = "Stake11111111111111111111111111111111111111";
+export const STAKE_POOL_PROGRAM_ID = "SPoo1Ku8WFXoNDMHPsrGSTSG1Y47rzgn41SLUNakuHy";
 
 // ============================================
 // Token Programs
@@ -41,6 +42,20 @@ export const ORCA_WHIRLPOOL_PROGRAM_ID = "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3u
 // ============================================
 
 export const METAPLEX_PROGRAM_ID = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";
+export const CANDY_MACHINE_V3_PROGRAM_ID = "CndyV3LdqHUfDLmE5naZjVN8rBZz4tqhdefbAnjHG3JR";
+export const CANDY_GUARD_PROGRAM_ID = "Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g";
+export const BUBBLEGUM_PROGRAM_ID = "BGUMAp9Gq7iTEuizy4pqaxsTyUCBK68MDfK752saRPUY";
+export const MAGIC_EDEN_CANDY_MACHINE_ID = "CMZYPASGWeTz7RNGHaRJfCq2XQ5pYK6nDvVQxzkH51zb";
+
+// ============================================
+// Bridge Programs
+// ============================================
+
+export const WORMHOLE_PROGRAM_ID = "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth";
+export const WORMHOLE_TOKEN_BRIDGE_ID = "wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb";
+export const DEGODS_BRIDGE_PROGRAM_ID = "35iLrpYNNR9ygHLcvE1xKFHbHq6paHthrF6wSovdWgGu";
+export const DEBRIDGE_PROGRAM_ID = "DEbrdGj3HsRsAzx6uH4MKyREKxVAfBydijLUF3ygsFfh";
+export const ALLBRIDGE_PROGRAM_ID = "BrdgN2RPzEMWF96ZbnnJaUtQDQx7VRXYaHHbYCBvceWB";
 
 // ============================================
 // Payment Facilitators
@@ -67,6 +82,22 @@ export const DEX_PROGRAM_IDS = [
   JUPITER_V4_PROGRAM_ID,
   RAYDIUM_PROGRAM_ID,
   ORCA_WHIRLPOOL_PROGRAM_ID,
+] as const;
+
+export const NFT_PROGRAM_IDS = [
+  METAPLEX_PROGRAM_ID,
+  CANDY_MACHINE_V3_PROGRAM_ID,
+  CANDY_GUARD_PROGRAM_ID,
+  BUBBLEGUM_PROGRAM_ID,
+  MAGIC_EDEN_CANDY_MACHINE_ID,
+] as const;
+
+export const BRIDGE_PROGRAM_IDS = [
+  WORMHOLE_PROGRAM_ID,
+  WORMHOLE_TOKEN_BRIDGE_ID,
+  DEGODS_BRIDGE_PROGRAM_ID,
+  DEBRIDGE_PROGRAM_ID,
+  ALLBRIDGE_PROGRAM_ID,
 ] as const;
 
 export const KNOWN_FACILITATORS = [

@@ -4,13 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { ClassifiedTransaction } from "tx-indexer";
 import { formatAddress, formatDateOnly, formatTime } from "@/lib/utils";
 import { CopyButton } from "@/components/copy-button";
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowLeftRight,
-  ArrowRight,
-  RefreshCw,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface TransactionReceiptProps {
   transaction: ClassifiedTransaction;
@@ -43,25 +37,6 @@ export function TransactionReceipt({
     return isStablecoin(symbol) ? amount.toFixed(2) : amount.toFixed(4);
   };
 
-  const getDirectionIcon = (direction: string, primaryType: string) => {
-    if (primaryType === "transfer" && direction === "neutral") {
-      return <ArrowRight className="w-7 h-7 text-blue-600" />;
-    }
-
-    switch (direction) {
-      case "incoming":
-        return <ArrowDown className="w-7 h-7 text-green-600" />;
-      case "outgoing":
-        return <ArrowUp className="w-7 h-7 text-orange-600" />;
-      case "neutral":
-        return <ArrowLeftRight className="w-7 h-7 text-blue-600" />;
-      case "self":
-        return <RefreshCw className="w-7 h-7 text-gray-600" />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <Card className="border-neutral-800/30 bg-white w-full max-w-md print:shadow-none" data-print-receipt>
       <CardContent className="space-y-6 p-6 print:space-y-3 print:p-4">
@@ -83,31 +58,23 @@ export function TransactionReceipt({
 
         <div className="space-y-4 print:space-y-2">
           <div className="text-center flex flex-col items-center justify-center py-4 print:py-2">
-            <div className="flex items-center justify-center gap-3 mb-1 print:gap-2 print:mb-0.5">
-              <div className="print:scale-75">
-                {getDirectionIcon(
-                  classification.direction,
-                  classification.primaryType
-                )}
-              </div>
-              <h3 className="text-3xl font-bold text-foreground print:text-2xl">
-                {classification.primaryType
-                  .replace(/_/g, " ")
-                  .split(" ")
-                  .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                  .join(" ")}
-              </h3>
-            </div>
-            {classification.primaryType === "transfer" &&
-            classification.direction === "neutral" &&
-            classification.metadata?.sender ? (
-              <div className="flex items-center justify-center gap-2 text-sm mt-2 print:text-xs print:mt-1">
-                <div className="flex items-center gap-1.5">
+            <h3 className="text-3xl font-bold text-foreground print:text-2xl mb-2">
+              {classification.primaryType
+                .replace(/_/g, " ")
+                .split(" ")
+                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                .join(" ")}
+            </h3>
+            {(classification.sender || classification.receiver) && (
+              <div className="flex items-center justify-center gap-2 text-sm print:text-xs">
+                {classification.sender && (
                   <span className="text-muted-foreground opacity-70 font-mono">
-                    {formatAddress(classification.metadata.sender as string)}
+                    {formatAddress(classification.sender)}
                   </span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground print:w-3 print:h-3" />
+                )}
+                {classification.sender && classification.receiver && (
+                  <ArrowRight className="w-4 h-4 text-muted-foreground print:w-3 print:h-3" />
+                )}
                 <span className="font-semibold text-foreground">
                   {formatAmount(
                     classification.primaryAmount?.amountUi || 0,
@@ -115,28 +82,15 @@ export function TransactionReceipt({
                   )}{" "}
                   {classification.primaryAmount?.token.symbol}
                 </span>
-                <ArrowRight className="w-4 h-4 text-muted-foreground print:w-3 print:h-3" />
-                <div className="flex items-center gap-1.5">
+                {classification.sender && classification.receiver && (
+                  <ArrowRight className="w-4 h-4 text-muted-foreground print:w-3 print:h-3" />
+                )}
+                {classification.receiver && (
                   <span className="text-muted-foreground opacity-70 font-mono">
-                    {formatAddress(classification.counterparty?.address || "")}
+                    {formatAddress(classification.receiver)}
                   </span>
-                </div>
+                )}
               </div>
-            ) : (
-              classification.counterparty && (
-                <p className="text-muted-foreground print:text-xs">
-                  {classification.direction === "incoming"
-                    ? "from"
-                    : classification.direction === "outgoing"
-                      ? "to"
-                      : classification.direction === "self"
-                        ? "to yourself"
-                        : "with"}{" "}
-                  {classification.direction !== "self" &&
-                    (classification.counterparty.name ||
-                      formatAddress(classification.counterparty.address))}
-                </p>
-              )
             )}
           </div>
 

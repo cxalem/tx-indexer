@@ -1,16 +1,10 @@
 "use client";
 
 import type { ClassifiedTransaction } from "tx-indexer";
-import {
-  Check,
-  X,
-  ArrowUpRight,
-  ArrowDownRight,
-  ArrowLeftRight,
-} from "lucide-react";
+import { Check, X, ArrowRight } from "lucide-react";
 import localFont from "next/font/local";
 import { CopyButton } from "@/components/copy-button";
-import { formatDateOnly, formatTime } from "@/lib/utils";
+import { formatDateOnly, formatTime, formatAddress } from "@/lib/utils";
 
 const bitcountFont = localFont({
   src: "../../app/fonts/Bitcount.ttf",
@@ -38,17 +32,6 @@ function getStatusDisplay(err: any) {
   );
 }
 
-function getDirectionIcon(direction: string) {
-  switch (direction) {
-    case "incoming":
-      return <ArrowDownRight className="h-6 w-6 text-green-600" />;
-    case "outgoing":
-      return <ArrowUpRight className="h-6 w-6 text-red-600" />;
-    default:
-      return <ArrowLeftRight className="h-6 w-6 text-neutral-600" />;
-  }
-}
-
 function getTransactionDescription(transaction: ClassifiedTransaction) {
   const { classification } = transaction;
   const type = classification.primaryType.replace("_", " ");
@@ -65,24 +48,40 @@ function getTransactionDescription(transaction: ClassifiedTransaction) {
     const secondaryAmount = `${secondary.amountUi.toLocaleString()} ${secondary.token.symbol}`;
     return (
       <>
-        You swapped <span className="font-semibold">{primaryAmount}</span> →{" "}
+        <span className="font-semibold">{primaryAmount}</span> →{" "}
         <span className="font-semibold">{secondaryAmount}</span>
       </>
     );
   }
 
-  if (classification.direction === "incoming") {
+  if (classification.sender && classification.receiver) {
     return (
       <>
-        You received <span className="font-semibold">{primaryAmount}</span>
+        <span className="font-mono text-sm">{formatAddress(classification.sender)}</span>
+        {" → "}
+        <span className="font-semibold">{primaryAmount}</span>
+        {" → "}
+        <span className="font-mono text-sm">{formatAddress(classification.receiver)}</span>
       </>
     );
   }
 
-  if (classification.direction === "outgoing") {
+  if (classification.receiver) {
     return (
       <>
-        You sent <span className="font-semibold">{primaryAmount}</span>
+        <span className="font-semibold">{primaryAmount}</span>
+        {" → "}
+        <span className="font-mono text-sm">{formatAddress(classification.receiver)}</span>
+      </>
+    );
+  }
+
+  if (classification.sender) {
+    return (
+      <>
+        <span className="font-mono text-sm">{formatAddress(classification.sender)}</span>
+        {" → "}
+        <span className="font-semibold">{primaryAmount}</span>
       </>
     );
   }
@@ -107,14 +106,11 @@ export function TransactionSummary({ transaction }: TransactionSummaryProps) {
 
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-3">
-          {getDirectionIcon(classification.direction)}
+          <ArrowRight className="h-6 w-6 text-neutral-600" />
           <div>
             <h2 className="text-2xl font-semibold capitalize text-neutral-900">
               {classification.primaryType.replace("_", " ")}
             </h2>
-            <p className="text-sm text-neutral-500 capitalize">
-              {classification.direction}
-            </p>
           </div>
         </div>
         {getStatusDisplay(tx.err)}

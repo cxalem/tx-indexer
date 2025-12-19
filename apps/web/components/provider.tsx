@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import type { SolanaClientConfig } from '@solana/client';
-import { SolanaProvider } from '@solana/react-hooks';
-import type { PropsWithChildren } from 'react';
+import type { SolanaClientConfig } from "@solana/client";
+import { SolanaProvider } from "@solana/react-hooks";
+import type { PropsWithChildren } from "react";
 
 const defaultConfig: SolanaClientConfig = {
-	endpoint: process.env.RPC_URL!,
+  endpoint: process.env.RPC_URL!,
 };
 
 export function Providers({ children }: PropsWithChildren) {
-	return <SolanaProvider config={defaultConfig}>{children}</SolanaProvider>;
+  return <SolanaProvider config={defaultConfig}>{children}</SolanaProvider>;
 }

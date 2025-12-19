@@ -21,126 +21,47 @@ import type { WalletBalance } from "@tx-indexer/solana/fetcher/balances";
 import type { RawTransaction } from "@tx-indexer/core/tx/tx.types";
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 
-/**
- * Configuration options for creating a transaction indexer.
- * 
- * Use either `rpcUrl` to let the SDK create a client, or provide an existing `client`
- * to share connections across your application.
- */
 export type TxIndexerOptions =
   | { 
-      /** Solana RPC URL (SDK creates a new client) */
       rpcUrl: string; 
-      /** Optional WebSocket URL for subscriptions */
       wsUrl?: string;
     }
   | { 
-      /** Existing Solana client to reuse (shares connections) */
       client: SolanaClient;
     };
 
-/**
- * Options for fetching and filtering transaction history.
- */
 export interface GetTransactionsOptions {
-  /** Maximum number of transactions to return (default: 10) */
   limit?: number;
-  /** Fetch transactions before this signature (for pagination) */
   before?: Signature;
-  /** Fetch transactions until this signature (for pagination) */
   until?: Signature;
-  /** Whether to filter out spam transactions (default: true) */
   filterSpam?: boolean;
-  /** Custom spam filter configuration */
   spamConfig?: SpamFilterConfig;
 }
 
-/**
- * A fully classified transaction with raw data, classification metadata, and accounting legs.
- */
 export interface ClassifiedTransaction {
-  /** Raw transaction data from the blockchain */
   tx: RawTransaction;
-  /** Classification metadata (type, direction, amounts, counterparty) */
   classification: TransactionClassification;
-  /** Accounting legs representing all balance movements */
   legs: ReturnType<typeof transactionToLegs>;
 }
 
-/**
- * Transaction indexer client for querying and classifying Solana transactions.
- * 
- * Provides methods to fetch wallet balances, transaction history, and individual transactions
- * with automatic protocol detection and classification.
- */
 export interface TxIndexer {
-  /** Direct access to the underlying Solana RPC client */
   rpc: ReturnType<typeof createSolanaClient>["rpc"];
   
-  /**
-   * Fetches the SOL and SPL token balances for a wallet.
-   * 
-   * @param walletAddress - Wallet address to query balances for
-   * @param tokenMints - Optional array of token mint addresses to filter
-   * @returns Wallet balance data including SOL and token balances
-   */
   getBalance(
     walletAddress: Address,
     tokenMints?: readonly string[]
   ): Promise<WalletBalance>;
   
-  /**
-   * Fetches and classifies transaction history for a wallet.
-   * 
-   * @param walletAddress - Wallet address to fetch transaction history for
-   * @param options - Configuration options for fetching and filtering
-   * @returns Array of classified transactions with full metadata
-   */
   getTransactions(
     walletAddress: Address,
     options?: GetTransactionsOptions
   ): Promise<ClassifiedTransaction[]>;
   
-  /**
-   * Fetches and classifies a single transaction by its signature.
-   * 
-   * @param signature - Transaction signature to fetch
-   * @param walletAddress - Optional wallet address for classification perspective.
-   *   When omitted, returns classification from observer mode (neutral perspective).
-   * @returns Classified transaction with full metadata, or null if transaction not found
-   */
-  getTransaction(
-    signature: Signature,
-    walletAddress?: Address
-  ): Promise<ClassifiedTransaction | null>;
+  getTransaction(signature: Signature): Promise<ClassifiedTransaction | null>;
   
-  /**
-   * Fetches a raw transaction without classification.
-   * 
-   * @param signature - Transaction signature to fetch
-   * @returns Raw transaction data from the blockchain, or null if not found
-   */
   getRawTransaction(signature: Signature): Promise<RawTransaction | null>;
 }
 
-/**
- * Creates a transaction indexer client for querying and classifying Solana transactions.
- * 
- * Accepts either an RPC URL (SDK creates client) or an existing SolanaClient (for sharing
- * connections across your app or with React providers).
- * 
- * @param options - Configuration with RPC URL or existing client
- * @returns Transaction indexer client
- * 
- * @example
- * // Option 1: SDK creates client
- * const indexer = createIndexer({ rpcUrl: "https://api.mainnet-beta.solana.com" });
- * 
- * @example
- * // Option 2: Provide existing client (share connections)
- * const myClient = createSolanaClient("https://...");
- * const indexer = createIndexer({ client: myClient });
- */
 export function createIndexer(options: TxIndexerOptions): TxIndexer {
   const client = "client" in options
     ? options.client
@@ -162,7 +83,6 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
     ): Promise<ClassifiedTransaction[]> {
       const { limit = 10, before, until, filterSpam = true, spamConfig } = options;
 
-      // If spam filtering is disabled, use original behavior (single fetch)
       if (!filterSpam) {
         const signatures = await fetchWalletSignatures(client.rpc, walletAddress, {
           limit,
@@ -184,8 +104,8 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
 
         const classified = transactions.map((tx) => {
           tx.protocol = detectProtocol(tx.programIds);
-          const legs = transactionToLegs(tx, walletAddress);
-          const classification = classifyTransaction(legs, walletAddress, tx);
+          const legs = transactionToLegs(tx);
+          const classification = classifyTransaction(legs, tx);
           return { tx, classification, legs };
         });
 
@@ -222,8 +142,8 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
 
         const classified = transactions.map((tx) => {
           tx.protocol = detectProtocol(tx.programIds);
-          const legs = transactionToLegs(tx, walletAddress);
-          const classification = classifyTransaction(legs, walletAddress, tx);
+          const legs = transactionToLegs(tx);
+          const classification = classifyTransaction(legs, tx);
           return { tx, classification, legs };
         });
 
@@ -241,10 +161,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       return accumulated.slice(0, limit);
     },
 
-    async getTransaction(
-      signature: Signature,
-      walletAddress?: Address
-    ): Promise<ClassifiedTransaction | null> {
+    async getTransaction(signature: Signature): Promise<ClassifiedTransaction | null> {
       const tx = await fetchTransaction(client.rpc, signature);
 
       if (!tx) {
@@ -253,8 +170,8 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
 
       tx.protocol = detectProtocol(tx.programIds);
 
-      const legs = transactionToLegs(tx, walletAddress);
-      const classification = classifyTransaction(legs, walletAddress, tx);
+      const legs = transactionToLegs(tx);
+      const classification = classifyTransaction(legs, tx);
 
       return { tx, classification, legs };
     },

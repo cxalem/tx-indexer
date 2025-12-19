@@ -1,4 +1,4 @@
-import { address, signature } from "@solana/kit";
+import { signature } from "@solana/kit";
 import { TransactionReceipt } from "@/components/tx-receipt";
 import { createIndexer } from "tx-indexer";
 import { InstallCommand } from "@/components/install-command";
@@ -7,7 +7,6 @@ import localFont from "next/font/local";
 const TX_SIGNATURE = signature(
   "4cu2aBEviivATT9mQbu7xEjaDaGokKk3phGmcqMT3X9v5nUmPLjvCmtU4oTSeWYhGmc1ShSQEjykgvGVq81TBxsF"
 );
-const WALLET_ADDRESS = address("Hb6dzd4pYxmFYKkJDWuhzBEUkkaE93sFcvXYtriTkmw9");
 
 const bitcountFont = localFont({
   src: "./fonts/Bitcount.ttf",
@@ -19,7 +18,7 @@ export default async function Page() {
     rpcUrl: process.env.RPC_URL!,
   });
 
-  const transaction = await getTransaction(TX_SIGNATURE, WALLET_ADDRESS);
+  const transaction = await getTransaction(TX_SIGNATURE);
 
   return (
     <div className={`w-full h-full`}>
@@ -59,7 +58,6 @@ export default async function Page() {
           <TransactionReceipt 
             transaction={transaction} 
             showViewFullTransaction={true}
-            walletAddress={WALLET_ADDRESS.toString()}
           />
         </div>
       )}

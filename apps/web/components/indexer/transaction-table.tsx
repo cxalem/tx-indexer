@@ -3,12 +3,10 @@
 import { useRouter } from "next/navigation";
 import {
   ArrowLeftRight,
-  ArrowUpRight,
-  ArrowDownRight,
+  ArrowRight,
   Gift,
   Sparkles,
   Circle,
-  ArrowRight,
   Inbox,
 } from "lucide-react";
 import type { ClassifiedTransaction } from "tx-indexer";
@@ -27,26 +25,18 @@ interface TransactionTableProps {
   walletAddress: string | null;
 }
 
-function getIcon(type: string, direction: string) {
+function getIcon(type: string) {
   const className = "h-4 w-4";
 
   switch (type) {
     case "swap":
       return <ArrowLeftRight className={className} />;
     case "transfer":
-      return direction === "incoming" ? (
-        <ArrowDownRight className={className} />
-      ) : (
-        <ArrowUpRight className={className} />
-      );
+      return <ArrowRight className={className} />;
     case "airdrop":
       return <Gift className={className} />;
     case "nft_mint":
       return <Sparkles className={className} />;
-    case "nft_sale":
-      return <ArrowUpRight className={className} />;
-    case "nft_purchase":
-      return <ArrowDownRight className={className} />;
     default:
       return <Circle className={className} />;
   }
@@ -191,17 +181,11 @@ export function TransactionTable({
                     <div
                       className={`p-2 rounded-lg ${getIconBg(tx.classification.primaryType)}`}
                     >
-                      {getIcon(
-                        tx.classification.primaryType,
-                        tx.classification.direction
-                      )}
+                      {getIcon(tx.classification.primaryType)}
                     </div>
                     <div>
                       <p className="capitalize font-medium text-neutral-700">
                         {tx.classification.primaryType.replace("_", " ")}
-                      </p>
-                      <p className="text-xs capitalize text-neutral-400">
-                        {tx.classification.direction}
                       </p>
                     </div>
                   </div>
@@ -262,17 +246,11 @@ export function TransactionTable({
                 <div
                   className={`p-2 rounded-lg ${getIconBg(tx.classification.primaryType)}`}
                 >
-                  {getIcon(
-                    tx.classification.primaryType,
-                    tx.classification.direction
-                  )}
+                  {getIcon(tx.classification.primaryType)}
                 </div>
                 <div>
                   <p className=" font-medium text-neutral-700">
                     {tx.classification.primaryType.replace("_", " ")}
-                  </p>
-                  <p className="text-xs  text-neutral-400">
-                    {tx.classification.direction}
                   </p>
                 </div>
               </div>
