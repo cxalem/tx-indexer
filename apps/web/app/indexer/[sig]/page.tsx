@@ -1,4 +1,5 @@
 import { indexer } from "@/lib/indexer";
+import { getSolPrice } from "@/lib/sol-price";
 import { signature } from "@solana/kit";
 import { TransactionSummary } from "@/components/transaction/transaction-summary";
 import { TransactionReceiptSection } from "@/components/transaction/transaction-receipt-section";
@@ -78,7 +79,10 @@ export default async function TransactionPage({
 }) {
   const { sig } = await params;
 
-  const transaction = await indexer.getTransaction(signature(sig));
+  const [transaction, solPrice] = await Promise.all([
+    indexer.getTransaction(signature(sig)),
+    getSolPrice(),
+  ]);
 
   if (!transaction) {
     return (
@@ -118,7 +122,10 @@ export default async function TransactionPage({
         <div data-print-hide>
           <TransactionSummary transaction={transaction} />
         </div>
-        <TransactionReceiptSection transaction={transaction} />
+        <TransactionReceiptSection
+          transaction={transaction}
+          solPrice={solPrice}
+        />
         <div data-print-hide>
           <TransactionTechnical transaction={transaction} />
         </div>

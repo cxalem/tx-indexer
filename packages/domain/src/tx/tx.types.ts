@@ -51,6 +51,7 @@ export const RawTransactionSchema = z.object({
   signature: z.custom<Signature>((val) => typeof val === "string"),
   slot: z.union([z.number(), z.bigint()]),
   blockTime: z.union([z.number(), z.bigint()]).nullable(),
+  fee: z.number().optional(),
   err: z.any().nullable(),
   programIds: z.array(z.string()),
   protocol: ProtocolInfoSchema.nullable(),

@@ -1,6 +1,7 @@
 import { signature } from "@solana/kit";
 import { TransactionReceipt } from "@/components/tx-receipt";
 import { createIndexer } from "tx-indexer";
+import { getSolPrice } from "@/lib/sol-price";
 import { InstallCommand } from "@/components/install-command";
 import localFont from "next/font/local";
 
@@ -18,7 +19,10 @@ export default async function Page() {
     rpcUrl: process.env.RPC_URL!,
   });
 
-  const transaction = await getTransaction(TX_SIGNATURE);
+  const [transaction, solPrice] = await Promise.all([
+    getTransaction(TX_SIGNATURE),
+    getSolPrice(),
+  ]);
 
   return (
     <div className={`w-full h-full`}>
@@ -58,6 +62,7 @@ export default async function Page() {
           <TransactionReceipt 
             transaction={transaction} 
             showViewFullTransaction={true}
+            solPrice={solPrice}
           />
         </div>
       )}

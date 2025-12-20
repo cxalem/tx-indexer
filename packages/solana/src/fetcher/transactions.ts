@@ -86,6 +86,7 @@ export async function fetchTransaction(
     signature,
     slot: response.slot,
     blockTime: response.blockTime,
+    fee: Number(response.meta?.fee ?? 0),
     err: response.meta?.err ?? null,
     programIds: extractProgramIds(response.transaction),
     protocol: null,

@@ -4,49 +4,54 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { ClassifiedTransaction } from "tx-indexer";
 import { formatAddress, formatDateOnly, formatTime } from "@/lib/utils";
 import { CopyButton } from "@/components/copy-button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Palette } from "lucide-react";
+import { getDisplayData } from "./tx-receipt.utils";
 
 interface TransactionReceiptProps {
   transaction: ClassifiedTransaction;
   showViewFullTransaction?: boolean;
   walletAddress?: string;
+  solPrice?: number | null;
 }
 
-export function TransactionReceipt({ 
-  transaction, 
+export function TransactionReceipt({
+  transaction,
   showViewFullTransaction = false,
   walletAddress,
+  solPrice,
 }: TransactionReceiptProps) {
   const { tx, classification } = transaction;
+  const metadata = classification.metadata as
+    | Record<string, unknown>
+    | undefined;
 
   const formattedDate = formatDateOnly(tx.blockTime);
   const formattedTime = formatTime(tx.blockTime);
-
   const isSuccess = !tx.err;
-  const totalAmount =
-    classification.secondaryAmount?.amountUi ||
-    classification.primaryAmount?.amountUi ||
-    0;
 
-  const isStablecoin = (symbol: string) => {
-    const stablecoins = ["USDC", "USDT", "USDH", "PAI", "UXD", "EURC", "USDG"];
-    return stablecoins.includes(symbol.toUpperCase());
-  };
-
-  const formatAmount = (amount: number, symbol: string) => {
-    return isStablecoin(symbol) ? amount.toFixed(2) : amount.toFixed(4);
-  };
+  const feeInLamports = tx.fee ?? 5000;
+  const feeInSol = feeInLamports / 1e9;
+  const feeInUsd = solPrice ? feeInSol * solPrice : null;
+  
+  const display = getDisplayData(classification, metadata, solPrice);
 
   return (
-    <Card className="border-neutral-800/30 bg-white w-full max-w-md print:shadow-none" data-print-receipt>
+    <Card
+      className="border-neutral-800/30 bg-white w-full max-w-md print:shadow-none"
+      data-print-receipt
+    >
       <CardContent className="space-y-6 p-6 print:space-y-3 print:p-4">
         <div className="flex items-start justify-between border-b border-gray-200 pb-4 print:pb-2">
           <div>
-            <h2 className="text-2xl font-bold text-foreground print:text-xl">itx</h2>
-            <p className="font-mono text-xs text-muted-foreground print:text-[10px]">RECEIPT</p>
+            <h2 className="text-2xl font-bold text-foreground print:text-xl">
+              itx
+            </h2>
+            <p className="font-mono text-xs text-muted-foreground print:text-[10px]">
+              RECEIPT
+            </p>
           </div>
           <span
-            className={`px-3 py-1 rounded-full text-sm font-medium print:text-xs print:px-2 print:py-0.5 ${
+            className={`px-3 py-1 lowercase rounded-full text-sm font-medium print:text-xs print:px-2 print:py-0.5 ${
               isSuccess
                 ? "bg-green-100 text-green-700"
                 : "bg-red-100 text-red-700"
@@ -57,86 +62,116 @@ export function TransactionReceipt({
         </div>
 
         <div className="space-y-4 print:space-y-2">
-          <div className="text-center flex flex-col items-center justify-center py-4 print:py-2">
-            <h3 className="text-3xl font-bold text-foreground print:text-2xl mb-2">
-              {classification.primaryType
-                .replace(/_/g, " ")
-                .split(" ")
-                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                .join(" ")}
-            </h3>
-            {(classification.sender || classification.receiver) && (
-              <div className="flex items-center justify-center gap-2 text-sm print:text-xs">
-                {classification.sender && (
-                  <span className="text-muted-foreground opacity-70 font-mono">
-                    {formatAddress(classification.sender)}
-                  </span>
-                )}
-                {classification.sender && classification.receiver && (
-                  <ArrowRight className="w-4 h-4 text-muted-foreground print:w-3 print:h-3" />
-                )}
-                <span className="font-semibold text-foreground">
-                  {formatAmount(
-                    classification.primaryAmount?.amountUi || 0,
-                    classification.primaryAmount?.token.symbol || ""
-                  )}{" "}
-                  {classification.primaryAmount?.token.symbol}
-                </span>
-                {classification.sender && classification.receiver && (
-                  <ArrowRight className="w-4 h-4 text-muted-foreground print:w-3 print:h-3" />
-                )}
-                {classification.receiver && (
-                  <span className="text-muted-foreground opacity-70 font-mono">
-                    {formatAddress(classification.receiver)}
-                  </span>
-                )}
+          {display.type === "nft" ? (
+            <div className="text-center flex flex-col items-center justify-center py-4 print:py-2">
+              <div className="w-16 h-16 rounded-lg bg-neutral-100 flex items-center justify-center mb-3">
+                <Palette className="w-8 h-8 text-neutral-600" />
               </div>
-            )}
-          </div>
+              <h3 className="text-2xl font-bold text-foreground print:text-xl mb-1">
+                {display.title}
+              </h3>
+              {display.nft?.name && (
+                <p className="text-lg font-semibold text-foreground">
+                  {display.nft.name}
+                </p>
+              )}
+              {display.nft?.mint && (
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-xs text-muted-foreground font-mono">
+                    {formatAddress(display.nft.mint)}
+                  </span>
+                  <CopyButton text={display.nft.mint} iconClassName="w-3 h-3" />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center flex flex-col items-center justify-center py-4 print:py-2">
+              <h3 className="text-3xl font-bold text-foreground print:text-2xl mb-2">
+                {display.title}
+              </h3>
+              {(display.sender || display.receiver) && (
+                <div className="flex items-center justify-center gap-2 text-sm print:text-xs">
+                  {display.sender && (
+                    <span className="text-muted-foreground opacity-70 font-mono">
+                      {formatAddress(display.sender)}
+                    </span>
+                  )}
+                  {display.sender && display.receiver && (
+                    <ArrowRight className="w-4 h-4 text-muted-foreground print:w-3 print:h-3" />
+                  )}
+                  {display.primaryAmount && (
+                    <span className="font-semibold text-foreground">
+                      {display.primaryAmount.formatted}{" "}
+                      {display.primaryAmount.symbol}
+                    </span>
+                  )}
+                  {display.sender && display.receiver && (
+                    <ArrowRight className="w-4 h-4 text-muted-foreground print:w-3 print:h-3" />
+                  )}
+                  {display.receiver && (
+                    <span className="text-muted-foreground opacity-70 font-mono">
+                      {formatAddress(display.receiver)}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="text-center border-y border-gray-200 py-4 print:py-2">
-            {classification.secondaryAmount ? (
+            {display.isFreeNft ? (
+              <div className="text-2xl font-medium text-muted-foreground print:text-xl">
+                Free Mint
+              </div>
+            ) : display.type === "nft" && display.secondaryAmount ? (
               <>
                 <div className="text-4xl font-bold text-foreground print:text-3xl">
-                  $
-                  {formatAmount(
-                    totalAmount,
-                    classification.secondaryAmount.token.symbol
-                  )}
-                </div>
-                <div className="text-sm text-muted-foreground mt-2 print:text-xs print:mt-1">
-                  {formatAmount(
-                    classification.primaryAmount?.amountUi || 0,
-                    classification.primaryAmount?.token.symbol || ""
-                  )}{" "}
-                  {classification.primaryAmount?.token.symbol}
-                  {" → "}
-                  {formatAmount(
-                    classification.secondaryAmount.amountUi,
-                    classification.secondaryAmount.token.symbol
-                  )}{" "}
-                  {classification.secondaryAmount.token.symbol}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="text-4xl font-bold text-foreground print:text-3xl">
-                  {formatAmount(
-                    classification.primaryAmount?.amountUi || 0,
-                    classification.primaryAmount?.token.symbol || "SOL"
-                  )}
+                  {display.usdValue !== null
+                    ? `$${display.usdValue.toFixed(2)}`
+                    : `${display.secondaryAmount.formatted} ${display.secondaryAmount.symbol}`}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1 print:text-xs print:mt-0.5">
-                  {classification.primaryAmount?.token.symbol || "SOL"}
-                  {" ≈ "}${totalAmount.toFixed(2)}
+                  {display.secondaryAmount.formatted}{" "}
+                  {display.secondaryAmount.symbol}
                 </div>
               </>
-            )}
+            ) : display.type === "swap" &&
+              display.primaryAmount &&
+              display.secondaryAmount ? (
+              <>
+                <div className="text-4xl font-bold text-foreground print:text-3xl">
+                  {display.usdValue !== null
+                    ? `$${display.usdValue.toFixed(2)}`
+                    : `${display.secondaryAmount.formatted} ${display.secondaryAmount.symbol}`}
+                </div>
+                <div className="text-sm text-muted-foreground mt-2 print:text-xs print:mt-1">
+                  {display.primaryAmount.formatted}{" "}
+                  {display.primaryAmount.symbol}
+                  {" → "}
+                  {display.secondaryAmount.formatted}{" "}
+                  {display.secondaryAmount.symbol}
+                </div>
+              </>
+            ) : display.primaryAmount ? (
+              <>
+                <div className="text-4xl font-bold text-foreground print:text-3xl">
+                  {display.usdValue !== null
+                    ? `$${display.usdValue.toFixed(2)}`
+                    : `${display.primaryAmount.formatted} ${display.primaryAmount.symbol}`}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1 print:text-xs print:mt-0.5">
+                  {display.primaryAmount.formatted}{" "}
+                  {display.primaryAmount.symbol}
+                </div>
+              </>
+            ) : null}
           </div>
 
           {tx.memo && (
             <div className="bg-gray-50 rounded-lg p-3 print:p-2">
-              <p className="text-xs text-muted-foreground mb-1 print:text-[10px] print:mb-0.5">Description</p>
+              <p className="text-xs text-muted-foreground mb-1 print:text-[10px] print:mb-0.5">
+                Description
+              </p>
               <p className="text-sm text-foreground print:text-xs">{tx.memo}</p>
             </div>
           )}
@@ -160,14 +195,22 @@ export function TransactionReceipt({
           <div className="space-y-2 border-t border-gray-200 pt-4 print:space-y-1 print:pt-2">
             <div className="flex justify-between text-sm print:text-xs">
               <span className="text-muted-foreground">Transaction Fee</span>
-              <span className="font-mono">{"<"}$0.01</span>
-            </div>
-            <div className="flex justify-between font-bold print:text-sm">
-              <span>Total</span>
               <span className="font-mono">
-                ${(totalAmount + 0.01).toFixed(2)}
+                {feeInUsd !== null
+                  ? feeInUsd < 0.01
+                    ? "<$0.01"
+                    : `$${feeInUsd.toFixed(4)}`
+                  : `${feeInSol.toFixed(6)} SOL`}
               </span>
             </div>
+            {display.usdValue !== null && (
+              <div className="flex justify-between font-bold print:text-sm">
+                <span>Total</span>
+                <span className="font-mono">
+                  ${(display.usdValue + (feeInUsd || 0)).toFixed(2)}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="pt-4 border-t border-gray-200 print:pt-2">

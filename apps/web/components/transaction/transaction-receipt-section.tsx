@@ -12,10 +12,12 @@ const bitcountFont = localFont({
 
 interface TransactionReceiptSectionProps {
   transaction: ClassifiedTransaction;
+  solPrice: number | null;
 }
 
 export function TransactionReceiptSection({
   transaction,
+  solPrice,
 }: TransactionReceiptSectionProps) {
   return (
     <div className="border border-neutral-200 rounded-lg bg-white p-6 print:border-0 print:p-0">
@@ -47,7 +49,7 @@ export function TransactionReceiptSection({
         </div>
       </div>
 
-      <TransactionReceipt transaction={transaction} />
+      <TransactionReceipt transaction={transaction} solPrice={solPrice} />
     </div>
   );
 }
