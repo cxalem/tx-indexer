@@ -9,18 +9,21 @@ const WALLET_ADDRESS_STRING = process.env.WALLET_ADDRESS;
 async function main() {
   if (!SIGNATURE_STRING) {
     console.error("Error: SIGNATURE environment variable is required");
-    console.error("Usage: SIGNATURE=<sig> WALLET_ADDRESS=<address> bun apps/indexer/classify-tx.ts");
+    console.error(
+      "Usage: SIGNATURE=<sig> WALLET_ADDRESS=<address> bun apps/indexer/classify-tx.ts"
+    );
     process.exit(1);
   }
 
   if (!WALLET_ADDRESS_STRING) {
     console.error("Error: WALLET_ADDRESS environment variable is required");
-    console.error("Usage: SIGNATURE=<sig> WALLET_ADDRESS=<address> bun apps/indexer/classify-tx.ts");
+    console.error(
+      "Usage: SIGNATURE=<sig> WALLET_ADDRESS=<address> bun apps/indexer/classify-tx.ts"
+    );
     process.exit(1);
   }
 
   const txSignature = signature(SIGNATURE_STRING);
-  const walletAddress = address(WALLET_ADDRESS_STRING);
 
   console.log("TX Classifier\n");
   console.log("============================================\n");
@@ -29,7 +32,7 @@ async function main() {
 
   console.log(`Fetching transaction: ${SIGNATURE_STRING.slice(0, 16)}...\n`);
 
-  const result = await indexer.getTransaction(txSignature, walletAddress);
+  const result = await indexer.getTransaction(txSignature);
 
   if (!result) {
     console.error("Transaction not found");
@@ -61,7 +64,6 @@ async function main() {
   console.log(`\n\nClassification`);
   console.log("--------------------------------------------");
   console.log(`Type: ${classification.primaryType}`);
-  console.log(`Direction: ${classification.direction}`);
   if (classification.primaryAmount) {
     console.log(
       `Amount: ${classification.primaryAmount.amountUi.toFixed(
@@ -110,9 +112,7 @@ async function main() {
   for (const leg of legs) {
     const sign = leg.side === "credit" ? "+" : "-";
     const amount = leg.amount.amountUi.toFixed(leg.amount.token.decimals);
-    console.log(
-      `${leg.role}: ${sign}${amount} ${leg.amount.token.symbol}`
-    );
+    console.log(`${leg.role}: ${sign}${amount} ${leg.amount.token.symbol}`);
     console.log(`  Account: ${leg.accountId}`);
   }
 
@@ -133,4 +133,3 @@ async function main() {
 }
 
 main().catch(console.error);
-
