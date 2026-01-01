@@ -20,11 +20,17 @@ export const TransactionMessageSchema = z.object({
   header: TransactionHeaderSchema.optional(),
 });
 
+export const InnerInstructionSchema = z.object({
+  index: z.number(),
+  instructions: z.array(TransactionInstructionSchema).readonly(),
+});
+
 export const SolanaTransactionSchema = z.object({
   message: TransactionMessageSchema,
   signatures: z.array(z.string()).readonly(),
 });
 
+export type InnerInstruction = z.infer<typeof InnerInstructionSchema>;
 export type SolanaTransaction = z.infer<typeof SolanaTransactionSchema>;
 export type TransactionMessage = z.infer<typeof TransactionMessageSchema>;
 export type TransactionInstruction = z.infer<

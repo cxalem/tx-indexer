@@ -40,7 +40,7 @@ console.log(tx.classification.receiver);    // receiver address
 ## Transaction Types
 
 - `transfer` - Wallet-to-wallet transfers
-- `swap` - Token exchanges (Jupiter, Raydium, Orca)
+- `swap` - Token exchanges (pattern-based detection works with any DEX, higher confidence for known protocols like Jupiter, Raydium, Orca)
 - `nft_mint` - NFT minting (Metaplex, Candy Machine, Bubblegum)
 - `stake_deposit` - SOL staking deposits
 - `stake_withdraw` - SOL staking withdrawals

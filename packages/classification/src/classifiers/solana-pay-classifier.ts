@@ -49,7 +49,7 @@ export class SolanaPayClassifier implements Classifier {
         ? {
             address: receiver,
             name: memo.merchant ?? undefined,
-            type: memo.merchant ? "merchant" : "wallet",
+            type: memo.merchant ? "merchant" : "unknown",
           }
         : null,
       confidence: 0.98,

@@ -12,26 +12,27 @@ export class SwapClassifier implements Classifier {
   classify(context: ClassifierContext): TransactionClassification | null {
     const { legs, tx } = context;
 
-    const hasDexProtocol = isDexProtocolById(tx.protocol?.id);
-    if (!hasDexProtocol) {
-      return null;
-    }
-
     const feeLeg = legs.find(
       (leg) => leg.role === "fee" && leg.side === "debit"
     );
     const initiator = feeLeg?.accountId.replace("external:", "") ?? null;
 
+    if (!initiator) {
+      return null;
+    }
+
+    const initiatorAccountId = `external:${initiator}`;
+
     const tokensOut = legs.filter(
       (leg) =>
-        leg.accountId.startsWith("external:") &&
+        leg.accountId === initiatorAccountId &&
         leg.side === "debit" &&
         (leg.role === "sent" || leg.role === "protocol_deposit")
     );
 
     const tokensIn = legs.filter(
       (leg) =>
-        leg.accountId.startsWith("external:") &&
+        leg.accountId === initiatorAccountId &&
         leg.side === "credit" &&
         (leg.role === "received" || leg.role === "protocol_withdraw")
     );
@@ -47,6 +48,9 @@ export class SwapClassifier implements Classifier {
       return null;
     }
 
+    const hasDexProtocol = isDexProtocolById(tx.protocol?.id);
+    const confidence = hasDexProtocol ? 0.95 : 0.75;
+
     return {
       primaryType: "swap",
       primaryAmount: tokenOut.amount,
@@ -54,7 +58,7 @@ export class SwapClassifier implements Classifier {
       sender: initiator,
       receiver: initiator,
       counterparty: null,
-      confidence: 0.9,
+      confidence,
       isRelevant: true,
       metadata: {
         swap_type: "token_to_token",

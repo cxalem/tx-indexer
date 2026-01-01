@@ -46,7 +46,7 @@ export class TransferClassifier implements Classifier {
       sender,
       receiver,
       counterparty: {
-        type: "wallet",
+        type: "unknown",
         address: receiver,
         name: `${receiver.slice(0, 8)}...`,
       },

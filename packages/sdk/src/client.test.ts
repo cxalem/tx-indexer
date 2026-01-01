@@ -3,7 +3,7 @@ import { createIndexer } from "./client";
 import type { Address, Signature } from "@solana/kit";
 
 // Mock the dependencies
-const mockRpc = {
+const mockRpc: Record<string, ReturnType<typeof mock>> = {
   getSignaturesForAddress: mock(() => ({
     send: mock(async () => []),
   })),
@@ -37,7 +37,7 @@ describe("TxIndexer.getTransactions with spam filtering", () => {
       signature: `sig2_${i}` as Signature,
       slot: 2000n + BigInt(i),
       blockTime: 2000000n + BigInt(i),
-      err: i < 5 ? { error: "spam" } : null, // 5 spam, 5 valid
+      err: i < 5 ? { error: "spam" } : null,
       memo: null,
     }));
     
@@ -46,27 +46,21 @@ describe("TxIndexer.getTransactions with spam filtering", () => {
       send: mock(async () => {
         callCount++;
         if (callCount === 1) {
-          expect(options.limit).toBe(10); // First call should use requested limit
+          expect(options.limit).toBe(10);
           return firstBatchSigs;
         } else if (callCount === 2) {
-          expect(options.limit).toBe(20); // Second call should use limit * 2
-          expect(options.before).toBeDefined(); // Should have pagination
+          expect(options.limit).toBe(20);
+          expect(options.before).toBeDefined();
           return secondBatchSigs;
         }
         return [];
       }),
     }));
-    
-    // This test validates the batching concept
-    // In a real implementation, we'd need to mock the full transaction fetching and classification
+
     expect(callCount).toBe(0);
-    
-    // Note: This is a placeholder test that demonstrates the expected behavior
-    // Full integration would require mocking fetchTransactionsBatch, classifyTransaction, etc.
   });
   
   test("should stop fetching when no more transactions available", async () => {
-    // Mock scenario: First batch has 5 txs (all valid), no more transactions after that
     const mockAddress = "TestAddress123" as Address;
     
     const firstBatchSigs = Array.from({ length: 5 }, (_, i) => ({
@@ -84,24 +78,20 @@ describe("TxIndexer.getTransactions with spam filtering", () => {
         if (callCount === 1) {
           return firstBatchSigs;
         }
-        return []; // No more transactions
+        return [];
       }),
     }));
     
-    // Should only make one call since we get empty array on second call
-    // In practice, this would return 5 transactions even though limit is 10
     expect(callCount).toBe(0);
   });
   
   test("should respect max iteration limit to prevent infinite loops", async () => {
-    // Mock scenario: Every batch returns only spam transactions
     const mockAddress = "TestAddress123" as Address;
     
     let callCount = 0;
     mockRpc.getSignaturesForAddress = mock((address: Address, options: any) => ({
       send: mock(async () => {
         callCount++;
-        // Always return spam transactions
         return Array.from({ length: 10 }, (_, i) => ({
           signature: `spam_sig_${callCount}_${i}` as Signature,
           slot: 1000n * BigInt(callCount) + BigInt(i),
