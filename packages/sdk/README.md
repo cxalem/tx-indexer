@@ -37,6 +37,18 @@ console.log(tx.classification.sender);      // sender address
 console.log(tx.classification.receiver);    // receiver address
 ```
 
+## RPC Compatibility
+
+The SDK works with any Solana RPC for core features (transactions, balances, classification).
+
+NFT metadata enrichment requires a DAS-compatible RPC (Helius, Triton, etc.). If using a standard RPC, disable it:
+
+```typescript
+const txs = await indexer.getTransactions(address, {
+  enrichNftMetadata: false
+});
+```
+
 ## Transaction Types
 
 - `transfer` - Wallet-to-wallet transfers

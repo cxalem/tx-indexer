@@ -116,9 +116,112 @@ describe("SwapClassifier", () => {
       expect(result?.metadata?.from_amount).toBe(fromAmount);
       expect(result?.metadata?.to_amount).toBe(toAmount);
     });
+
+    test("should classify swap for fee payer in P2P transaction", () => {
+      const feePayer = "FEE_PAYER";
+      const counterparty = "COUNTERPARTY";
+      const legs = [
+        createMockLeg({
+          accountId: `external:${feePayer}`,
+          side: "debit",
+          role: "fee",
+          amount: createSolAmount(0.000005),
+        }),
+        createMockLeg({
+          accountId: `external:${counterparty}`,
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(0.6),
+        }),
+        createMockLeg({
+          accountId: `external:${feePayer}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(74.71),
+        }),
+        createMockLeg({
+          accountId: `external:${feePayer}`,
+          side: "credit",
+          role: "received",
+          amount: createSolAmount(0.6),
+        }),
+        createMockLeg({
+          accountId: `external:${counterparty}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(74.71),
+        }),
+      ];
+      const tx = createMockTransaction({
+        protocol: { id: "jupiter", name: "Jupiter" },
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.primaryType).toBe("swap");
+      expect(result?.primaryAmount?.token.symbol).toBe("USDC");
+      expect(result?.secondaryAmount?.token.symbol).toBe("SOL");
+      expect(result?.sender).toBe(feePayer);
+    });
   });
 
   describe("should NOT classify as swap", () => {
+    test("should return null when no fee leg found", () => {
+      const legs = [
+        createMockLeg({
+          accountId: "external:USER",
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(1.0),
+        }),
+        createMockLeg({
+          accountId: "external:USER",
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(150),
+        }),
+      ];
+      const tx = createMockTransaction({
+        protocol: { id: "jupiter", name: "Jupiter" },
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).toBeNull();
+    });
+
+    test("should return null when fee payer has no token movements", () => {
+      const feePayer = "FEE_PAYER";
+      const other = "OTHER_USER";
+      const legs = [
+        createMockLeg({
+          accountId: `external:${feePayer}`,
+          side: "debit",
+          role: "fee",
+          amount: createSolAmount(0.000005),
+        }),
+        createMockLeg({
+          accountId: `external:${other}`,
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(1.0),
+        }),
+        createMockLeg({
+          accountId: `external:${other}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(150),
+        }),
+      ];
+      const tx = createMockTransaction({
+        protocol: { id: "jupiter", name: "Jupiter" },
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).toBeNull();
+    });
     test("should return null when no DEX protocol", () => {
       const userAddress = "USER123";
       const legs = [
