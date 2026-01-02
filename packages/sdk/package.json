@@ -1,6 +1,6 @@
 {
   "name": "tx-indexer",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A TypeScript SDK that transforms raw Solana transactions into human-readable financial data with automatic classification and protocol detection",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
