@@ -149,6 +149,90 @@ describe("TransferClassifier", () => {
       expect(result?.sender).toBe(senderAddress);
       expect(result?.receiver).toBe(receiverAddress);
     });
+
+    test("should pick largest transfer when multiple sent legs exist", () => {
+      // Regression test: When there are multiple "sent" legs (e.g., a tiny SOL
+      // amount and the actual transfer), should pick the largest one.
+      const senderAddress = "SENDER123";
+      const receiverAddress = "RECEIVER456";
+      const legs = [
+        // Tiny SOL "sent" leg that should be ignored
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(0.000005),
+        }),
+        // USDC transfer - this is the actual transfer
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(100),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(100),
+        }),
+      ];
+      const tx = createMockTransaction();
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.primaryType).toBe("transfer");
+      // Should pick USDC (100), not SOL (0.000005)
+      expect(result?.primaryAmount?.token.symbol).toBe("USDC");
+      expect(result?.primaryAmount?.amountUi).toBe(100);
+      expect(result?.sender).toBe(senderAddress);
+      expect(result?.receiver).toBe(receiverAddress);
+    });
+
+    test("should pick transfer with matching receiver even if SOL comes first", () => {
+      // Regression test: SOL sent leg has no matching external receiver
+      // (goes to fee:network), but USDC does have matching receiver.
+      const senderAddress = "SENDER123";
+      const receiverAddress = "RECEIVER456";
+      const legs = [
+        // SOL sent leg - no matching external receiver
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(0.000005),
+        }),
+        // SOL goes to fee, not external
+        createMockLeg({
+          accountId: "fee:network",
+          side: "credit",
+          role: "fee",
+          amount: createSolAmount(0.000005),
+        }),
+        // USDC has matching sender/receiver pair
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(50),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(50),
+        }),
+      ];
+      const tx = createMockTransaction();
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      // Should pick USDC because SOL has no matching external receiver
+      expect(result?.primaryAmount?.token.symbol).toBe("USDC");
+      expect(result?.primaryAmount?.amountUi).toBe(50);
+    });
   });
 
   describe("should NOT classify", () => {

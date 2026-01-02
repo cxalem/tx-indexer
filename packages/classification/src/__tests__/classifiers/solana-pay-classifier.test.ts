@@ -154,6 +154,61 @@ describe("SolanaPayClassifier", () => {
       expect(result?.metadata?.label).toBe("Payment");
       expect(result?.metadata?.message).toBe("Thank you");
     });
+
+    test("should pick USDC transfer over tiny SOL fee when both have sent role", () => {
+      // Regression test: Previously the classifier would pick the first "sent" leg
+      // which was often a tiny SOL amount used for fees, instead of the actual
+      // USDC payment amount.
+      const senderAddress = "Hb6dzd4pYxmFYKkJDWuhzBEUkkaE93sFcvXYtriTkmw9";
+      const receiverAddress = "CmGgLQL36Y9ubtTsy2zmE46TAxwCBm66onZmPPhUWNqv";
+      const memo = "Order #82855203: 3:M:white:1";
+
+      const legs = [
+        // SOL fee leg comes first - this should NOT be picked
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(0.000005),
+        }),
+        // Fee destination
+        createMockLeg({
+          accountId: "fee:network",
+          side: "credit",
+          role: "fee",
+          amount: createSolAmount(0.000005),
+        }),
+        // USDC receiver - this should be picked
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(0.15),
+        }),
+        // USDC sender - this should be picked
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(0.15),
+        }),
+      ];
+
+      const tx = createMockTransaction({
+        programIds: [SPL_MEMO_PROGRAM_ID],
+        memo,
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.primaryType).toBe("transfer");
+      // Should be USDC, not SOL
+      expect(result?.primaryAmount?.token.symbol).toBe("USDC");
+      expect(result?.primaryAmount?.amountUi).toBe(0.15);
+      expect(result?.sender).toBe(senderAddress);
+      expect(result?.receiver).toBe(receiverAddress);
+    });
   });
 
   describe("should NOT classify as Solana Pay", () => {
