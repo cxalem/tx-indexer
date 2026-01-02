@@ -3,7 +3,45 @@ import type {
   ClassifierContext,
 } from "../engine/classifier.interface";
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
+import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isDexProtocolById } from "../protocols/detector";
+
+/**
+ * Finds the best swap pair from the lists of tokens going out and coming in.
+ *
+ * The best pair is determined by:
+ * 1. Must have different token symbols (otherwise it's not a swap)
+ * 2. Prefer the pair with the largest total value (to avoid picking up dust/fees)
+ *
+ * For now, we use amountUi as a proxy for value since we don't have USD prices.
+ * This works well because:
+ * - The main swap tokens typically have much larger amounts than dust
+ * - A 2000 USDC swap will always beat a 0.0002 SOL fee
+ */
+function findSwapPair(
+  tokensOut: TxLeg[],
+  tokensIn: TxLeg[],
+): { initiatorOut: TxLeg; initiatorIn: TxLeg } | null {
+  let bestPair: { initiatorOut: TxLeg; initiatorIn: TxLeg } | null = null;
+  let bestScore = 0;
+
+  for (const out of tokensOut) {
+    for (const inLeg of tokensIn) {
+      if (out.amount.token.symbol !== inLeg.amount.token.symbol) {
+        // Score by the larger of the two amounts (in UI units)
+        // This helps identify the "main" swap vs dust movements
+        const score = Math.max(out.amount.amountUi, inLeg.amount.amountUi);
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestPair = { initiatorOut: out, initiatorIn: inLeg };
+        }
+      }
+    }
+  }
+
+  return bestPair;
+}
 
 export class SwapClassifier implements Classifier {
   name = "swap";
@@ -12,10 +50,7 @@ export class SwapClassifier implements Classifier {
   classify(context: ClassifierContext): TransactionClassification | null {
     const { legs, tx, walletAddress } = context;
 
-    const feeLeg = legs.find(
-      (leg) => leg.role === "fee" && leg.side === "debit"
-    );
-    const initiator = feeLeg?.accountId.replace("external:", "") ?? null;
+    const initiator = tx.accountKeys?.[0] ?? null;
 
     if (!initiator) {
       return null;
@@ -27,26 +62,26 @@ export class SwapClassifier implements Classifier {
       (leg) =>
         leg.accountId === initiatorAccountId &&
         leg.side === "debit" &&
-        (leg.role === "sent" || leg.role === "protocol_deposit")
+        (leg.role === "sent" || leg.role === "protocol_deposit"),
     );
 
     const initiatorTokensIn = legs.filter(
       (leg) =>
         leg.accountId === initiatorAccountId &&
         leg.side === "credit" &&
-        (leg.role === "received" || leg.role === "protocol_withdraw")
+        (leg.role === "received" || leg.role === "protocol_withdraw"),
     );
 
     if (initiatorTokensOut.length === 0 || initiatorTokensIn.length === 0) {
       return null;
     }
 
-    const initiatorOut = initiatorTokensOut[0]!;
-    const initiatorIn = initiatorTokensIn[0]!;
-
-    if (initiatorOut.amount.token.symbol === initiatorIn.amount.token.symbol) {
+    const swapPair = findSwapPair(initiatorTokensOut, initiatorTokensIn);
+    if (!swapPair) {
       return null;
     }
+
+    const { initiatorOut, initiatorIn } = swapPair;
 
     let tokenOut = initiatorOut;
     let tokenIn = initiatorIn;
@@ -54,22 +89,26 @@ export class SwapClassifier implements Classifier {
 
     if (walletAddress) {
       const walletAccountId = `external:${walletAddress}`;
-      
+
       const walletOut = legs.find(
         (leg) =>
           leg.accountId === walletAccountId &&
           leg.side === "debit" &&
-          (leg.role === "sent" || leg.role === "protocol_deposit")
+          (leg.role === "sent" || leg.role === "protocol_deposit"),
       );
 
       const walletIn = legs.find(
         (leg) =>
           leg.accountId === walletAccountId &&
           leg.side === "credit" &&
-          (leg.role === "received" || leg.role === "protocol_withdraw")
+          (leg.role === "received" || leg.role === "protocol_withdraw"),
       );
 
-      if (walletOut && walletIn && walletOut.amount.token.symbol !== walletIn.amount.token.symbol) {
+      if (
+        walletOut &&
+        walletIn &&
+        walletOut.amount.token.symbol !== walletIn.amount.token.symbol
+      ) {
         tokenOut = walletOut;
         tokenIn = walletIn;
         perspectiveWallet = walletAddress;

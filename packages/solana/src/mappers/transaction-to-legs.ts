@@ -1,4 +1,8 @@
-import type { RawTransaction, TxLeg, TxLegRole } from "@tx-indexer/core/tx/tx.types";
+import type {
+  RawTransaction,
+  TxLeg,
+  TxLegRole,
+} from "@tx-indexer/core/tx/tx.types";
 import type { ProtocolInfo } from "@tx-indexer/core/actors/counterparty.types";
 import { buildAccountId } from "@tx-indexer/core/tx/account-id";
 import {
@@ -7,11 +11,18 @@ import {
   type SolBalanceChange,
   type TokenBalanceChange,
 } from "./balance-parser";
-import { KNOWN_TOKENS, TOKEN_INFO } from "@tx-indexer/core/money/token-registry";
+import {
+  KNOWN_TOKENS,
+  TOKEN_INFO,
+} from "@tx-indexer/core/money/token-registry";
 import { DEX_PROTOCOL_IDS } from "../constants/protocol-constants";
 
 function isDexProtocol(protocol: ProtocolInfo | null | undefined): boolean {
-  return protocol !== null && protocol !== undefined && DEX_PROTOCOL_IDS.has(protocol.id);
+  return (
+    protocol !== null &&
+    protocol !== undefined &&
+    DEX_PROTOCOL_IDS.has(protocol.id)
+  );
 }
 
 /**
@@ -128,25 +139,21 @@ export function transactionToLegs(tx: RawTransaction): TxLeg[] {
 /**
  * Determines the role of a SOL balance change in the transaction context.
  *
+ * Network fees are handled separately via the fee:network leg (calculated from
+ * the imbalance between total debits and credits). This function only categorizes
+ * external account balance changes as sent/received.
+ *
  * @param change - SOL balance change for an account
  * @param tx - Raw transaction for additional context
- * @param feePayer - Fee payer address
+ * @param _feePayer - Fee payer address (unused, kept for API compatibility)
  * @returns The role of this SOL balance change
  */
 function determineSolRole(
   change: SolBalanceChange,
   tx: RawTransaction,
-  feePayer?: string
+  _feePayer?: string,
 ): TxLegRole {
-  const isFeePayer = feePayer
-    ? change.address.toLowerCase() === feePayer
-    : false;
   const isPositive = change.change > 0n;
-  const amountSol = Math.abs(change.changeUi);
-
-  if (isFeePayer && !isPositive && amountSol < 0.01) {
-    return "fee";
-  }
 
   if (isPositive) {
     if (tx.protocol?.id === "stake") {
@@ -169,7 +176,7 @@ function determineSolRole(
 function determineTokenRole(
   change: TokenBalanceChange,
   tx: RawTransaction,
-  feePayer?: string
+  feePayer?: string,
 ): TxLegRole {
   const isFeePayer = feePayer
     ? change.owner?.toLowerCase() === feePayer

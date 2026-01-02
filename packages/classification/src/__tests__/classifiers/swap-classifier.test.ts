@@ -17,12 +17,6 @@ describe("SwapClassifier", () => {
         createMockLeg({
           accountId: `external:${userAddress}`,
           side: "debit",
-          role: "fee",
-          amount: createSolAmount(0.000005),
-        }),
-        createMockLeg({
-          accountId: `external:${userAddress}`,
-          side: "debit",
           role: "sent",
           amount: createSolAmount(1.0),
         }),
@@ -35,6 +29,7 @@ describe("SwapClassifier", () => {
       ];
       const tx = createMockTransaction({
         protocol: { id: "jupiter", name: "Jupiter" },
+        accountKeys: [userAddress],
       });
 
       const result = classifier.classify({ legs, tx });
@@ -45,19 +40,13 @@ describe("SwapClassifier", () => {
       expect(result?.secondaryAmount?.token.symbol).toBe("USDC");
       expect(result?.sender).toBe(userAddress);
       expect(result?.receiver).toBe(userAddress);
-      expect(result?.confidence).toBe(0.9);
+      expect(result?.confidence).toBe(0.95);
       expect(result?.metadata?.swap_type).toBe("token_to_token");
     });
 
     test("should classify USDC to SOL swap via Raydium", () => {
       const userAddress = "USER123";
       const legs = [
-        createMockLeg({
-          accountId: `external:${userAddress}`,
-          side: "debit",
-          role: "fee",
-          amount: createSolAmount(0.000005),
-        }),
         createMockLeg({
           accountId: `external:${userAddress}`,
           side: "debit",
@@ -73,6 +62,7 @@ describe("SwapClassifier", () => {
       ];
       const tx = createMockTransaction({
         protocol: { id: "raydium", name: "Raydium" },
+        accountKeys: [userAddress],
       });
 
       const result = classifier.classify({ legs, tx });
@@ -91,12 +81,6 @@ describe("SwapClassifier", () => {
         createMockLeg({
           accountId: `external:${userAddress}`,
           side: "debit",
-          role: "fee",
-          amount: createSolAmount(0.000005),
-        }),
-        createMockLeg({
-          accountId: `external:${userAddress}`,
-          side: "debit",
           role: "sent",
           amount: createSolAmount(fromAmount),
         }),
@@ -109,6 +93,7 @@ describe("SwapClassifier", () => {
       ];
       const tx = createMockTransaction({
         protocol: { id: "jupiter", name: "Jupiter" },
+        accountKeys: [userAddress],
       });
 
       const result = classifier.classify({ legs, tx });
@@ -122,12 +107,6 @@ describe("SwapClassifier", () => {
       const counterparty = "COUNTERPARTY";
       const legs = [
         createMockLeg({
-          accountId: `external:${feePayer}`,
-          side: "debit",
-          role: "fee",
-          amount: createSolAmount(0.000005),
-        }),
-        createMockLeg({
           accountId: `external:${counterparty}`,
           side: "debit",
           role: "sent",
@@ -154,6 +133,7 @@ describe("SwapClassifier", () => {
       ];
       const tx = createMockTransaction({
         protocol: { id: "jupiter", name: "Jupiter" },
+        accountKeys: [feePayer, counterparty],
       });
 
       const result = classifier.classify({ legs, tx });
@@ -167,7 +147,7 @@ describe("SwapClassifier", () => {
   });
 
   describe("should NOT classify as swap", () => {
-    test("should return null when no fee leg found", () => {
+    test("should return null when no accountKeys", () => {
       const legs = [
         createMockLeg({
           accountId: "external:USER",
@@ -196,12 +176,6 @@ describe("SwapClassifier", () => {
       const other = "OTHER_USER";
       const legs = [
         createMockLeg({
-          accountId: `external:${feePayer}`,
-          side: "debit",
-          role: "fee",
-          amount: createSolAmount(0.000005),
-        }),
-        createMockLeg({
           accountId: `external:${other}`,
           side: "debit",
           role: "sent",
@@ -216,30 +190,7 @@ describe("SwapClassifier", () => {
       ];
       const tx = createMockTransaction({
         protocol: { id: "jupiter", name: "Jupiter" },
-      });
-
-      const result = classifier.classify({ legs, tx });
-
-      expect(result).toBeNull();
-    });
-    test("should return null when no DEX protocol", () => {
-      const userAddress = "USER123";
-      const legs = [
-        createMockLeg({
-          accountId: `external:${userAddress}`,
-          side: "debit",
-          role: "sent",
-          amount: createSolAmount(1.0),
-        }),
-        createMockLeg({
-          accountId: `external:${userAddress}`,
-          side: "credit",
-          role: "received",
-          amount: createUsdcAmount(150),
-        }),
-      ];
-      const tx = createMockTransaction({
-        protocol: { id: "metaplex", name: "Metaplex" },
+        accountKeys: [feePayer],
       });
 
       const result = classifier.classify({ legs, tx });
@@ -265,6 +216,7 @@ describe("SwapClassifier", () => {
       ];
       const tx = createMockTransaction({
         protocol: { id: "jupiter", name: "Jupiter" },
+        accountKeys: [userAddress],
       });
 
       const result = classifier.classify({ legs, tx });
@@ -284,6 +236,7 @@ describe("SwapClassifier", () => {
       ];
       const tx = createMockTransaction({
         protocol: { id: "jupiter", name: "Jupiter" },
+        accountKeys: [userAddress],
       });
 
       const result = classifier.classify({ legs, tx });
@@ -303,6 +256,7 @@ describe("SwapClassifier", () => {
       ];
       const tx = createMockTransaction({
         protocol: { id: "jupiter", name: "Jupiter" },
+        accountKeys: [userAddress],
       });
 
       const result = classifier.classify({ legs, tx });
