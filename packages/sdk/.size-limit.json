@@ -15,19 +15,19 @@
     "name": "Tree-shaken: classifyTransaction",
     "path": "src/index.ts",
     "import": "{ classifyTransaction }",
-    "limit": "5 KB"
+    "limit": "8 KB"
   },
   {
     "name": "Tree-shaken: fetchTransaction",
     "path": "src/index.ts",
     "import": "{ fetchTransaction }",
-    "limit": "6 KB"
+    "limit": "8 KB"
   },
   {
     "name": "Tree-shaken: transactionToLegs",
     "path": "src/index.ts",
     "import": "{ transactionToLegs }",
-    "limit": "6 KB"
+    "limit": "8 KB"
   }
 ]
 

@@ -1,0 +1,194 @@
+# tx-indexer SDK - AI Documentation
+
+## Overview
+tx-indexer is a TypeScript SDK that transforms raw Solana transactions into human-readable financial data with automatic classification and protocol detection.
+
+## Installation
+npm install tx-indexer
+# or
+bun add tx-indexer
+# or
+yarn add tx-indexer
+# or
+pnpm add tx-indexer
+
+## Quick Start
+
+```typescript
+import { createIndexer } from "tx-indexer";
+
+const indexer = createIndexer({ 
+  rpcUrl: "https://api.mainnet-beta.solana.com" 
+});
+
+// Get wallet balance
+const balance = await indexer.getBalance("YourWalletAddress...");
+
+// Get classified transactions
+const txs = await indexer.getTransactions("YourWalletAddress...", {
+  limit: 10,
+  filterSpam: true
+});
+
+// Get single transaction (no wallet required)
+const tx = await indexer.getTransaction("signature...");
+```
+
+## API Reference
+
+### createIndexer(options: TxIndexerOptions): TxIndexer
+
+Creates a new indexer instance.
+
+Options:
+- `rpcUrl: string` - Solana RPC endpoint URL
+- `wsUrl?: string` - Optional WebSocket URL
+- `client?: SolanaClient` - Pre-configured Solana client
+
+### indexer.getBalance(walletAddress: Address, tokenMints?: readonly string[]): Promise<WalletBalance>
+
+Fetches wallet balance including SOL and specified tokens.
+
+Returns:
+- `sol: { raw: string, ui: number }` - SOL balance
+- `tokens: Array<{ symbol, amount, decimals }>` - Token balances
+
+### indexer.getTransactions(walletAddress: Address, options?: GetTransactionsOptions): Promise<ClassifiedTransaction[]>
+
+Fetches and classifies transactions for a wallet.
+
+Options:
+- `limit?: number` - Number of transactions (default: 10)
+- `before?: Signature` - Pagination cursor
+- `until?: Signature` - Stop at this signature
+- `filterSpam?: boolean` - Filter spam transactions (default: true)
+- `spamConfig?: SpamFilterConfig` - Spam filter configuration
+- `enrichNftMetadata?: boolean` - Fetch NFT metadata (default: true, requires DAS-compatible RPC)
+
+Returns array of ClassifiedTransaction objects.
+
+### indexer.getTransaction(signature: Signature, options?: GetTransactionOptions): Promise<ClassifiedTransaction | null>
+
+Fetches and classifies a single transaction by signature.
+
+Options:
+- `enrichNftMetadata?: boolean` - Fetch NFT metadata (default: true)
+
+Returns ClassifiedTransaction or null if not found.
+
+### indexer.getRawTransaction(signature: Signature): Promise<RawTransaction | null>
+
+Fetches raw transaction data without classification.
+
+### indexer.getNftMetadata(mintAddress: string): Promise<NftMetadata | null>
+
+Fetches NFT metadata (requires DAS-compatible RPC like Helius).
+
+### indexer.getNftMetadataBatch(mintAddresses: string[]): Promise<Map<string, NftMetadata>>
+
+Fetches NFT metadata for multiple mints in batch.
+
+## Transaction Classification Types
+
+- `transfer` - Wallet-to-wallet transfers
+- `swap` - Token exchanges (works with any DEX, higher confidence for Jupiter, Raydium, Orca)
+- `nft_mint` - NFT minting (Metaplex, Candy Machine, Bubblegum)
+- `stake_deposit` - SOL staking deposits
+- `stake_withdraw` - SOL staking withdrawals
+- `bridge_in` - Receiving from bridge (Wormhole, deBridge, Allbridge)
+- `bridge_out` - Sending to bridge
+- `airdrop` - Token distributions
+- `fee_only` - Transactions with only network fees
+- `solana_pay` - Solana Pay payments
+
+## Classification Object Structure
+
+```typescript
+interface TransactionClassification {
+  primaryType: string;
+  primaryAmount: MoneyAmount | null;
+  secondaryAmount: MoneyAmount | null;
+  sender: string | null;
+  receiver: string | null;
+  counterparty: Counterparty | null;
+  confidence: number; // 0.0 to 1.0
+  isRelevant: boolean;
+  metadata: Record<string, unknown>;
+}
+```
+
+## ClassifiedTransaction Structure
+
+```typescript
+interface ClassifiedTransaction {
+  tx: RawTransaction; // Raw transaction data
+  classification: TransactionClassification; // Classification result
+  legs: TxLeg[]; // Accounting legs for balance analysis
+}
+```
+
+## RPC Compatibility
+
+- Core features (transactions, balances, classification) work with any Solana RPC
+- NFT metadata enrichment requires DAS-compatible RPC (Helius, Triton, etc.)
+- Disable NFT enrichment if using standard RPC: `{ enrichNftMetadata: false }`
+
+## Error Handling
+
+- `getTransaction()` returns `null` if transaction not found (expected case)
+- Network/RPC errors throw typed errors
+- Use try/catch for error handling
+
+## Examples
+
+### Get wallet transaction history
+```typescript
+const txs = await indexer.getTransactions(walletAddress, {
+  limit: 20,
+  filterSpam: true,
+  spamConfig: {
+    minSolAmount: 0.001,
+    minTokenAmountUsd: 0.01,
+  }
+});
+```
+
+### Check if transaction is a swap
+```typescript
+const tx = await indexer.getTransaction(signature);
+if (tx?.classification.primaryType === "swap") {
+  const from = tx.classification.primaryAmount;
+  const to = tx.classification.secondaryAmount;
+  console.log(`Swapped ${from.amountUi} ${from.token.symbol} for ${to.amountUi} ${to.token.symbol}`);
+}
+```
+
+### Frontend perspective handling
+```typescript
+const tx = await indexer.getTransaction(signature);
+const connectedWallet = wallet?.address;
+
+if (connectedWallet === tx.classification.sender) {
+  // "You sent..."
+} else if (connectedWallet === tx.classification.receiver) {
+  // "You received..."
+}
+```
+
+## Bundle Size
+
+- Full SDK: 11.34 KB (minified + brotli)
+- createIndexer only: 11.34 KB
+- classifyTransaction: 6.39 KB
+- fetchTransaction: 7.39 KB
+- transactionToLegs: 7.3 KB
+- Tree-shakeable for smaller bundles
+
+## License
+
+MIT
+
+## Repository
+
+https://github.com/cxalem/tx-indexer
+

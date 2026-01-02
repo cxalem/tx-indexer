@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
 import { NoisyBackground } from "@/components/noisy-bg";
@@ -53,8 +54,31 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "tx-indexer",
+    description:
+      "A TypeScript SDK that transforms raw Solana transactions into human-readable financial data with automatic classification and protocol detection",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    codeRepository: "https://github.com/cxalem/tx-indexer",
+    programmingLanguage: "TypeScript",
+    license: "https://opensource.org/licenses/MIT",
+  };
+
   return (
     <html lang="en">
+      <Script
+        id="structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col`}
       >

@@ -76,7 +76,17 @@ export {
   KNOWN_TOKENS,
   TOKEN_INFO,
   getTokenInfo,
+  createUnknownToken,
+  SUPPORTED_STABLECOINS,
+  LIQUID_STAKING_TOKENS,
 } from "@tx-indexer/core/money/token-registry";
+
+export {
+  createTokenFetcher,
+  getDefaultTokenFetcher,
+  type TokenFetcher,
+  type TokenFetcherOptions,
+} from "@tx-indexer/core/money/token-fetcher";
 
 export {
   JUPITER_V6_PROGRAM_ID,

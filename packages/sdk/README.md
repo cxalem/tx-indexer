@@ -84,11 +84,11 @@ The SDK is lightweight and tree-shakeable:
 
 | Import | Size (minified + brotli) |
 |--------|----------|
-| Full SDK | ~20 KB |
-| `createIndexer` only | ~20 KB |
-| `classifyTransaction` | ~3 KB |
-| `fetchTransaction` | ~4 KB |
-| `transactionToLegs` | ~4 KB |
+| Full SDK | 11.34 KB |
+| `createIndexer` only | 11.34 KB |
+| `classifyTransaction` | 6.39 KB |
+| `fetchTransaction` | 7.39 KB |
+| `transactionToLegs` | 7.3 KB |
 
 Check current sizes:
 ```bash
