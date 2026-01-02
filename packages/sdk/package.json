@@ -1,6 +1,6 @@
 {
   "name": "tx-indexer",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A TypeScript SDK that transforms raw Solana transactions into human-readable financial data with automatic classification and protocol detection",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -31,7 +31,9 @@
     "prepublishOnly": "bun run build",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "bun test",
+    "test": "bun test src/client.test.ts src/nft.test.ts",
+    "test:integration": "bun test src/__tests__/integration.test.ts",
+    "test:all": "bun test",
     "size": "size-limit",
     "size:why": "size-limit --why"
   },
