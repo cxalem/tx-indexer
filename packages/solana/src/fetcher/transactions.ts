@@ -8,11 +8,25 @@ import type {
 import type { RawTransaction } from "@tx-indexer/core/tx/tx.types";
 import { extractProgramIds } from "@tx-indexer/solana/mappers/transaction-mapper";
 import { extractMemo } from "@tx-indexer/solana/mappers/memo-parser";
+import { withRetry, type RetryConfig } from "@tx-indexer/solana/rpc/retry";
+import pLimit from "p-limit";
 
 export interface FetchTransactionsConfig {
   limit?: number;
   before?: Signature;
   until?: Signature;
+}
+
+export interface FetchTransactionOptions {
+  commitment?: "confirmed" | "finalized";
+  retry?: RetryConfig;
+}
+
+export interface FetchBatchOptions {
+  commitment?: "confirmed" | "finalized";
+  concurrency?: number;
+  retry?: RetryConfig;
+  onFetchError?: (signature: Signature, error: Error) => void;
 }
 
 /**
@@ -26,7 +40,7 @@ export interface FetchTransactionsConfig {
 export async function fetchWalletSignatures(
   rpc: Rpc<GetSignaturesForAddressApi>,
   walletAddress: Address,
-  config: FetchTransactionsConfig = {}
+  config: FetchTransactionsConfig = {},
 ): Promise<RawTransaction[]> {
   const { limit = 100, before, until } = config;
 
@@ -54,21 +68,27 @@ export async function fetchWalletSignatures(
  *
  * @param rpc - Solana RPC client
  * @param signature - Transaction signature
- * @param commitment - Commitment level for fetching
- * @returns Full raw transaction with program IDs
+ * @param options - Fetch options including commitment level and retry config
+ * @returns Full raw transaction with program IDs, or null if not found
  */
 export async function fetchTransaction(
   rpc: Rpc<GetTransactionApi>,
   signature: Signature,
-  commitment: "confirmed" | "finalized" = "confirmed"
+  options: FetchTransactionOptions = {},
 ): Promise<RawTransaction | null> {
-  const response = await rpc
-    .getTransaction(signature, {
-      commitment,
-      maxSupportedTransactionVersion: 0,
-      encoding: "json",
-    })
-    .send();
+  const { commitment = "confirmed", retry } = options;
+
+  const response = await withRetry(
+    () =>
+      rpc
+        .getTransaction(signature, {
+          commitment,
+          maxSupportedTransactionVersion: 0,
+          encoding: "json",
+        })
+        .send(),
+    retry,
+  );
 
   if (!response) {
     return null;
@@ -115,28 +135,52 @@ export async function fetchTransaction(
     preBalances: (response.meta?.preBalances ?? []).map((bal) => Number(bal)),
     postBalances: (response.meta?.postBalances ?? []).map((bal) => Number(bal)),
     accountKeys: response.transaction.message.accountKeys.map((key) =>
-      key.toString()
+      key.toString(),
     ),
     memo,
   };
 }
 
 /**
- * Fetches multiple transactions in parallel.
+ * Fetches multiple transactions with controlled concurrency.
  *
  * @param rpc - Solana RPC client
- * @param signatures - Array of transaction signatures
- * @param commitment - Commitment level for fetching
- * @returns Array of full raw transactions (nulls filtered out)
+ * @param signatures - Array of transaction signatures to fetch
+ * @param options - Fetch options including commitment level, concurrency limit, and retry config
+ * @returns Array of successfully fetched transactions (nulls and errors filtered out)
  */
 export async function fetchTransactionsBatch(
   rpc: Rpc<GetTransactionApi>,
   signatures: Signature[],
-  commitment: "confirmed" | "finalized" = "confirmed"
+  options: FetchBatchOptions = {},
 ): Promise<RawTransaction[]> {
-  const promises = signatures.map((sig) =>
-    fetchTransaction(rpc, sig, commitment)
-  );
+  const {
+    commitment = "confirmed",
+    concurrency = 10,
+    retry,
+    onFetchError,
+  } = options;
+
+  if (signatures.length === 0) {
+    return [];
+  }
+
+  const limit = pLimit(concurrency);
+
+  const safeFetch = async (sig: Signature): Promise<RawTransaction | null> => {
+    try {
+      return await fetchTransaction(rpc, sig, { commitment, retry });
+    } catch (error) {
+      onFetchError?.(
+        sig,
+        error instanceof Error ? error : new Error(String(error)),
+      );
+      return null;
+    }
+  };
+
+  const promises = signatures.map((sig) => limit(() => safeFetch(sig)));
+
   const results = await Promise.all(promises);
   return results.filter((tx): tx is RawTransaction => tx !== null);
 }

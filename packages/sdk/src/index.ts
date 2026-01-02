@@ -28,20 +28,20 @@ export {
   fetchWalletSignatures,
   fetchTransaction,
   fetchTransactionsBatch,
+  type FetchBatchOptions,
+  type FetchTransactionOptions,
 } from "@tx-indexer/solana/fetcher/transactions";
 
-export {
-  transactionToLegs,
-} from "@tx-indexer/solana/mappers/transaction-to-legs";
+export { type RetryConfig } from "@tx-indexer/solana/rpc/retry";
+
+export { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
 
 export {
   classifyTransaction,
   type ClassificationService,
 } from "@tx-indexer/classification/engine/classification-service";
 
-export {
-  detectProtocol,
-} from "@tx-indexer/classification/protocols/detector";
+export { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 
 export {
   isSpamTransaction,

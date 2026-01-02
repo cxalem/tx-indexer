@@ -6,7 +6,14 @@ import {
   address,
 } from "@solana/kit";
 
-import { getTokenInfo, KNOWN_TOKENS } from "@tx-indexer/core/money/token-registry";
+import {
+  getTokenInfo,
+  KNOWN_TOKENS,
+} from "@tx-indexer/core/money/token-registry";
+import {
+  TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
+} from "../constants/program-ids";
 
 export interface WalletBalance {
   address: string;
@@ -47,7 +54,7 @@ export interface TokenAccountBalance {
 export async function fetchWalletBalance(
   rpc: Rpc<GetBalanceApi & GetTokenAccountsByOwnerApi>,
   walletAddress: Address,
-  tokenMints?: readonly string[]
+  tokenMints?: readonly string[],
 ): Promise<WalletBalance> {
   const balanceResponse = await rpc.getBalance(walletAddress).send();
   const lamports = balanceResponse.value;
@@ -70,19 +77,26 @@ export async function fetchWalletBalance(
 
 async function fetchTokenAccounts(
   rpc: Rpc<GetBalanceApi & GetTokenAccountsByOwnerApi>,
-  walletAddress: Address
+  walletAddress: Address,
 ): Promise<Map<string, TokenAccountBalance>> {
   const accountsMap = new Map<string, TokenAccountBalance>();
 
-  try {
-    const response = await rpc
-      .getTokenAccountsByOwner(
-        walletAddress,
-        { programId: address("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA") },
-        { encoding: "jsonParsed" }
-      )
-      .send();
+  const tokenPrograms = [TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID];
 
+  const responses = await Promise.all(
+    tokenPrograms.map((programId) =>
+      rpc
+        .getTokenAccountsByOwner(
+          walletAddress,
+          { programId: address(programId) },
+          { encoding: "jsonParsed" },
+        )
+        .send()
+        .catch(() => ({ value: [] })),
+    ),
+  );
+
+  for (const response of responses) {
     for (const account of response.value) {
       const parsedInfo = account.account.data.parsed.info;
       const mint = parsedInfo.mint;
@@ -103,8 +117,6 @@ async function fetchTokenAccounts(
         symbol,
       });
     }
-  } catch (error) {
-    console.error("Error fetching token accounts:", error);
   }
 
   return accountsMap;
@@ -118,7 +130,7 @@ async function fetchTokenAccounts(
  */
 function filterToTrackedTokens(
   fetchedAccounts: Map<string, TokenAccountBalance>,
-  tokenMints: readonly string[]
+  tokenMints: readonly string[],
 ): TokenAccountBalance[] {
   const result: TokenAccountBalance[] = [];
 

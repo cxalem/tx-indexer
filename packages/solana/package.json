@@ -21,6 +21,7 @@
   "dependencies": {
     "@solana/kit": "^5.0.0",
     "@tx-indexer/core": "workspace:*",
+    "p-limit": "^6.2.0",
     "zod": "^4.1.13"
   }
 }
