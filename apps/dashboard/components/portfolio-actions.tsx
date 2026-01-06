@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Send, ArrowLeftRight, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PortfolioActionsProps {
@@ -40,10 +40,11 @@ export function PortfolioActions({
         type="button"
         onClick={onSend}
         className={cn(
-          "px-3 py-1.5 text-sm rounded-lg transition-colors",
+          "flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors",
           "bg-vibrant-red text-white hover:bg-vibrant-red/90",
         )}
       >
+        <Send className="h-3.5 w-3.5" />
         send
       </button>
 
@@ -67,8 +68,9 @@ export function PortfolioActions({
                 onTrade();
                 setOpen(false);
               }}
-              className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors"
             >
+              <ArrowLeftRight className="h-4 w-4 text-neutral-400" />
               trade
             </button>
             <button
@@ -77,8 +79,9 @@ export function PortfolioActions({
                 onEarn();
                 setOpen(false);
               }}
-              className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors"
             >
+              <TrendingUp className="h-4 w-4 text-neutral-400" />
               earn
             </button>
           </div>
