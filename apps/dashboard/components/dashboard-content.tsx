@@ -118,7 +118,7 @@ function PortfolioCard({
             </div>
           )}
         </div>
-        <PortfolioActions onSend={onSend} />
+        <PortfolioActions walletAddress={walletAddress} onSend={onSend} />
       </div>
       <p className="text-3xl font-mono text-neutral-900 mb-2">
         {formatUsd(total)}

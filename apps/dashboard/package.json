@@ -25,6 +25,7 @@
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-qr-code": "^2.0.18",
     "tailwind-merge": "^3.4.0",
     "tweetnacl": "^1.0.3",
     "tx-indexer": "^0.5.4",

@@ -7,6 +7,7 @@ import {
 import { fetchWalletBalance } from "@tx-indexer/solana/fetcher/balances";
 import {
   fetchWalletSignatures,
+  fetchWalletAndTokenSignatures,
   fetchTransaction,
   fetchTransactionsBatch,
 } from "@tx-indexer/solana/fetcher/transactions";
@@ -236,6 +237,12 @@ export interface GetTransactionsOptions {
    * Defaults to true.
    */
   enrichTokenMetadata?: boolean;
+  /**
+   * Include transactions from token accounts (ATAs) in addition to the wallet address.
+   * This captures incoming token transfers that only reference the ATA, not the wallet.
+   * Defaults to true.
+   */
+  includeTokenAccounts?: boolean;
 }
 
 export interface GetTransactionOptions {
@@ -313,7 +320,13 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         spamConfig,
         enrichNftMetadata = true,
         enrichTokenMetadata: enrichTokens = true,
+        includeTokenAccounts = true,
       } = options;
+
+      // Choose the appropriate signature fetcher based on includeTokenAccounts option
+      const fetchSignatures = includeTokenAccounts
+        ? fetchWalletAndTokenSignatures
+        : fetchWalletSignatures;
 
       async function enrichBatch(
         transactions: ClassifiedTransaction[],
@@ -374,15 +387,11 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       }
 
       if (!filterSpam) {
-        const signatures = await fetchWalletSignatures(
-          client.rpc,
-          walletAddress,
-          {
-            limit,
-            before,
-            until,
-          },
-        );
+        const signatures = await fetchSignatures(client.rpc, walletAddress, {
+          limit,
+          before,
+          until,
+        });
 
         if (signatures.length === 0) {
           return [];
@@ -422,15 +431,11 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
 
         const batchSize = iteration === 1 ? limit : limit * 2;
 
-        const signatures = await fetchWalletSignatures(
-          client.rpc,
-          walletAddress,
-          {
-            limit: batchSize,
-            before: currentBefore,
-            until,
-          },
-        );
+        const signatures = await fetchSignatures(client.rpc, walletAddress, {
+          limit: batchSize,
+          before: currentBefore,
+          until,
+        });
 
         if (signatures.length === 0) {
           break;

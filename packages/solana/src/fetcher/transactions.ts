@@ -1,15 +1,21 @@
-import type {
-  Address,
-  Rpc,
-  Signature,
-  GetSignaturesForAddressApi,
-  GetTransactionApi,
+import {
+  type Address,
+  type Rpc,
+  type Signature,
+  type GetSignaturesForAddressApi,
+  type GetTransactionApi,
+  type GetTokenAccountsByOwnerApi,
+  address,
 } from "@solana/kit";
 import type { RawTransaction } from "@tx-indexer/core/tx/tx.types";
 import { extractProgramIds } from "@tx-indexer/solana/mappers/transaction-mapper";
 import { extractMemo } from "@tx-indexer/solana/mappers/memo-parser";
 import { withRetry, type RetryConfig } from "@tx-indexer/solana/rpc/retry";
 import pLimit from "p-limit";
+import {
+  TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
+} from "../constants/program-ids";
 
 export interface FetchTransactionsConfig {
   limit?: number;
@@ -61,6 +67,108 @@ export async function fetchWalletSignatures(
     protocol: null,
     memo: sig.memo || null,
   }));
+}
+
+/**
+ * Fetches all token account (ATA) addresses for a wallet.
+ *
+ * @param rpc - Solana RPC client
+ * @param walletAddress - Wallet address to fetch token accounts for
+ * @returns Array of token account addresses (ATAs)
+ */
+export async function fetchWalletTokenAccounts(
+  rpc: Rpc<GetTokenAccountsByOwnerApi>,
+  walletAddress: Address,
+): Promise<Address[]> {
+  const tokenPrograms = [TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID];
+
+  const responses = await Promise.all(
+    tokenPrograms.map((programId) =>
+      rpc
+        .getTokenAccountsByOwner(
+          walletAddress,
+          { programId: address(programId) },
+          { encoding: "jsonParsed" },
+        )
+        .send()
+        .catch(() => ({ value: [] })),
+    ),
+  );
+
+  const tokenAccounts: Address[] = [];
+  for (const response of responses) {
+    for (const account of response.value) {
+      tokenAccounts.push(account.pubkey);
+    }
+  }
+
+  return tokenAccounts;
+}
+
+/**
+ * Fetches transaction signatures for a wallet and all its token accounts (ATAs).
+ * This captures incoming token transfers that only reference the ATA, not the wallet address.
+ *
+ * @param rpc - Solana RPC client
+ * @param walletAddress - Wallet address to fetch signatures for
+ * @param config - Optional pagination and limit configuration
+ * @returns Array of raw transactions with basic metadata, deduplicated and sorted by slot (descending)
+ */
+export async function fetchWalletAndTokenSignatures(
+  rpc: Rpc<GetSignaturesForAddressApi & GetTokenAccountsByOwnerApi>,
+  walletAddress: Address,
+  config: FetchTransactionsConfig = {},
+): Promise<RawTransaction[]> {
+  const { limit = 100, before, until } = config;
+
+  // Fetch token accounts for the wallet
+  const tokenAccounts = await fetchWalletTokenAccounts(rpc, walletAddress);
+
+  // Fetch signatures for wallet and all token accounts in parallel
+  const allAddresses = [walletAddress, ...tokenAccounts];
+
+  const signaturePromises = allAddresses.map((addr) =>
+    rpc
+      .getSignaturesForAddress(addr, {
+        limit,
+        before,
+        until,
+      })
+      .send()
+      .catch(() => []),
+  );
+
+  const responses = await Promise.all(signaturePromises);
+
+  // Merge and deduplicate signatures by signature string
+  const signatureMap = new Map<string, RawTransaction>();
+
+  for (const response of responses) {
+    for (const sig of response) {
+      // Only add if not already present (keep first occurrence which is most recent)
+      if (!signatureMap.has(sig.signature)) {
+        signatureMap.set(sig.signature, {
+          signature: sig.signature,
+          slot: sig.slot,
+          blockTime: sig.blockTime,
+          err: sig.err,
+          programIds: [],
+          protocol: null,
+          memo: sig.memo || null,
+        });
+      }
+    }
+  }
+
+  // Sort by slot descending (most recent first)
+  const sortedSignatures = Array.from(signatureMap.values()).sort((a, b) => {
+    const slotA = typeof a.slot === "bigint" ? a.slot : BigInt(a.slot);
+    const slotB = typeof b.slot === "bigint" ? b.slot : BigInt(b.slot);
+    return slotB > slotA ? 1 : slotB < slotA ? -1 : 0;
+  });
+
+  // Return only up to the requested limit
+  return sortedSignatures.slice(0, limit);
 }
 
 /**

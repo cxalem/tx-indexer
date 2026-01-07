@@ -26,6 +26,8 @@ export {
 
 export {
   fetchWalletSignatures,
+  fetchWalletTokenAccounts,
+  fetchWalletAndTokenSignatures,
   fetchTransaction,
   fetchTransactionsBatch,
   type FetchBatchOptions,
