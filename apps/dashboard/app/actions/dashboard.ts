@@ -4,6 +4,7 @@ import { getIndexer } from "@/lib/indexer";
 import { fetchTokenPrices } from "@/lib/prices";
 import type { ClassifiedTransaction, WalletBalance } from "tx-indexer";
 import { address } from "@solana/kit";
+import { dashboardDataSchema } from "@/lib/validations";
 
 const STABLECOIN_MINTS = new Set([
   "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC
@@ -72,12 +73,25 @@ export async function getDashboardData(
   walletAddress: string,
   transactionLimit: number = 10,
 ): Promise<DashboardData> {
+  // Validate inputs with Zod
+  const validationResult = dashboardDataSchema.safeParse({
+    walletAddress,
+    transactionLimit,
+  });
+
+  if (!validationResult.success) {
+    throw new Error("Invalid input parameters");
+  }
+
+  const { walletAddress: validAddress, transactionLimit: validLimit } =
+    validationResult.data;
+
   const indexer = getIndexer();
-  const addr = address(walletAddress);
+  const addr = address(validAddress);
 
   const [balance, transactions] = await Promise.all([
     indexer.getBalance(addr),
-    indexer.getTransactions(addr, { limit: transactionLimit }),
+    indexer.getTransactions(addr, { limit: validLimit }),
   ]);
 
   const portfolio = await calculatePortfolio(balance);

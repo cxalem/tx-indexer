@@ -1,6 +1,10 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  solanaAddressSchema,
+  upsertWalletLabelSchema,
+} from "@/lib/validations";
 
 export interface WalletLabel {
   id: string;
@@ -50,6 +54,12 @@ export async function getWalletLabels(): Promise<WalletLabel[]> {
 export async function getLabelForAddress(
   address: string,
 ): Promise<string | null> {
+  // Validate address
+  const addressResult = solanaAddressSchema.safeParse(address);
+  if (!addressResult.success) {
+    return null;
+  }
+
   const supabase = await createClient();
 
   const {
@@ -64,7 +74,7 @@ export async function getLabelForAddress(
     .from("wallet_labels")
     .select("label")
     .eq("user_id", user.id)
-    .eq("address", address)
+    .eq("address", addressResult.data)
     .single();
 
   if (error || !data) {
@@ -81,6 +91,18 @@ export async function upsertWalletLabel(
   address: string,
   label: string,
 ): Promise<{ success: boolean; error?: string }> {
+  // Validate inputs with Zod
+  const validationResult = upsertWalletLabelSchema.safeParse({
+    address,
+    label,
+  });
+  if (!validationResult.success) {
+    const firstError = validationResult.error.issues[0];
+    return { success: false, error: firstError?.message || "Invalid input" };
+  }
+
+  const { address: validAddress, label: validLabel } = validationResult.data;
+
   const supabase = await createClient();
 
   const {
@@ -91,20 +113,11 @@ export async function upsertWalletLabel(
     return { success: false, error: "Not authenticated" };
   }
 
-  // Validate inputs
-  if (!address || address.trim().length === 0) {
-    return { success: false, error: "Address is required" };
-  }
-
-  if (!label || label.trim().length === 0) {
-    return { success: false, error: "Label is required" };
-  }
-
   const { error } = await supabase.from("wallet_labels").upsert(
     {
       user_id: user.id,
-      address: address.trim(),
-      label: label.trim(),
+      address: validAddress,
+      label: validLabel,
     },
     {
       onConflict: "user_id,address",
@@ -125,6 +138,12 @@ export async function upsertWalletLabel(
 export async function deleteWalletLabel(
   address: string,
 ): Promise<{ success: boolean; error?: string }> {
+  // Validate address
+  const addressResult = solanaAddressSchema.safeParse(address);
+  if (!addressResult.success) {
+    return { success: false, error: "Invalid address format" };
+  }
+
   const supabase = await createClient();
 
   const {
@@ -139,7 +158,7 @@ export async function deleteWalletLabel(
     .from("wallet_labels")
     .delete()
     .eq("user_id", user.id)
-    .eq("address", address);
+    .eq("address", addressResult.data);
 
   if (error) {
     console.error("[WalletLabels] Failed to delete label:", error);

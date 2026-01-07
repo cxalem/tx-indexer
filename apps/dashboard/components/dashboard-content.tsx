@@ -36,7 +36,6 @@ import {
   ExternalLink,
 } from "lucide-react";
 import localFont from "next/font/local";
-import Link from "next/link";
 import Image from "next/image";
 
 const bitcountFont = localFont({
@@ -315,13 +314,15 @@ function TransactionRow({
               </div>
 
               <div className="pt-2">
-                <Link
-                  href={`/transaction/${tx.signature}`}
+                <a
+                  href={`https://itx-indexer.com/indexer/${tx.signature}?add=${walletAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-sm text-vibrant-red hover:underline"
                 >
                   view full details
                   <ExternalLink className="h-3 w-3" />
-                </Link>
+                </a>
               </div>
             </div>
           </div>

@@ -32,20 +32,15 @@ import {
   useUsdcTransfer,
   type TransferStatus,
 } from "@/hooks/use-usdc-transfer";
+import {
+  isValidSolanaAddress,
+  transferAmountSchema,
+  transferMemoSchema,
+} from "@/lib/validations";
 
 interface SendTransferDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-// Solana address validation (base58, 32-44 characters)
-function isValidSolanaAddress(address: string): boolean {
-  if (!address || address.length < 32 || address.length > 44) {
-    return false;
-  }
-  // Base58 character set (no 0, O, I, l)
-  const base58Regex = /^[1-9A-HJ-NP-Za-km-z]+$/;
-  return base58Regex.test(address);
 }
 
 function formatUsd(value: number): string {
@@ -203,31 +198,42 @@ export function SendTransferDrawer({
   );
 
   // Validation
-  const recipientError =
-    touched.recipient &&
-    recipientAddress &&
-    !isValidSolanaAddress(recipientAddress)
-      ? "Invalid address"
-      : touched.recipient && !recipientAddress
-        ? "Recipient is required"
-        : null;
+  // Validate recipient address
+  const recipientError = (() => {
+    if (!touched.recipient) return null;
+    if (!recipientAddress) return "Recipient is required";
+    if (!isValidSolanaAddress(recipientAddress))
+      return "Invalid Solana address";
+    return null;
+  })();
 
+  // Validate amount with Zod
   const amountNum = parseFloat(amount) || 0;
   const currentBalance = usdcBalance ?? 0;
   const insufficientBalance = amountNum > currentBalance;
-  const amountError =
-    touched.amount && !amount
-      ? "Amount is required"
-      : touched.amount && amountNum <= 0
-        ? "Amount must be greater than 0"
-        : touched.amount && insufficientBalance
-          ? "Insufficient balance"
-          : null;
+  const amountValidation = transferAmountSchema.safeParse(amountNum);
+  const amountError = (() => {
+    if (!touched.amount) return null;
+    if (!amount) return "Amount is required";
+    if (!amountValidation.success) {
+      return amountValidation.error.issues[0]?.message || "Invalid amount";
+    }
+    if (insufficientBalance) return "Insufficient balance";
+    return null;
+  })();
+
+  // Validate memo (optional)
+  const memoValidation = transferMemoSchema.safeParse(description);
+  const memoError =
+    description && !memoValidation.success
+      ? memoValidation.error.issues[0]?.message
+      : null;
 
   const isFormValid =
     isValidSolanaAddress(recipientAddress) &&
-    amountNum > 0 &&
-    !insufficientBalance;
+    amountValidation.success &&
+    !insufficientBalance &&
+    memoValidation.success;
 
   // Calculate totals
   const amountUsd = amountNum * USDC_PRICE;
@@ -265,13 +271,6 @@ export function SendTransferDrawer({
       }
 
       // Execute the transfer with optional memo (description)
-      console.log("[SendTransferDrawer] Calling transfer", {
-        recipientAddress,
-        recipientAddressType: typeof recipientAddress,
-        amountNum,
-        amountNumType: typeof amountNum,
-        description: description || undefined,
-      });
       const result = await transfer(
         recipientAddress,
         amountNum,
@@ -579,18 +578,29 @@ export function SendTransferDrawer({
               {/* Description (optional) */}
               <div>
                 <label className="text-xs text-neutral-500 mb-1 block">
-                  note <span className="text-neutral-400">(optional)</span>
+                  note{" "}
+                  <span className="text-neutral-400">
+                    (optional, max 256 chars)
+                  </span>
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="What's this transfer for?"
                   rows={2}
+                  maxLength={256}
                   className={cn(
-                    "w-full px-3 py-2.5 rounded-lg border border-neutral-200 bg-white text-sm transition-colors resize-none",
+                    "w-full px-3 py-2.5 rounded-lg border bg-white text-sm transition-colors resize-none",
                     "focus:outline-none focus:border-vibrant-red",
+                    memoError ? "border-red-300" : "border-neutral-200",
                   )}
                 />
+                {memoError && (
+                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {memoError}
+                  </p>
+                )}
               </div>
 
               {/* Transaction Summary */}

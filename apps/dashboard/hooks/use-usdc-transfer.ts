@@ -119,12 +119,6 @@ export function useUsdcTransfer(): UseUsdcTransferReturn {
       amount: number,
       memo?: string,
     ): Promise<TransferResult> => {
-      console.log("[USDC Transfer] Starting transfer", {
-        recipient,
-        amount,
-        memo,
-      });
-
       if (wallet.status !== "connected") {
         setError("Wallet not connected");
         setStatus("error");
@@ -142,7 +136,6 @@ export function useUsdcTransfer(): UseUsdcTransferReturn {
 
         // If no memo, use the simple send method
         if (!memo || memo.trim() === "") {
-          console.log("[USDC Transfer] No memo, using simple transfer");
           setStatus("signing");
 
           const result = await splHelper.sendTransfer({
@@ -155,15 +148,10 @@ export function useUsdcTransfer(): UseUsdcTransferReturn {
           setCurrentSignature(signatureStr);
           setStatus("confirming");
 
-          console.log("[USDC Transfer] Transfer submitted", {
-            signature: signatureStr,
-          });
-
           return { signature: signatureStr, error: null };
         }
 
         // With memo, we need to build a custom transaction
-        console.log("[USDC Transfer] Building transaction with memo");
 
         // Prepare the SPL transfer (this gives us the prepared transaction with instructions)
         const prepared = await splHelper.prepareTransfer({
@@ -214,10 +202,6 @@ export function useUsdcTransfer(): UseUsdcTransferReturn {
         setCurrentSignature(signatureStr);
         setStatus("confirming");
 
-        console.log("[USDC Transfer] Transfer with memo submitted", {
-          signature: signatureStr,
-        });
-
         return { signature: signatureStr, error: null };
       } catch (err: unknown) {
         let errorMessage = "Transfer failed";
@@ -230,11 +214,6 @@ export function useUsdcTransfer(): UseUsdcTransferReturn {
           const errObj = err as Record<string, unknown>;
           if (errObj.message) errorMessage = String(errObj.message);
         }
-
-        console.error("[USDC Transfer] Error occurred", {
-          error: err,
-          errorMessage,
-        });
 
         setError(errorMessage);
         setStatus("error");

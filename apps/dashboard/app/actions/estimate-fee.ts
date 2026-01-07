@@ -2,6 +2,7 @@
 
 import { createSolanaRpc } from "@solana/kit";
 import { address } from "@solana/kit";
+import { solanaAddressSchema } from "@/lib/validations";
 
 const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 
@@ -74,12 +75,9 @@ async function hasUsdcTokenAccount(walletAddress: string): Promise<boolean> {
 export async function estimateFee(
   recipientAddress: string,
 ): Promise<FeeEstimate> {
-  // Validate address format first
-  if (
-    !recipientAddress ||
-    recipientAddress.length < 32 ||
-    recipientAddress.length > 44
-  ) {
+  // Validate address format with Zod
+  const addressResult = solanaAddressSchema.safeParse(recipientAddress);
+  if (!addressResult.success) {
     return {
       feeSol: 0,
       feeUsd: 0,
@@ -87,18 +85,11 @@ export async function estimateFee(
     };
   }
 
-  const base58Regex = /^[1-9A-HJ-NP-Za-km-z]+$/;
-  if (!base58Regex.test(recipientAddress)) {
-    return {
-      feeSol: 0,
-      feeUsd: 0,
-      needsAccountCreation: false,
-    };
-  }
+  const validAddress = addressResult.data;
 
   // Check if recipient has USDC account and get SOL price in parallel
   const [hasAccount, solPrice] = await Promise.all([
-    hasUsdcTokenAccount(recipientAddress),
+    hasUsdcTokenAccount(validAddress),
     getSolPrice(),
   ]);
 
