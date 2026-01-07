@@ -15,12 +15,12 @@ export function Nav() {
           >
             indexer
           </Link>
-          <Link
-            href="/dashboard"
+          <a
+            href="https://dashboard.itx-indexer.com"
             className="lowercase text-neutral-600 hover:text-black transition-colors"
           >
             dashboard
-          </Link>
+          </a>
           <Link
             href="/docs"
             className="lowercase text-neutral-600 hover:text-black transition-colors"
