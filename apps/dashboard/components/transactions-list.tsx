@@ -1,7 +1,7 @@
 "use client";
 
 import type { ClassifiedTransaction } from "tx-indexer";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { TransactionRow } from "@/components/transaction-row";
 import { Inbox } from "lucide-react";
 
@@ -14,25 +14,24 @@ export function TransactionsList({
   transactions,
   walletAddress,
 }: TransactionsListProps) {
-  // Track previously seen transaction signatures to detect new ones
   const seenSignaturesRef = useRef<Set<string>>(new Set());
   const [newSignatures, setNewSignatures] = useState<Set<string>>(new Set());
   const isInitializedRef = useRef(false);
 
-  // Create a stable key from transaction signatures to detect changes
-  const transactionKey = transactions.map((tx) => tx.tx.signature).join(",");
+  const transactionKey = useMemo(
+    () => transactions.map((tx) => tx.tx.signature).join(","),
+    [transactions],
+  );
 
   useEffect(() => {
     const currentSignatures = transactions.map((tx) => tx.tx.signature);
 
     if (!isInitializedRef.current) {
-      // On first render, mark all current transactions as "seen"
       seenSignaturesRef.current = new Set(currentSignatures);
       isInitializedRef.current = true;
       return;
     }
 
-    // Find new transactions (signatures we haven't seen before)
     const newSigs = new Set<string>();
     for (const sig of currentSignatures) {
       if (!seenSignaturesRef.current.has(sig)) {
@@ -42,9 +41,7 @@ export function TransactionsList({
     }
 
     if (newSigs.size > 0) {
-      console.log("New transactions detected:", Array.from(newSigs));
       setNewSignatures(newSigs);
-      // Clear the "new" state after animation duration
       const timer = setTimeout(() => setNewSignatures(new Set()), 3000);
       return () => clearTimeout(timer);
     }

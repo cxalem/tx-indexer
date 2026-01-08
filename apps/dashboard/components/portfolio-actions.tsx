@@ -18,11 +18,13 @@ interface PortfolioActionsProps {
   onEarn?: () => void;
 }
 
+const noop = () => {};
+
 export function PortfolioActions({
   walletAddress,
-  onSend = () => console.log("send"),
-  onTrade = () => console.log("trade"),
-  onEarn = () => console.log("earn"),
+  onSend = noop,
+  onTrade = noop,
+  onEarn = noop,
 }: PortfolioActionsProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [receiveOpen, setReceiveOpen] = useState(false);

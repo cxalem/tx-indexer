@@ -6,8 +6,12 @@ import { useDashboardData } from "@/hooks/use-dashboard-data";
 import { cn } from "@/lib/utils";
 import { PortfolioCard } from "@/components/portfolio-card";
 import { TransactionsList } from "@/components/transactions-list";
-import { SendTransferDrawer } from "@/components/send-transfer-drawer";
-import { TradeDrawer } from "@/components/trade-drawer";
+import { SendTransferDrawer } from "@/components/send-transfer";
+import { TradeDrawer } from "@/components/trade";
+import {
+  PortfolioCardSkeleton,
+  TransactionsListSkeleton,
+} from "@/components/skeletons";
 import { Inbox, Wallet, RefreshCw } from "lucide-react";
 import localFont from "next/font/local";
 
@@ -89,15 +93,7 @@ export function DashboardContent() {
     return (
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <div className="border border-neutral-200 rounded-lg bg-white p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-neutral-100">
-                <Wallet className="h-5 w-5 text-neutral-600" />
-              </div>
-              <span className="text-neutral-500">portfolio</span>
-            </div>
-            <p className="text-2xl font-mono text-neutral-400">loading...</p>
-          </div>
+          <PortfolioCardSkeleton />
         </div>
 
         <div>
@@ -106,9 +102,7 @@ export function DashboardContent() {
           >
             <span className="text-vibrant-red">{"//"}</span> recent transactions
           </h2>
-          <div className="border border-neutral-200 rounded-lg bg-white p-8 text-center">
-            <p className="text-neutral-500">loading transactions...</p>
-          </div>
+          <TransactionsListSkeleton count={5} />
         </div>
       </main>
     );

@@ -3,7 +3,7 @@
 import { getIndexer } from "@/lib/indexer";
 import { fetchTokenPrices } from "@/lib/prices";
 import type { ClassifiedTransaction, WalletBalance } from "tx-indexer";
-import { address } from "@solana/kit";
+import { address, signature } from "@solana/kit";
 import { dashboardDataSchema } from "@/lib/validations";
 
 const STABLECOIN_MINTS = new Set([
@@ -69,6 +69,41 @@ async function calculatePortfolio(
   };
 }
 
+/**
+ * Fetch new transactions since a known signature (for incremental updates)
+ * This dramatically reduces RPC calls on polling - only fetches what's new
+ */
+export async function getNewTransactions(
+  walletAddress: string,
+  untilSignature: string,
+  limit: number = 10,
+): Promise<ClassifiedTransaction[]> {
+  const indexer = getIndexer();
+  const addr = address(walletAddress);
+
+  return indexer.getTransactions(addr, {
+    limit,
+    until: signature(untilSignature),
+    retry: { maxAttempts: 3, baseDelayMs: 500, maxDelayMs: 5000 },
+  });
+}
+
+/**
+ * Fetch only balance and portfolio (no transactions)
+ * Used for polling when we already have cached transactions
+ */
+export async function getBalanceAndPortfolio(
+  walletAddress: string,
+): Promise<{ balance: WalletBalance; portfolio: PortfolioSummary }> {
+  const indexer = getIndexer();
+  const addr = address(walletAddress);
+
+  const balance = await indexer.getBalance(addr);
+  const portfolio = await calculatePortfolio(balance);
+
+  return { balance, portfolio };
+}
+
 export async function getDashboardData(
   walletAddress: string,
   transactionLimit: number = 10,
@@ -89,10 +124,19 @@ export async function getDashboardData(
   const indexer = getIndexer();
   const addr = address(validAddress);
 
-  const [balance, transactions] = await Promise.all([
-    indexer.getBalance(addr),
-    indexer.getTransactions(addr, { limit: validLimit }),
-  ]);
+  // Retry config for rate limiting resilience
+  const retryConfig = {
+    maxAttempts: 3,
+    baseDelayMs: 500,
+    maxDelayMs: 5000,
+  };
+
+  // Fetch balance first, then transactions sequentially to reduce burst
+  const balance = await indexer.getBalance(addr);
+  const transactions = await indexer.getTransactions(addr, {
+    limit: validLimit,
+    retry: retryConfig,
+  });
 
   const portfolio = await calculatePortfolio(balance);
 
