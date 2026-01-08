@@ -13,7 +13,10 @@ const DEFAULT_CONFIG: Required<RetryConfig> = {
 function isRetryableError(error: unknown): boolean {
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
-    return (
+    const errorName = error.name.toLowerCase();
+
+    // Check error message for common retryable conditions
+    if (
       message.includes("timeout") ||
       message.includes("econnreset") ||
       message.includes("econnrefused") ||
@@ -25,7 +28,29 @@ function isRetryableError(error: unknown): boolean {
       message.includes("503") ||
       message.includes("502") ||
       message.includes("504")
-    );
+    ) {
+      return true;
+    }
+
+    if (errorName === "solanaerror" || error.name === "SolanaError") {
+      const context = (error as any).context;
+      if (context && typeof context === "object") {
+        const contextStr = JSON.stringify(context).toLowerCase();
+        if (
+          contextStr.includes("429") ||
+          contextStr.includes("too many requests") ||
+          contextStr.includes("rate limit") ||
+          contextStr.includes("503") ||
+          contextStr.includes("502") ||
+          contextStr.includes("504")
+        ) {
+          return true;
+        }
+      }
+      if (message.includes("8100002")) {
+        return true;
+      }
+    }
   }
   return false;
 }

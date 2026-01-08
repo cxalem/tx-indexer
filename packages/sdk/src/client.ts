@@ -290,10 +290,12 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         spamConfig,
         enrichNftMetadata = true,
         enrichTokenMetadata: enrichTokens = true,
-        includeTokenAccounts = true,
-        maxIterations = 10,
-        signatureConcurrency = 3,
-        transactionConcurrency = 5,
+        // Disabled by default - wallet address signatures already capture most transfers
+        // and this saves 20+ RPC calls per request for wallets with many token accounts
+        includeTokenAccounts = false,
+        maxIterations = 5,
+        signatureConcurrency = 2,
+        transactionConcurrency = 3,
         retry,
       } = options;
 
