@@ -26,7 +26,7 @@
     "react-dom": "^19.2.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "tx-indexer": "^0.5.8"
+    "tx-indexer": "^0.6.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
