@@ -15,6 +15,52 @@ import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-leg
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import { filterSpamTransactions } from "@tx-indexer/core/tx/spam-filter";
+import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
+
+/**
+ * Derives the direction of a transaction from the wallet's perspective.
+ * - "in": wallet receives value (transfers in, swaps where they get tokens, airdrops)
+ * - "out": wallet sends value (transfers out, swaps where they spend tokens)
+ * - "self": internal transaction (swaps, stake operations on own account)
+ * - null: cannot determine direction
+ */
+function deriveDirection(
+  classification: TransactionClassification,
+  walletAddress: string,
+): "in" | "out" | "self" | null {
+  const { primaryType, sender, receiver } = classification;
+  const walletLower = walletAddress.toLowerCase();
+  const senderLower = sender?.toLowerCase();
+  const receiverLower = receiver?.toLowerCase();
+
+  // Swaps are always "self" - you're exchanging tokens with yourself
+  if (primaryType === "swap") {
+    return "self";
+  }
+
+  // Stake operations are "self"
+  if (primaryType === "stake_deposit" || primaryType === "stake_withdraw") {
+    return "self";
+  }
+
+  // Airdrops and rewards are always "in"
+  if (primaryType === "airdrop" || primaryType === "reward") {
+    return "in";
+  }
+
+  // For transfers, check sender/receiver
+  if (senderLower === walletLower && receiverLower === walletLower) {
+    return "self";
+  }
+  if (senderLower === walletLower) {
+    return "out";
+  }
+  if (receiverLower === walletLower) {
+    return "in";
+  }
+
+  return null;
+}
 
 const transactions = new Hono<{ Bindings: Bindings }>();
 
@@ -116,7 +162,7 @@ transactions.get("/:address/transactions", async (c) => {
 
     const rawTransactions = await fetchTransactionsBatch(
       client.rpc,
-      signatures.map((s) => s.signature)
+      signatures.map((s) => s.signature),
     );
 
     if (query.format === "raw") {
@@ -161,7 +207,7 @@ transactions.get("/:address/transactions", async (c) => {
     const classifiedTransactions = rawTransactions.map((tx) => {
       tx.protocol = detectProtocol(tx.programIds);
       const legs = transactionToLegs(tx, validAddress);
-      const classification = classifyTransaction(legs, validAddress, tx);
+      const classification = classifyTransaction(legs, tx, validAddress);
       return { tx, classification, legs };
     });
 
@@ -176,7 +222,7 @@ transactions.get("/:address/transactions", async (c) => {
       const feeLegs = legs.filter((leg) => leg.role === "fee");
       const totalFee = feeLegs.reduce(
         (sum, leg) => sum + Math.abs(leg.amount.amountUi),
-        0
+        0,
       );
 
       return {
@@ -184,7 +230,7 @@ transactions.get("/:address/transactions", async (c) => {
         blockTime: tx.blockTime ? Number(tx.blockTime) : null,
         status: tx.err ? "failed" : "success",
         type: classification.primaryType,
-        direction: classification.direction,
+        direction: deriveDirection(classification, validAddress),
         primaryAmount: classification.primaryAmount
           ? {
               token: classification.primaryAmount.token.symbol,
@@ -231,9 +277,9 @@ transactions.get("/:address/transactions", async (c) => {
       return c.json(
         error(
           "VALIDATION_ERROR",
-          `Invalid parameters: ${err.issues.map((e: any) => e.message).join(", ")}`
+          `Invalid parameters: ${err.issues.map((e: any) => e.message).join(", ")}`,
         ),
-        400
+        400,
       );
     }
 
@@ -244,9 +290,9 @@ transactions.get("/:address/transactions", async (c) => {
     return c.json(
       error(
         "FETCH_FAILED",
-        err instanceof Error ? err.message : "Failed to fetch transactions"
+        err instanceof Error ? err.message : "Failed to fetch transactions",
       ),
-      503
+      503,
     );
   }
 });

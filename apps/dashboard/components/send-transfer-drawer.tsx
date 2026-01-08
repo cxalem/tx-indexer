@@ -19,6 +19,7 @@ import {
   ExternalLink,
   CheckCircle2,
   XCircle,
+  LogIn,
 } from "lucide-react";
 import { estimateFee, type FeeEstimate } from "@/app/actions/estimate-fee";
 import {
@@ -28,6 +29,7 @@ import {
   type WalletLabel,
 } from "@/app/actions/wallet-labels";
 import { useAuth } from "@/lib/auth";
+import { useReauth } from "@/hooks/use-reauth";
 import {
   useUsdcTransfer,
   type TransferStatus,
@@ -84,6 +86,14 @@ export function SendTransferDrawer({
   const wallet = useWallet();
   const { isAuthenticated } = useAuth();
   const {
+    needsReauth,
+    isReauthenticating,
+    canReauth,
+    error: reauthError,
+    reauth,
+    clearError: clearReauthError,
+  } = useReauth();
+  const {
     balance: hookUsdcBalance,
     isLoadingBalance,
     transfer,
@@ -96,6 +106,9 @@ export function SendTransferDrawer({
 
   // Prefer external balance (from React Query) to avoid duplicate RPC calls
   const usdcBalance = externalUsdcBalance ?? hookUsdcBalance;
+
+  // State for showing sign-in prompt for labels
+  const [showSignInForLabels, setShowSignInForLabels] = useState(false);
 
   // Refetch dashboard data when transfer is confirmed
   const prevTransferStatus = useRef(transferStatus);
@@ -324,6 +337,17 @@ export function SendTransferDrawer({
     ],
   );
 
+  // Handle sign-in for labels feature
+  const handleSignInForLabels = useCallback(async () => {
+    clearReauthError();
+    const success = await reauth();
+    if (success) {
+      setShowSignInForLabels(false);
+      // Reload labels after successful sign-in
+      getWalletLabels().then(setSavedLabels);
+    }
+  }, [reauth, clearReauthError]);
+
   const handleSaveLabel = useCallback(async () => {
     if (!newLabel.trim()) return;
 
@@ -530,12 +554,23 @@ export function SendTransferDrawer({
                   </div>
                 )}
 
-                {recipientError && (
-                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {recipientError}
-                  </p>
-                )}
+                <div className="h-5 mt-1">
+                  {recipientError ? (
+                    <p className="text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {recipientError}
+                    </p>
+                  ) : needsReauth && !showSignInForLabels ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowSignInForLabels(true)}
+                      className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1"
+                    >
+                      <LogIn className="h-3 w-3" />
+                      sign in to use saved contacts
+                    </button>
+                  ) : null}
+                </div>
               </div>
 
               {/* Amount */}
@@ -669,6 +704,55 @@ export function SendTransferDrawer({
                 </div>
               )}
             </div>
+
+            {/* Sign-in prompt for labels (when session expired) */}
+            {needsReauth && showSignInForLabels && (
+              <div className="mt-4 p-4 rounded-lg bg-amber-50 border border-amber-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <LogIn className="h-4 w-4 text-amber-600" />
+                  <p className="text-sm font-medium text-amber-800">
+                    sign in to use contacts
+                  </p>
+                </div>
+                <p className="text-xs text-amber-700 mb-3">
+                  Your session has expired. Sign in again to save and view your
+                  contacts.
+                </p>
+                {reauthError && (
+                  <p className="text-xs text-red-600 mb-3 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {reauthError}
+                  </p>
+                )}
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowSignInForLabels(false)}
+                    className="flex-1 px-3 py-1.5 text-sm text-neutral-600 hover:bg-amber-100 rounded-lg transition-colors"
+                  >
+                    cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSignInForLabels}
+                    disabled={isReauthenticating || !canReauth}
+                    className={cn(
+                      "flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-center gap-1",
+                      canReauth && !isReauthenticating
+                        ? "bg-vibrant-red text-white hover:bg-vibrant-red/90"
+                        : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
+                    )}
+                  >
+                    {isReauthenticating ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <LogIn className="h-3 w-3" />
+                    )}
+                    {isReauthenticating ? "signing in..." : "sign in"}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Label prompt */}
             {showLabelPrompt && (

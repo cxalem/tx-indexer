@@ -2,12 +2,50 @@ import { Hono } from "hono";
 import { z } from "zod";
 import type { Bindings } from "../types";
 import { success, error } from "../lib/response";
-import { createSolanaClient, parseSignature } from "@tx-indexer/solana/rpc/client";
+import {
+  createSolanaClient,
+  parseSignature,
+} from "@tx-indexer/solana/rpc/client";
 import { fetchTransaction } from "@tx-indexer/solana/fetcher/transactions";
 import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import { validateLegsBalance } from "@tx-indexer/core/tx/leg-validation";
+import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
+
+/**
+ * Derives the direction of a transaction from the initiator's perspective.
+ */
+function deriveDirection(
+  classification: TransactionClassification,
+  walletAddress: string,
+): "in" | "out" | "self" | null {
+  const { primaryType, sender, receiver } = classification;
+  const walletLower = walletAddress.toLowerCase();
+  const senderLower = sender?.toLowerCase();
+  const receiverLower = receiver?.toLowerCase();
+
+  if (
+    primaryType === "swap" ||
+    primaryType === "stake_deposit" ||
+    primaryType === "stake_withdraw"
+  ) {
+    return "self";
+  }
+  if (primaryType === "airdrop" || primaryType === "reward") {
+    return "in";
+  }
+  if (senderLower === walletLower && receiverLower === walletLower) {
+    return "self";
+  }
+  if (senderLower === walletLower) {
+    return "out";
+  }
+  if (receiverLower === walletLower) {
+    return "in";
+  }
+  return null;
+}
 
 const transaction = new Hono<{ Bindings: Bindings }>();
 
@@ -19,15 +57,15 @@ const QuerySchema = z.object({
 
 /**
  * Get single transaction by signature
- * 
+ *
  * @route GET /transaction/:signature
  * @param {string} signature - Transaction signature (base58, 88 characters)
  * @returns {Object} Detailed transaction classification and accounting legs
- * 
+ *
  * @example
  * Request:
  * GET /api/v1/transaction/5x...ABC
- * 
+ *
  * Response:
  * {
  *   "success": true,
@@ -77,7 +115,7 @@ const QuerySchema = z.object({
  *     "version": "1.0.0"
  *   }
  * }
- * 
+ *
  * @throws {400} Invalid signature format
  * @throws {404} Transaction not found
  * @throws {503} RPC connection failed
@@ -90,7 +128,7 @@ transaction.get("/:signature", async (c) => {
 
     const cacheKey = `tx:${validSignature}:${query.format}`;
     const cached = await c.env.CACHE.get(cacheKey);
-    
+
     if (cached) {
       return c.json(JSON.parse(cached));
     }
@@ -128,12 +166,20 @@ transaction.get("/:signature", async (c) => {
 
     tx.protocol = detectProtocol(tx.programIds);
     const legs = transactionToLegs(tx, tx.accountKeys?.[0] || "");
-    const classification = classifyTransaction(legs, tx.accountKeys?.[0] || "", tx);
+    const classification = classifyTransaction(
+      legs,
+      tx,
+      tx.accountKeys?.[0] || "",
+    );
     const validation = validateLegsBalance(legs);
 
     const feeLegs = legs.filter((leg) => leg.role === "fee");
-    const totalFee = feeLegs.reduce((sum, leg) => sum + Math.abs(leg.amount.amountUi), 0);
+    const totalFee = feeLegs.reduce(
+      (sum, leg) => sum + Math.abs(leg.amount.amountUi),
+      0,
+    );
 
+    const walletAddress = tx.accountKeys?.[0] || "";
     const response = success({
       signature: validSignature,
       blockTime: tx.blockTime ? Number(tx.blockTime) : null,
@@ -141,7 +187,7 @@ transaction.get("/:signature", async (c) => {
       status: tx.err ? "failed" : "success",
       classification: {
         type: classification.primaryType,
-        direction: classification.direction,
+        direction: deriveDirection(classification, walletAddress),
         primaryAmount: classification.primaryAmount
           ? {
               token: classification.primaryAmount.token.symbol,
@@ -188,7 +234,13 @@ transaction.get("/:signature", async (c) => {
     return c.json(response);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return c.json(error("INVALID_SIGNATURE", "Invalid signature format (must be 88 characters)"), 400);
+      return c.json(
+        error(
+          "INVALID_SIGNATURE",
+          "Invalid signature format (must be 88 characters)",
+        ),
+        400,
+      );
     }
 
     if (err instanceof Error && err.message.includes("not found")) {
@@ -196,11 +248,13 @@ transaction.get("/:signature", async (c) => {
     }
 
     return c.json(
-      error("FETCH_FAILED", err instanceof Error ? err.message : "Failed to fetch transaction"),
-      503
+      error(
+        "FETCH_FAILED",
+        err instanceof Error ? err.message : "Failed to fetch transaction",
+      ),
+      503,
     );
   }
 });
 
 export default transaction;
-

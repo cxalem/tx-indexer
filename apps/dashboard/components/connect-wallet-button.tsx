@@ -7,7 +7,7 @@ import {
 } from "@solana/react-hooks";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { truncate, cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, AlertCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
 const CONNECTORS: ReadonlyArray<{ id: string; label: string }> = [
@@ -24,6 +24,7 @@ export function ConnectWalletButton() {
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isReAuthenticating, setIsReAuthenticating] = useState(false);
 
   // Track if we initiated the connection (to trigger auto sign-in)
   const pendingSignInRef = useRef(false);
@@ -32,6 +33,10 @@ export function ConnectWalletButton() {
   const address = isConnected
     ? wallet.session.account.address.toString()
     : null;
+
+  // Detect session expired state: wallet connected but not authenticated
+  const isSessionExpired = isConnected && !isAuthenticated;
+  const hasSignMessageSupport = isConnected && !!wallet.session.signMessage;
 
   // Auto sign-in after wallet connects
   const performSignIn = useCallback(async () => {
@@ -52,6 +57,35 @@ export function ConnectWalletButton() {
     } finally {
       setIsConnecting(false);
       pendingSignInRef.current = false;
+    }
+  }, [wallet, signIn]);
+
+  // Re-authenticate when session expired but wallet still connected
+  const handleReAuthenticate = useCallback(async () => {
+    if (wallet.status !== "connected") return;
+
+    if (!wallet.session.signMessage) {
+      setError("wallet does not support message signing");
+      return;
+    }
+
+    setError(null);
+    setIsReAuthenticating(true);
+
+    try {
+      const walletAddress = wallet.session.account.address.toString();
+      const walletSignMessage = wallet.session.signMessage;
+      const signMessage = async (message: Uint8Array) => {
+        const result = await walletSignMessage(message);
+        return result;
+      };
+
+      await signIn(walletAddress, signMessage);
+      setOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "unable to sign in");
+    } finally {
+      setIsReAuthenticating(false);
     }
   }, [wallet, signIn]);
 
@@ -102,6 +136,7 @@ export function ConnectWalletButton() {
           "bg-vibrant-red text-white hover:bg-vibrant-red/90",
           "cursor-pointer min-w-[160px] justify-center",
           isConnecting && "opacity-70 cursor-wait",
+          isSessionExpired && "ring-2 ring-amber-400 ring-offset-1",
         )}
       >
         {isConnecting ? (
@@ -110,7 +145,12 @@ export function ConnectWalletButton() {
             <span>signing in...</span>
           </>
         ) : address ? (
-          <span className="font-mono">{truncate(address)}</span>
+          <div className="flex items-center gap-2">
+            {isSessionExpired && (
+              <AlertCircle className="h-4 w-4 text-amber-200" />
+            )}
+            <span className="font-mono">{truncate(address)}</span>
+          </div>
         ) : (
           <span>sign in</span>
         )}
@@ -129,11 +169,16 @@ export function ConnectWalletButton() {
               <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-xs font-medium text-neutral-500">
-                    signed in
+                    {isSessionExpired ? "wallet connected" : "signed in"}
                   </p>
-                  {isAuthenticated && (
+                  {isAuthenticated ? (
                     <span className="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
                       active
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      session expired
                     </span>
                   )}
                 </div>
@@ -141,6 +186,32 @@ export function ConnectWalletButton() {
                   {truncate(address ?? "")}
                 </p>
               </div>
+
+              {/* Re-authenticate button when session expired */}
+              {isSessionExpired && (
+                <button
+                  type="button"
+                  onClick={() => void handleReAuthenticate()}
+                  disabled={isReAuthenticating || !hasSignMessageSupport}
+                  className={cn(
+                    "w-full px-3 py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2",
+                    "bg-vibrant-red text-white hover:bg-vibrant-red/90",
+                    (isReAuthenticating || !hasSignMessageSupport) &&
+                      "opacity-70 cursor-not-allowed",
+                  )}
+                >
+                  {isReAuthenticating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      signing in...
+                    </>
+                  ) : !hasSignMessageSupport ? (
+                    "wallet doesn't support signing"
+                  ) : (
+                    "sign in again"
+                  )}
+                </button>
+              )}
 
               <button
                 type="button"

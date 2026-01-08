@@ -20,6 +20,7 @@ import {
 import { CopyButton } from "@/components/copy-button";
 import { PortfolioActions } from "@/components/portfolio-actions";
 import { SendTransferDrawer } from "@/components/send-transfer-drawer";
+import { TradeDrawer } from "@/components/trade-drawer";
 import {
   ArrowLeftRight,
   ArrowRight,
@@ -90,10 +91,12 @@ function PortfolioCard({
   portfolio,
   walletAddress,
   onSend,
+  onTrade,
 }: {
   portfolio: PortfolioSummary | null;
   walletAddress: string | null;
   onSend?: () => void;
+  onTrade?: () => void;
 }) {
   const total = portfolio?.totalUsd ?? 0;
   const stablecoins = portfolio?.stablecoinsUsd ?? 0;
@@ -117,7 +120,11 @@ function PortfolioCard({
             </div>
           )}
         </div>
-        <PortfolioActions walletAddress={walletAddress} onSend={onSend} />
+        <PortfolioActions
+          walletAddress={walletAddress}
+          onSend={onSend}
+          onTrade={onTrade}
+        />
       </div>
       <p className="text-3xl font-mono text-neutral-900 mb-2">
         {formatUsd(total)}
@@ -160,7 +167,7 @@ function TransactionRow({
   const isSuccess = tx.err === null;
   const isSwap = classification.primaryType === "swap";
   const isNft = ["nft_purchase", "nft_sale", "nft_mint"].includes(
-    classification.primaryType,
+    classification.primaryType
   );
   const nftMetadata = classification.metadata as
     | { nft_name?: string; nft_image?: string }
@@ -181,7 +188,7 @@ function TransactionRow({
     <div
       className={cn(
         "border-b border-neutral-100 last:border-b-0 transition-all duration-500",
-        getNewAnimationClass(),
+        getNewAnimationClass()
       )}
     >
       <button
@@ -194,7 +201,7 @@ function TransactionRow({
             <div
               className={cn(
                 "p-2 rounded-lg",
-                getIconBgClass(direction.direction),
+                getIconBgClass(direction.direction)
               )}
             >
               {getIcon(classification.primaryType, direction.direction)}
@@ -216,7 +223,7 @@ function TransactionRow({
               <p className={cn("font-mono", direction.colorClass)}>
                 {formatAmountWithDirection(
                   classification.primaryAmount,
-                  direction,
+                  direction
                 )}
               </p>
               <p className="text-sm text-neutral-400">
@@ -226,7 +233,7 @@ function TransactionRow({
             <ChevronDown
               className={cn(
                 "h-4 w-4 text-neutral-400 transition-transform duration-200",
-                isExpanded && "rotate-180",
+                isExpanded && "rotate-180"
               )}
             />
           </div>
@@ -238,7 +245,7 @@ function TransactionRow({
           "grid transition-all duration-200 ease-out",
           isExpanded
             ? "grid-rows-[1fr] opacity-100"
-            : "grid-rows-[0fr] opacity-0",
+            : "grid-rows-[0fr] opacity-0"
         )}
       >
         <div className="overflow-hidden">
@@ -250,7 +257,7 @@ function TransactionRow({
                     "text-xs font-medium px-2 py-1 rounded",
                     isSuccess
                       ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700",
+                      : "bg-red-100 text-red-700"
                   )}
                 >
                   {isSuccess ? "success" : "failed"}
@@ -263,7 +270,7 @@ function TransactionRow({
                   <p className="font-mono text-neutral-600 bg-white border rounded-lg w-fit px-3 py-1 text-xl">
                     {formatSwapDetails(
                       classification.primaryAmount,
-                      classification.secondaryAmount,
+                      classification.secondaryAmount
                     )}
                   </p>
                 </div>
@@ -434,6 +441,7 @@ export function DashboardContent() {
   const wallet = useWallet();
   const isConnected = wallet.status === "connected";
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false);
+  const [tradeDrawerOpen, setTradeDrawerOpen] = useState(false);
   // Enable fast polling temporarily after a transaction
   const [fastPolling, setFastPolling] = useState(false);
 
@@ -444,14 +452,23 @@ export function DashboardContent() {
   const {
     portfolio,
     transactions,
+    balance,
     usdcBalance,
     isLoading,
     isFetching,
     refetch,
   } = useDashboardData(address, { fastPolling });
 
-  // Handle transfer success - enable fast polling for 30 seconds
-  const handleTransferSuccess = () => {
+  // Prepare token balances for trade drawer
+  const tokenBalances =
+    balance?.tokens.map((t) => ({
+      mint: t.mint,
+      symbol: t.symbol,
+      uiAmount: t.amount.ui,
+    })) ?? [];
+
+  // Handle transfer/trade success - enable fast polling for 30 seconds
+  const handleTransactionSuccess = () => {
     setFastPolling(true);
     refetch();
     // Disable fast polling after 30 seconds
@@ -529,6 +546,7 @@ export function DashboardContent() {
           portfolio={portfolio}
           walletAddress={address}
           onSend={() => setSendDrawerOpen(true)}
+          onTrade={() => setTradeDrawerOpen(true)}
         />
       </div>
 
@@ -543,7 +561,7 @@ export function DashboardContent() {
             disabled={isFetching}
             className={cn(
               "p-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors",
-              isFetching && "animate-spin",
+              isFetching && "animate-spin"
             )}
             title="Refresh"
           >
@@ -559,8 +577,16 @@ export function DashboardContent() {
       <SendTransferDrawer
         open={sendDrawerOpen}
         onOpenChange={setSendDrawerOpen}
-        onTransferSuccess={handleTransferSuccess}
+        onTransferSuccess={handleTransactionSuccess}
         usdcBalance={usdcBalance}
+      />
+
+      <TradeDrawer
+        open={tradeDrawerOpen}
+        onOpenChange={setTradeDrawerOpen}
+        onTradeSuccess={handleTransactionSuccess}
+        solBalance={balance?.sol.ui}
+        tokenBalances={tokenBalances}
       />
     </main>
   );
