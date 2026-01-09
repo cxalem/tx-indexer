@@ -343,56 +343,10 @@ export async function fetchTransactionsBatch(
     return [];
   }
 
-  // Use JSON-RPC batching if rpcUrl is provided
-  if (rpcUrl) {
-    try {
-      return await fetchTransactionsBatched(rpcUrl, signatures, {
-        commitment,
-        batchSize,
-        retry,
-      });
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-
-      // Silently skip batching if not supported (e.g., Helius free tier)
-      if (!errorMsg.includes("BATCH_NOT_SUPPORTED")) {
-        console.warn(
-          "Batch request failed, falling back to individual requests:",
-          error,
-        );
-
-        // If we failed due to rate limiting, use lower concurrency for fallback
-        const isRateLimit =
-          errorMsg.includes("429") || errorMsg.includes("Too Many");
-        if (isRateLimit) {
-          // Use concurrency of 2 with delay between requests
-          const rateLimitedConcurrency = pLimit(2);
-          const safeFetchRateLimited = async (
-            sig: Signature,
-          ): Promise<RawTransaction | null> => {
-            try {
-              // Add small delay to help with rate limiting
-              await new Promise((r) => setTimeout(r, 200));
-              return await fetchTransaction(rpc, sig, { commitment, retry });
-            } catch (err) {
-              onFetchError?.(
-                sig,
-                err instanceof Error ? err : new Error(String(err)),
-              );
-              return null;
-            }
-          };
-          const results = await Promise.all(
-            signatures.map((sig) =>
-              rateLimitedConcurrency(() => safeFetchRateLimited(sig)),
-            ),
-          );
-          return results.filter((tx): tx is RawTransaction => tx !== null);
-        }
-      }
-      // Fall through to standard individual requests
-    }
-  }
+  // JSON-RPC batching is only available on paid RPC tiers
+  // For now, we skip it entirely to avoid rate limit issues
+  // TODO: Re-enable when we have a way to detect paid tier
+  // if (rpcUrl) { ... }
 
   // Fall back to individual requests with concurrency limiting
   const limit = pLimit(concurrency);

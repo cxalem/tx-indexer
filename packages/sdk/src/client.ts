@@ -249,6 +249,12 @@ export interface GetTransactionsOptions {
    * Set lower for rate-limited RPCs.
    */
   minPageSize?: number;
+  /**
+   * Maximum number of token accounts to query for signatures (default: 5).
+   * Lower values reduce RPC calls but may miss some incoming transfers.
+   * Set to 0 to skip token account queries entirely.
+   */
+  maxTokenAccounts?: number;
 }
 
 export interface GetTransactionOptions {
@@ -409,6 +415,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         retry,
         overfetchMultiplier = 2,
         minPageSize = 20,
+        maxTokenAccounts = 5,
       } = options;
 
       const normalizedAddress = normalizeAddress(walletAddress);
@@ -537,20 +544,8 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         let currentBefore = before;
         let iteration = 0;
         let walletExhausted = false;
-        let ataExhausted = !includeTokenAccounts; // Skip ATA if not included
+        let ataExhausted = !includeTokenAccounts;
         let ataBefore = before;
-
-        // Pre-fetch token accounts if needed (do this once upfront)
-        if (includeTokenAccounts && !cachedTokenAccounts) {
-          cachedTokenAccounts = await fetchWalletTokenAccounts(
-            client.rpc,
-            normalizedAddress,
-            retry,
-          );
-          if (cachedTokenAccounts.length === 0) {
-            ataExhausted = true;
-          }
-        }
 
         while (accumulated.length < limit && iteration < maxIterations) {
           iteration++;
@@ -558,31 +553,69 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
           const needed = limit - accumulated.length;
           const pageSize = Math.max(needed * overfetchMultiplier, minPageSize);
 
-          // Fetch from both sources in parallel on each iteration
-          const fetchPromises: Promise<RawTransaction[]>[] = [];
-
-          // Wallet signatures
+          // First, try wallet signatures (fast, single RPC call)
           if (!walletExhausted) {
-            fetchPromises.push(
-              fetchWalletSignaturesPaged(client.rpc, normalizedAddress, {
-                pageSize,
-                before: currentBefore,
-                until,
-                retry,
-              }),
+            const walletSigs = await fetchWalletSignaturesPaged(
+              client.rpc,
+              normalizedAddress,
+              { pageSize, before: currentBefore, until, retry },
             );
+
+            if (walletSigs.length === 0) {
+              walletExhausted = true;
+            } else {
+              const newSigs = dedupeSignatures(walletSigs);
+              if (newSigs.length > 0) {
+                const classified = await fetchAndClassify(newSigs);
+                const nonSpam = filterSpam
+                  ? filterSpamTransactions(
+                      classified,
+                      spamConfig,
+                      walletAddressStr,
+                    )
+                  : classified;
+                accumulated.push(...nonSpam);
+
+                const lastSig = walletSigs[walletSigs.length - 1];
+                if (lastSig) {
+                  currentBefore = parseSignature(lastSig.signature);
+                }
+              }
+
+              if (walletSigs.length < pageSize) {
+                walletExhausted = true;
+              }
+            }
           }
 
-          // Token account signatures (in parallel with wallet)
-          if (
-            !ataExhausted &&
-            cachedTokenAccounts &&
-            cachedTokenAccounts.length > 0
-          ) {
-            fetchPromises.push(
-              fetchTokenAccountSignaturesThrottled(
+          // If we have enough, stop early
+          if (accumulated.length >= limit) break;
+
+          // Only fetch from token accounts if wallet signatures aren't enough
+          // This is expensive (1 RPC call per token account), so we do it last
+          if (includeTokenAccounts && walletExhausted && !ataExhausted) {
+            // Lazy-load token accounts only when needed
+            if (!cachedTokenAccounts) {
+              cachedTokenAccounts = await fetchWalletTokenAccounts(
                 client.rpc,
-                cachedTokenAccounts,
+                normalizedAddress,
+                retry,
+              );
+            }
+
+            if (cachedTokenAccounts.length === 0 || maxTokenAccounts === 0) {
+              ataExhausted = true;
+            } else {
+              // Limit token accounts to reduce RPC calls
+              // Most recent activity is usually in the first few accounts
+              const limitedAccounts = cachedTokenAccounts.slice(
+                0,
+                maxTokenAccounts,
+              );
+
+              const ataSigs = await fetchTokenAccountSignaturesThrottled(
+                client.rpc,
+                limitedAccounts,
                 {
                   concurrency: signatureConcurrency,
                   limit: pageSize,
@@ -590,63 +623,34 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
                   until,
                   retry,
                 },
-              ),
-            );
-          }
+              );
 
-          if (fetchPromises.length === 0) {
-            break; // No more sources to fetch from
-          }
-
-          const results = await Promise.all(fetchPromises);
-
-          // Process wallet signatures (first result if we fetched it)
-          let resultIndex = 0;
-          if (!walletExhausted) {
-            const walletSigs = results[resultIndex++]!;
-            if (walletSigs.length === 0) {
-              walletExhausted = true;
-            } else {
-              const lastSig = walletSigs[walletSigs.length - 1];
-              if (lastSig) {
-                currentBefore = parseSignature(lastSig.signature);
-              }
-              if (walletSigs.length < pageSize) {
-                walletExhausted = true;
-              }
-            }
-          }
-
-          // Process ATA signatures (next result if we fetched it)
-          if (
-            !ataExhausted &&
-            cachedTokenAccounts &&
-            cachedTokenAccounts.length > 0
-          ) {
-            const ataSigs = results[resultIndex]!;
-            if (ataSigs.length === 0) {
-              ataExhausted = true;
-            } else {
-              const lastSig = ataSigs[ataSigs.length - 1];
-              if (lastSig) {
-                ataBefore = parseSignature(lastSig.signature);
-              }
-              if (ataSigs.length < pageSize) {
+              if (ataSigs.length === 0) {
                 ataExhausted = true;
+              } else {
+                const newSigs = dedupeSignatures(ataSigs);
+                if (newSigs.length > 0) {
+                  const classified = await fetchAndClassify(newSigs);
+                  const nonSpam = filterSpam
+                    ? filterSpamTransactions(
+                        classified,
+                        spamConfig,
+                        walletAddressStr,
+                      )
+                    : classified;
+                  accumulated.push(...nonSpam);
+
+                  const lastSig = ataSigs[ataSigs.length - 1];
+                  if (lastSig) {
+                    ataBefore = parseSignature(lastSig.signature);
+                  }
+                }
+
+                if (ataSigs.length < pageSize) {
+                  ataExhausted = true;
+                }
               }
             }
-          }
-
-          // Merge all signatures, dedupe, and process
-          const allSigs = results.flat();
-          const newSigs = dedupeSignatures(allSigs);
-
-          if (newSigs.length > 0) {
-            const classified = await fetchAndClassify(newSigs);
-            const nonSpam = filterSpam
-              ? filterSpamTransactions(classified, spamConfig, walletAddressStr)
-              : classified;
-            accumulated.push(...nonSpam);
           }
 
           if (walletExhausted && ataExhausted) {
