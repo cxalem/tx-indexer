@@ -544,8 +544,25 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         let currentBefore = before;
         let iteration = 0;
         let walletExhausted = false;
-        let ataExhausted = !includeTokenAccounts;
+        let ataExhausted = !includeTokenAccounts || maxTokenAccounts === 0;
         let ataBefore = before;
+
+        // Pre-fetch token accounts list on first load if needed
+        // This is 2 RPC calls (TOKEN_PROGRAM + TOKEN_2022_PROGRAM)
+        if (
+          includeTokenAccounts &&
+          maxTokenAccounts > 0 &&
+          !cachedTokenAccounts
+        ) {
+          cachedTokenAccounts = await fetchWalletTokenAccounts(
+            client.rpc,
+            normalizedAddress,
+            retry,
+          );
+          if (cachedTokenAccounts.length === 0) {
+            ataExhausted = true;
+          }
+        }
 
         while (accumulated.length < limit && iteration < maxIterations) {
           iteration++;
@@ -553,67 +570,32 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
           const needed = limit - accumulated.length;
           const pageSize = Math.max(needed * overfetchMultiplier, minPageSize);
 
-          // First, try wallet signatures (fast, single RPC call)
+          // Fetch wallet signatures AND token account signatures in parallel
+          // This ensures we see both outgoing AND incoming transactions
+          const fetchPromises: Promise<RawTransaction[]>[] = [];
+
           if (!walletExhausted) {
-            const walletSigs = await fetchWalletSignaturesPaged(
-              client.rpc,
-              normalizedAddress,
-              { pageSize, before: currentBefore, until, retry },
+            fetchPromises.push(
+              fetchWalletSignaturesPaged(client.rpc, normalizedAddress, {
+                pageSize,
+                before: currentBefore,
+                until,
+                retry,
+              }),
             );
-
-            if (walletSigs.length === 0) {
-              walletExhausted = true;
-            } else {
-              const newSigs = dedupeSignatures(walletSigs);
-              if (newSigs.length > 0) {
-                const classified = await fetchAndClassify(newSigs);
-                const nonSpam = filterSpam
-                  ? filterSpamTransactions(
-                      classified,
-                      spamConfig,
-                      walletAddressStr,
-                    )
-                  : classified;
-                accumulated.push(...nonSpam);
-
-                const lastSig = walletSigs[walletSigs.length - 1];
-                if (lastSig) {
-                  currentBefore = parseSignature(lastSig.signature);
-                }
-              }
-
-              if (walletSigs.length < pageSize) {
-                walletExhausted = true;
-              }
-            }
           }
 
-          // If we have enough, stop early
-          if (accumulated.length >= limit) break;
-
-          // Only fetch from token accounts if wallet signatures aren't enough
-          // This is expensive (1 RPC call per token account), so we do it last
-          if (includeTokenAccounts && walletExhausted && !ataExhausted) {
-            // Lazy-load token accounts only when needed
-            if (!cachedTokenAccounts) {
-              cachedTokenAccounts = await fetchWalletTokenAccounts(
-                client.rpc,
-                normalizedAddress,
-                retry,
-              );
-            }
-
-            if (cachedTokenAccounts.length === 0 || maxTokenAccounts === 0) {
-              ataExhausted = true;
-            } else {
-              // Limit token accounts to reduce RPC calls
-              // Most recent activity is usually in the first few accounts
-              const limitedAccounts = cachedTokenAccounts.slice(
-                0,
-                maxTokenAccounts,
-              );
-
-              const ataSigs = await fetchTokenAccountSignaturesThrottled(
+          if (
+            !ataExhausted &&
+            cachedTokenAccounts &&
+            cachedTokenAccounts.length > 0
+          ) {
+            const limitedAccounts = cachedTokenAccounts.slice(
+              0,
+              maxTokenAccounts,
+            );
+            fetchPromises.push(
+              fetchTokenAccountSignaturesThrottled(
                 client.rpc,
                 limitedAccounts,
                 {
@@ -623,39 +605,64 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
                   until,
                   retry,
                 },
-              );
+              ),
+            );
+          }
 
-              if (ataSigs.length === 0) {
-                ataExhausted = true;
-              } else {
-                const newSigs = dedupeSignatures(ataSigs);
-                if (newSigs.length > 0) {
-                  const classified = await fetchAndClassify(newSigs);
-                  const nonSpam = filterSpam
-                    ? filterSpamTransactions(
-                        classified,
-                        spamConfig,
-                        walletAddressStr,
-                      )
-                    : classified;
-                  accumulated.push(...nonSpam);
+          if (fetchPromises.length === 0) break;
 
-                  const lastSig = ataSigs[ataSigs.length - 1];
-                  if (lastSig) {
-                    ataBefore = parseSignature(lastSig.signature);
-                  }
-                }
+          const results = await Promise.all(fetchPromises);
 
-                if (ataSigs.length < pageSize) {
-                  ataExhausted = true;
-                }
+          // Process results and update cursors
+          let resultIdx = 0;
+
+          if (!walletExhausted) {
+            const walletSigs = results[resultIdx++] || [];
+            if (walletSigs.length === 0) {
+              walletExhausted = true;
+            } else {
+              const lastSig = walletSigs[walletSigs.length - 1];
+              if (lastSig) {
+                currentBefore = parseSignature(lastSig.signature);
+              }
+              if (walletSigs.length < pageSize) {
+                walletExhausted = true;
               }
             }
           }
 
-          if (walletExhausted && ataExhausted) {
-            break;
+          if (
+            !ataExhausted &&
+            cachedTokenAccounts &&
+            cachedTokenAccounts.length > 0
+          ) {
+            const ataSigs = results[resultIdx] || [];
+            if (ataSigs.length === 0) {
+              ataExhausted = true;
+            } else {
+              const lastSig = ataSigs[ataSigs.length - 1];
+              if (lastSig) {
+                ataBefore = parseSignature(lastSig.signature);
+              }
+              if (ataSigs.length < pageSize) {
+                ataExhausted = true;
+              }
+            }
           }
+
+          // Merge, dedupe, classify
+          const allSigs = results.flat();
+          const newSigs = dedupeSignatures(allSigs);
+
+          if (newSigs.length > 0) {
+            const classified = await fetchAndClassify(newSigs);
+            const nonSpam = filterSpam
+              ? filterSpamTransactions(classified, spamConfig, walletAddressStr)
+              : classified;
+            accumulated.push(...nonSpam);
+          }
+
+          if (walletExhausted && ataExhausted) break;
         }
 
         return sortByBlockTime(accumulated).slice(0, limit);
