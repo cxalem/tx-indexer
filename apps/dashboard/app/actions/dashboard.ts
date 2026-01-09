@@ -85,6 +85,7 @@ export async function getNewTransactions(
   return indexer.getTransactions(addr, {
     limit,
     until: signature(untilSignature),
+    includeTokenAccounts: true,
     retry: { maxAttempts: 3, baseDelayMs: 500, maxDelayMs: 5000 },
   });
 }
@@ -132,8 +133,9 @@ export async function getTransactionsPage(
   };
 
   const transactions = await indexer.getTransactions(addr, {
-    limit: limit + 1, // Fetch one extra to check if there are more
+    limit: limit + 1,
     before: cursor ? signature(cursor) : undefined,
+    includeTokenAccounts: true,
     retry: retryConfig,
   });
 
@@ -180,10 +182,10 @@ export async function getDashboardData(
     maxDelayMs: 5000,
   };
 
-  // Fetch balance first, then transactions sequentially to reduce burst
   const balance = await indexer.getBalance(addr);
   const transactions = await indexer.getTransactions(addr, {
     limit: validLimit,
+    includeTokenAccounts: true,
     retry: retryConfig,
   });
 
