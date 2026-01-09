@@ -4,7 +4,7 @@ import { TransactionTable } from "@/components/indexer/transaction-table";
 import { useWallet } from "@solana/react-hooks";
 import type { ClassifiedTransaction } from "tx-indexer";
 import { useState, useEffect } from "react";
-import { indexer } from "@/lib/indexer";
+import { getWalletTransactions } from "@/app/actions/transactions";
 
 export function TransactionsSection() {
   const wallet = useWallet();
@@ -17,9 +17,7 @@ export function TransactionsSection() {
     if (!address) return;
 
     const fetchTransactions = async () => {
-      const fetchedTransactions = await indexer.getTransactions(address, {
-        limit: 5,
-      });
+      const fetchedTransactions = await getWalletTransactions(address, 5);
       setTransactions(fetchedTransactions);
     };
 
