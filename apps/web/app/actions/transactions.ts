@@ -8,5 +8,9 @@ export async function getWalletTransactions(
   limit: number = 5,
 ): Promise<ClassifiedTransaction[]> {
   const indexer = getIndexer();
-  return indexer.getTransactions(walletAddress, { limit });
+  return indexer.getTransactions(walletAddress, {
+    limit,
+    // Include token account signatures to see incoming SPL transfers
+    includeTokenAccounts: true,
+  });
 }
