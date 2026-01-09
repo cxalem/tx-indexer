@@ -1,4 +1,5 @@
 export * from "./rpc/client";
+export * from "./rpc/batch";
 export * from "./fetcher/transactions";
 export * from "./fetcher/balances";
 export * from "./mappers/transaction-mapper";
@@ -7,4 +8,3 @@ export * from "./mappers/transaction-to-legs";
 export * from "./mappers/memo-parser";
 export * from "./types/transaction.types";
 export * from "./constants/program-ids";
-

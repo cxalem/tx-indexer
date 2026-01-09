@@ -11,6 +11,7 @@ import type { RawTransaction } from "@tx-indexer/core/tx/tx.types";
 import { extractProgramIds } from "@tx-indexer/solana/mappers/transaction-mapper";
 import { extractMemo } from "@tx-indexer/solana/mappers/memo-parser";
 import { withRetry, type RetryConfig } from "@tx-indexer/solana/rpc/retry";
+import { fetchTransactionsBatched } from "@tx-indexer/solana/rpc/batch";
 import pLimit from "p-limit";
 import {
   TOKEN_PROGRAM_ID,
@@ -33,6 +34,10 @@ export interface FetchBatchOptions {
   concurrency?: number;
   retry?: RetryConfig;
   onFetchError?: (signature: Signature, error: Error) => void;
+  /** RPC URL for batched requests. If provided, uses JSON-RPC batching. */
+  rpcUrl?: string;
+  /** Batch size for JSON-RPC batching (default: 100) */
+  batchSize?: number;
 }
 
 export interface FetchSignaturesPagedOptions {
@@ -330,12 +335,66 @@ export async function fetchTransactionsBatch(
     concurrency = 5,
     retry,
     onFetchError,
+    rpcUrl,
+    batchSize = 100,
   } = options;
 
   if (signatures.length === 0) {
     return [];
   }
 
+  // Use JSON-RPC batching if rpcUrl is provided
+  if (rpcUrl) {
+    try {
+      return await fetchTransactionsBatched(rpcUrl, signatures, {
+        commitment,
+        batchSize,
+        retry,
+      });
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+
+      // Silently skip batching if not supported (e.g., Helius free tier)
+      if (!errorMsg.includes("BATCH_NOT_SUPPORTED")) {
+        console.warn(
+          "Batch request failed, falling back to individual requests:",
+          error,
+        );
+
+        // If we failed due to rate limiting, use lower concurrency for fallback
+        const isRateLimit =
+          errorMsg.includes("429") || errorMsg.includes("Too Many");
+        if (isRateLimit) {
+          // Use concurrency of 2 with delay between requests
+          const rateLimitedConcurrency = pLimit(2);
+          const safeFetchRateLimited = async (
+            sig: Signature,
+          ): Promise<RawTransaction | null> => {
+            try {
+              // Add small delay to help with rate limiting
+              await new Promise((r) => setTimeout(r, 200));
+              return await fetchTransaction(rpc, sig, { commitment, retry });
+            } catch (err) {
+              onFetchError?.(
+                sig,
+                err instanceof Error ? err : new Error(String(err)),
+              );
+              return null;
+            }
+          };
+          const results = await Promise.all(
+            signatures.map((sig) =>
+              rateLimitedConcurrency(() => safeFetchRateLimited(sig)),
+            ),
+          );
+          return results.filter((tx): tx is RawTransaction => tx !== null);
+        }
+      }
+      // Fall through to standard individual requests
+    }
+  }
+
+  // Fall back to individual requests with concurrency limiting
   const limit = pLimit(concurrency);
 
   const safeFetch = async (sig: Signature): Promise<RawTransaction | null> => {
