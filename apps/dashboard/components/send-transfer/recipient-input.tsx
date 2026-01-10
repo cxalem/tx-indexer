@@ -101,7 +101,7 @@ export function RecipientInput({
               key={label.id}
               type="button"
               onClick={() => onSelectLabel(label)}
-              className="w-full px-3 py-2 text-left hover:bg-neutral-50 transition-colors flex items-center justify-between"
+              className="w-full px-3 py-2 text-left hover:bg-neutral-50 transition-colors flex items-center justify-between cursor-pointer"
             >
               <div>
                 <p className="text-sm font-medium">{label.label}</p>
@@ -125,7 +125,7 @@ export function RecipientInput({
           <button
             type="button"
             onClick={onShowSignInPrompt}
-            className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1"
+            className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1 cursor-pointer"
           >
             <LogIn className="h-3 w-3" />
             sign in to use saved contacts

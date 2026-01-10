@@ -76,7 +76,7 @@ export function TransferSuccess({
         href={`https://itx-indexer.com/indexer/${signature}?add=${senderAddress}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm text-vibrant-red hover:underline flex items-center gap-1 mb-6"
+        className="text-sm text-vibrant-red hover:underline flex items-center gap-1 mb-6 cursor-pointer"
       >
         View transaction
         <ExternalLink className="h-3 w-3" />
@@ -84,7 +84,7 @@ export function TransferSuccess({
       <button
         type="button"
         onClick={onClose}
-        className="px-6 py-2.5 rounded-lg bg-vibrant-red text-white text-sm font-medium hover:bg-vibrant-red/90 transition-colors"
+        className="px-6 py-2.5 rounded-lg bg-vibrant-red text-white text-sm font-medium hover:bg-vibrant-red/90 transition-colors cursor-pointer"
       >
         Done
       </button>
@@ -114,14 +114,14 @@ export function TransferError({ error, onClose, onRetry }: TransferErrorProps) {
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2.5 rounded-lg border border-neutral-200 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+          className="px-4 py-2.5 rounded-lg border border-neutral-200 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors cursor-pointer"
         >
           Cancel
         </button>
         <button
           type="button"
           onClick={onRetry}
-          className="px-4 py-2.5 rounded-lg bg-vibrant-red text-white text-sm font-medium hover:bg-vibrant-red/90 transition-colors"
+          className="px-4 py-2.5 rounded-lg bg-vibrant-red text-white text-sm font-medium hover:bg-vibrant-red/90 transition-colors cursor-pointer"
         >
           Try again
         </button>

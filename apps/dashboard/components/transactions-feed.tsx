@@ -180,7 +180,7 @@ function FeedHeader({ onRefresh, isRefreshing }: FeedHeaderProps) {
           onClick={onRefresh}
           disabled={isRefreshing}
           className={cn(
-            "p-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors",
+            "p-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors cursor-pointer",
             isRefreshing && "animate-spin"
           )}
           title="Refresh"

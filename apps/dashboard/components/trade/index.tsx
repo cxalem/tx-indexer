@@ -206,7 +206,7 @@ export function TradeDrawer({
                 <button
                   type="button"
                   onClick={handleSwapDirection}
-                  className="p-2 rounded-full border border-neutral-200 bg-white hover:bg-neutral-50 transition-colors"
+                  className="p-2 rounded-full border border-neutral-200 bg-white hover:bg-neutral-50 transition-colors cursor-pointer"
                 >
                   <ArrowUpDown className="h-4 w-4 text-neutral-500" />
                 </button>
@@ -241,7 +241,7 @@ export function TradeDrawer({
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 px-4 py-2.5 rounded-lg border border-neutral-200 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-lg border border-neutral-200 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors cursor-pointer"
               >
                 cancel
               </button>
@@ -252,7 +252,7 @@ export function TradeDrawer({
                 className={cn(
                   "flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2",
                   canTrade
-                    ? "bg-vibrant-red text-white hover:bg-vibrant-red/90"
+                    ? "bg-vibrant-red text-white hover:bg-vibrant-red/90 cursor-pointer"
                     : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
                 )}
               >

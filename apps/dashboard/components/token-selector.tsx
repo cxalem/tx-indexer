@@ -41,7 +41,7 @@ export function TokenSelector({
         disabled={disabled}
         className={cn(
           "flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 bg-white",
-          "hover:bg-neutral-50 transition-colors min-w-[120px]",
+          "hover:bg-neutral-50 transition-colors min-w-[120px] cursor-pointer",
           disabled && "opacity-50 cursor-not-allowed",
         )}
       >
@@ -67,7 +67,7 @@ export function TokenSelector({
                 setOpen(false);
               }}
               className={cn(
-                "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors",
+                "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors cursor-pointer",
                 token.mint === selectedToken.mint && "bg-neutral-50",
               )}
             >

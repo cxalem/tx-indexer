@@ -42,7 +42,7 @@ export function QuoteDisplay({
           <button
             type="button"
             onClick={onRefresh}
-            className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1"
+            className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1 cursor-pointer"
           >
             <RefreshCw className="h-3 w-3" />
             Quote expired - click to refresh

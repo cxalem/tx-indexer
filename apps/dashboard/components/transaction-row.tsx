@@ -41,7 +41,7 @@ function TransactionRowHeader({
     <button
       type="button"
       onClick={onToggle}
-      className="w-full p-4 hover:bg-neutral-50 transition-colors text-left"
+      className="w-full p-4 hover:bg-neutral-50 transition-colors text-left cursor-pointer"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -257,7 +257,7 @@ function TransactionRowDetails({
                 href={`https://itx-indexer.com/indexer/${tx.signature}?add=${walletAddress}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-vibrant-red hover:underline"
+                className="inline-flex items-center gap-1 text-sm text-vibrant-red hover:underline cursor-pointer"
               >
                 view full details
                 <ExternalLink className="h-3 w-3" />

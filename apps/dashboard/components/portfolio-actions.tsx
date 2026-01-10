@@ -53,7 +53,7 @@ export function PortfolioActions({
           type="button"
           onClick={onSend}
           className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors",
+            "flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors cursor-pointer",
             "bg-vibrant-red text-white hover:bg-vibrant-red/90",
           )}
         >
@@ -66,7 +66,7 @@ export function PortfolioActions({
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
             className={cn(
-              "p-1.5 rounded-lg border border-neutral-200 transition-colors",
+              "p-1.5 rounded-lg border border-neutral-200 transition-colors cursor-pointer",
               "hover:bg-neutral-50 text-neutral-500",
             )}
           >
@@ -81,7 +81,7 @@ export function PortfolioActions({
                   setReceiveOpen(true);
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors cursor-pointer"
               >
                 <QrCode className="h-4 w-4 text-neutral-400" />
                 receive
@@ -92,7 +92,7 @@ export function PortfolioActions({
                   onTrade();
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors cursor-pointer"
               >
                 <ArrowLeftRight className="h-4 w-4 text-neutral-400" />
                 trade
@@ -103,7 +103,7 @@ export function PortfolioActions({
                   onEarn();
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors cursor-pointer"
               >
                 <TrendingUp className="h-4 w-4 text-neutral-400" />
                 earn

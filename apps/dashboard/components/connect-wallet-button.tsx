@@ -213,7 +213,7 @@ export function ConnectWalletButton() {
                   onClick={() => void handleReAuthenticate()}
                   disabled={isReAuthenticating || !hasSignMessageSupport}
                   className={cn(
-                    "w-full px-3 py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2",
+                    "w-full px-3 py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer",
                     "bg-vibrant-red text-white hover:bg-vibrant-red/90",
                     (isReAuthenticating || !hasSignMessageSupport) &&
                       "opacity-70 cursor-not-allowed",
@@ -235,7 +235,7 @@ export function ConnectWalletButton() {
               <button
                 type="button"
                 onClick={() => void handleDisconnect()}
-                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer"
               >
                 sign out
               </button>
@@ -251,7 +251,7 @@ export function ConnectWalletButton() {
                     key={connector.id}
                     type="button"
                     onClick={() => void handleConnect(connector.id)}
-                    className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors flex justify-between items-center"
+                    className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors flex justify-between items-center cursor-pointer"
                   >
                     <span>{connector.label}</span>
                     <span className="text-neutral-400">→</span>

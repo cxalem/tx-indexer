@@ -38,7 +38,7 @@ export function LabelPrompt({
         <button
           type="button"
           onClick={onSkip}
-          className="flex-1 px-3 py-1.5 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+          className="flex-1 px-3 py-1.5 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer"
         >
           skip
         </button>
@@ -49,7 +49,7 @@ export function LabelPrompt({
           className={cn(
             "flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-center gap-1",
             value.trim()
-              ? "bg-vibrant-red text-white hover:bg-vibrant-red/90"
+              ? "bg-vibrant-red text-white hover:bg-vibrant-red/90 cursor-pointer"
               : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
           )}
         >
@@ -101,7 +101,7 @@ export function SignInPrompt({
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 px-3 py-1.5 text-sm text-neutral-600 hover:bg-amber-100 rounded-lg transition-colors"
+          className="flex-1 px-3 py-1.5 text-sm text-neutral-600 hover:bg-amber-100 rounded-lg transition-colors cursor-pointer"
         >
           cancel
         </button>
@@ -112,7 +112,7 @@ export function SignInPrompt({
           className={cn(
             "flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-center gap-1",
             canReauth && !isReauthenticating
-              ? "bg-vibrant-red text-white hover:bg-vibrant-red/90"
+              ? "bg-vibrant-red text-white hover:bg-vibrant-red/90 cursor-pointer"
               : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
           )}
         >

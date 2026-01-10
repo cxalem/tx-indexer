@@ -56,7 +56,7 @@ export function SwapInput({
               <button
                 type="button"
                 onClick={onMaxClick}
-                className="text-xs font-medium text-vibrant-red hover:text-vibrant-red/80 transition-colors"
+                className="text-xs font-medium text-vibrant-red hover:text-vibrant-red/80 transition-colors cursor-pointer"
               >
                 MAX
               </button>
