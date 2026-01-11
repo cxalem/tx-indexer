@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-01-09
+
+### Added
+
+- **RPC Request Profiler**: Test utility to measure HTTP requests during SDK operations
+  - Run with: `RPC_URL=<url> PROFILE_WALLET=<addr> bun test rpc-profiler`
+
+- **RPC Optimization Options**: New options for rate-limited RPC environments
+  - `overfetchMultiplier` - Controls signature overfetch (default: 2, use 1 for strict rate limits)
+  - `minPageSize` - Minimum page size for fetching (default: 20)
+  - `maxTokenAccounts` - Limit ATA queries (default: 5)
+
+### Changed
+
+- **Token Account Fetching**: Optimized signature retrieval
+  - Sequential wallet → ATA fetching to avoid rate limit errors
+  - Only fetch ATAs when wallet signatures aren't sufficient
+  - Parallel fetching of wallet and token account signatures where safe
+
+- **Performance Improvements**: Significantly reduced RPC calls for rate-limited environments
+  - Load time improvements from ~105s to ~7s in constrained environments
+  - Disabled JSON-RPC batching (not supported on most free tier RPCs)
+
+### Fixed
+
+- Rate limit handling for Helius free tier (10 req/sec) and similar constrained RPCs
+
 ## [1.0.0] - 2025-01-09
 
 ### Added

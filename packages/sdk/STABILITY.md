@@ -23,6 +23,7 @@ APIs in this tier are production-ready and follow semantic versioning strictly:
 - All core types (`ClassifiedTransaction`, `RawTransaction`, `TxLeg`, etc.)
 - JSON serialization helpers (`toJsonClassifiedTransaction`, etc.)
 - Token registry (`getTokenInfo`, `KNOWN_TOKENS`, etc.)
+- RPC optimization options (`overfetchMultiplier`, `minPageSize`, `maxTokenAccounts`)
 
 ### Advanced (`tx-indexer/advanced`)
 
@@ -78,7 +79,8 @@ When we deprecate an API:
 
 ## Version History
 
-| Version | Tier Changes                            |
-| ------- | --------------------------------------- |
-| 1.0.0   | Initial stable release with tier system |
-| 0.x.x   | Pre-release, no stability guarantees    |
+| Version | Tier Changes                                  |
+| ------- | --------------------------------------------- |
+| 1.1.0   | Added RPC optimization options to stable tier |
+| 1.0.0   | Initial stable release with tier system       |
+| 0.x.x   | Pre-release, no stability guarantees          |

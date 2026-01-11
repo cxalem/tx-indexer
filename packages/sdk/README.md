@@ -150,6 +150,30 @@ const txs = await indexer.getTransactions(address, {
 });
 ```
 
+## RPC Optimization
+
+For rate-limited RPCs (like Helius free tier at 10 req/sec), the SDK provides optimization options to reduce RPC calls:
+
+```typescript
+const indexer = createIndexer({
+  rpcUrl: "https://api.mainnet-beta.solana.com",
+  // Optimization options for rate-limited environments
+  overfetchMultiplier: 1, // Default: 2, reduces signature overfetch
+  minPageSize: 10, // Default: 20, matches page size to your limit
+  maxTokenAccounts: 3, // Default: 5, limits ATA queries
+});
+```
+
+**Options:**
+
+| Option                | Default | Description                                      |
+| --------------------- | ------- | ------------------------------------------------ |
+| `overfetchMultiplier` | `2`     | Multiplier for signature overfetch (1 = minimal) |
+| `minPageSize`         | `20`    | Minimum page size for RPC calls                  |
+| `maxTokenAccounts`    | `5`     | Maximum token accounts to query for signatures   |
+
+These optimizations can reduce load time from ~105s to ~7s in rate-limited environments.
+
 ## Transaction Schema
 
 A `ClassifiedTransaction` has three parts:

@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TX Indexer Dashboard
+
+A non-custodial Solana wallet dashboard built with Next.js and the tx-indexer SDK.
+
+## Features
+
+- Real-time wallet balance display (SOL and SPL tokens)
+- Transaction history with automatic classification
+- Spam transaction filtering
+- Support for rate-limited RPCs with optimization options
+- Server-side transaction fetching for security
+- Client-side wallet operations with domain-restricted keys
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ or Bun
+- Solana RPC URL (Helius, QuickNode, or public endpoint)
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd apps/dashboard
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file based on `.env.example`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cp .env.example .env.local
+```
+
+Configure your environment variables:
+
+```bash
+# Server-side RPC (unrestricted key, never exposed to browser)
+SERVER_RPC_URL=https://mainnet.helius-rpc.com/?api-key=YOUR_SERVER_KEY
+
+# Client-side RPC (domain-restricted key for wallet operations)
+NEXT_PUBLIC_RPC_URL=https://mainnet.helius-rpc.com/?api-key=YOUR_PUBLIC_KEY
+
+# Optional: Enable aggressive optimization for rate-limited RPCs
+OPTIMIZE_FOR_RATE_LIMITS=true
+```
+
+**Security Note:** Use separate API keys for server and client:
+
+- `SERVER_RPC_URL`: Unrestricted key for server actions and API routes
+- `NEXT_PUBLIC_RPC_URL`: Domain-restricted key for client-side wallet operations
+
+### Development
+
+```bash
+bun run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
+
+## RPC Optimization
+
+For rate-limited RPCs (like Helius free tier at 10 req/sec), set:
+
+```bash
+OPTIMIZE_FOR_RATE_LIMITS=true
+```
+
+This enables:
+
+- `overfetchMultiplier: 1` - Reduces signature overfetch
+- `minPageSize` matching your limit - Reduces RPC calls
+- Smart token account fetching - Only queries ATAs when needed
+
+These optimizations can reduce load time from ~105s to ~7s.
+
+## Architecture
+
+```
+apps/dashboard/
+├── app/
+│   ├── actions/           # Server actions for secure RPC calls
+│   │   ├── dashboard.ts   # Transaction fetching with optimization
+│   │   └── estimate-fee.ts
+│   └── page.tsx           # Main dashboard page
+├── components/
+│   ├── providers.tsx      # Wallet and RPC providers
+│   └── ...                # UI components
+└── lib/
+    └── indexer.ts         # SDK configuration
+```
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+- [tx-indexer SDK Documentation](../../packages/sdk/README.md)
+- [Next.js Documentation](https://nextjs.org/docs)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

@@ -241,6 +241,22 @@ const txs = await indexer.getTransactions(address, {
 });
 ```
 
+## RPC Optimization
+
+For rate-limited RPCs (like Helius free tier at 10 req/sec), use optimization options:
+
+```typescript
+const indexer = createIndexer({
+  rpcUrl: "https://api.mainnet-beta.solana.com",
+  // Optimization options for rate-limited environments
+  overfetchMultiplier: 1, // Default: 2, reduces signature overfetch
+  minPageSize: 10, // Default: 20, matches page size to your limit
+  maxTokenAccounts: 3, // Default: 5, limits ATA queries
+});
+```
+
+These optimizations reduce RPC calls significantly (from ~105s to ~7s load time in constrained environments).
+
 ## Bundle Size
 
 | Import                          | Size (minified + brotli) |
