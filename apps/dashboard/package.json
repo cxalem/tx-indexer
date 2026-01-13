@@ -28,6 +28,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-qr-code": "^2.0.18",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "tweetnacl": "^1.0.3",
     "tx-indexer": "^1.1.0",

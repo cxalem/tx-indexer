@@ -9,6 +9,8 @@ import {
   groupTransactionsByDay,
   type DailyTotal,
 } from "@/hooks/use-transactions-feed";
+import { useTransactionNotifications } from "@/hooks/use-transaction-notifications";
+import { NotificationBanner } from "@/components/notification-banner";
 import { cn } from "@/lib/utils";
 import { Inbox, RefreshCw, Clock, Loader2 } from "lucide-react";
 import localFont from "next/font/local";
@@ -27,6 +29,10 @@ export function TransactionsFeed({
   walletAddress,
   fastPolling = false,
 }: TransactionsFeedProps) {
+  const { notifyNewTransactions } = useTransactionNotifications({
+    walletAddress,
+  });
+
   const {
     transactions,
     newSignatures,
@@ -41,6 +47,7 @@ export function TransactionsFeed({
   } = useTransactionsFeed(walletAddress, {
     pageSize: 10,
     fastPolling,
+    onNewTransactions: notifyNewTransactions,
   });
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -68,7 +75,7 @@ export function TransactionsFeed({
           loadMore();
         }
       },
-      { rootMargin: "200px" }
+      { rootMargin: "200px" },
     );
 
     const currentRef = loadMoreRef.current;
@@ -85,7 +92,7 @@ export function TransactionsFeed({
 
   const transactionsByDay = useMemo(
     () => groupTransactionsByDay(transactions, walletAddress),
-    [transactions, walletAddress]
+    [transactions, walletAddress],
   );
 
   const handleRefresh = useCallback(() => {
@@ -123,6 +130,7 @@ export function TransactionsFeed({
   return (
     <div>
       <FeedHeader onRefresh={handleRefresh} isRefreshing={isFetching} />
+      <NotificationBanner />
 
       <div className="space-y-4">
         {transactionsByDay.map((dayGroup) => (
@@ -181,7 +189,7 @@ function FeedHeader({ onRefresh, isRefreshing }: FeedHeaderProps) {
           disabled={isRefreshing}
           className={cn(
             "p-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors cursor-pointer",
-            isRefreshing && "animate-spin"
+            isRefreshing && "animate-spin",
           )}
           title="Refresh"
         >
@@ -210,9 +218,7 @@ function DayGroup({
   return (
     <div>
       <div className="flex items-center justify-between px-1 mb-2">
-        <span className="font-bold text-neutral-600">
-          {displayDate}
-        </span>
+        <span className="font-bold text-neutral-600">{displayDate}</span>
         {dailyTotal && (
           <span className={"text-sm font-mono text-neutral-400"}>
             {dailyTotal.isPositive ? "+" : ""}

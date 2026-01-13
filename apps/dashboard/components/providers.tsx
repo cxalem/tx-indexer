@@ -4,6 +4,7 @@ import type { SolanaClientConfig } from "@solana/client";
 import { SolanaProvider } from "@solana/react-hooks";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type PropsWithChildren } from "react";
+import { Toaster } from "sonner";
 import { AuthProvider } from "@/lib/auth";
 
 const config: SolanaClientConfig = {
@@ -34,7 +35,10 @@ export function Providers({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <SolanaProvider config={config}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <Toaster position="bottom-right" richColors />
+        </AuthProvider>
       </SolanaProvider>
     </QueryClientProvider>
   );

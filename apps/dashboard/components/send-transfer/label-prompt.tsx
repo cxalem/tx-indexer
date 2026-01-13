@@ -58,7 +58,7 @@ export function LabelPrompt({
           ) : (
             <Check className="h-3 w-3" />
           )}
-          save & send
+          save
         </button>
       </div>
     </div>

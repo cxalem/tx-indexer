@@ -7,9 +7,12 @@ import {
   ArrowLeftRight,
   TrendingUp,
   QrCode,
+  Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReceiveDrawer } from "@/components/receive-drawer";
+import { LabelWalletDrawer } from "@/components/label-wallet-drawer";
+import { useAuth } from "@/lib/auth";
 
 interface PortfolioActionsProps {
   walletAddress: string | null;
@@ -26,8 +29,10 @@ export function PortfolioActions({
   onTrade = noop,
   onEarn = noop,
 }: PortfolioActionsProps) {
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [receiveOpen, setReceiveOpen] = useState(false);
+  const [labelDrawerOpen, setLabelDrawerOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,6 +54,22 @@ export function PortfolioActions({
   return (
     <>
       <div className="flex items-center gap-2" ref={menuRef}>
+        {isAuthLoading ? (
+          <div className="w-9 h-9 rounded-lg bg-neutral-100 animate-pulse" />
+        ) : isAuthenticated ? (
+          <button
+            type="button"
+            onClick={() => setLabelDrawerOpen(true)}
+            className={cn(
+              "p-2 rounded-lg border border-neutral-200 transition-colors cursor-pointer",
+              "hover:bg-neutral-50 text-neutral-500",
+            )}
+            title="Label a wallet"
+          >
+            <Tag className="h-4 w-4" />
+          </button>
+        ) : null}
+
         <button
           type="button"
           onClick={onSend}
@@ -120,6 +141,11 @@ export function PortfolioActions({
           walletAddress={walletAddress}
         />
       )}
+
+      <LabelWalletDrawer
+        open={labelDrawerOpen}
+        onOpenChange={setLabelDrawerOpen}
+      />
     </>
   );
 }

@@ -17,9 +17,14 @@ export const transactionsFeedKeys = {
     [...transactionsFeedKeys.all, "feed", address] as const,
 };
 
+export type OnNewTransactionsCallback = (
+  transactions: ClassifiedTransaction[],
+) => void;
+
 interface UseTransactionsFeedOptions {
   pageSize?: number;
   fastPolling?: boolean;
+  onNewTransactions?: OnNewTransactionsCallback;
 }
 
 interface TransactionsFeedPage {
@@ -33,7 +38,7 @@ export function useTransactionsFeed(
   address: string | null,
   options: UseTransactionsFeedOptions = {},
 ) {
-  const { pageSize = 10, fastPolling = false } = options;
+  const { pageSize = 10, fastPolling = false, onNewTransactions } = options;
   const queryClient = useQueryClient();
 
   const polledSignaturesRef = useRef<Set<string>>(new Set());
@@ -164,6 +169,16 @@ export function useTransactionsFeed(
         setNewSignatures(trulyNewSigs);
         setTimeout(() => setNewSignatures(new Set()), 3000);
 
+        // Get the truly new transactions for notification callback
+        const trulyNewTxs = newTxs.filter((tx) =>
+          trulyNewSigs.has(tx.tx.signature),
+        );
+
+        // Call the notification callback if provided
+        if (onNewTransactions && trulyNewTxs.length > 0) {
+          onNewTransactions(trulyNewTxs);
+        }
+
         queryClient.setQueryData<{
           pages: TransactionsFeedPage[];
           pageParams: unknown[];
@@ -172,10 +187,7 @@ export function useTransactionsFeed(
 
           const newPage = {
             ...oldData.pages[0],
-            transactions: [
-              ...newTxs.filter((tx) => trulyNewSigs.has(tx.tx.signature)),
-              ...oldData.pages[0].transactions,
-            ],
+            transactions: [...trulyNewTxs, ...oldData.pages[0].transactions],
           };
 
           return {
@@ -187,7 +199,7 @@ export function useTransactionsFeed(
     } catch (error) {
       console.error("Failed to poll new transactions:", error);
     }
-  }, [address, allTransactions, pageSize, queryClient]);
+  }, [address, allTransactions, pageSize, queryClient, onNewTransactions]);
 
   const refresh = useCallback(async () => {
     if (!address) return;
