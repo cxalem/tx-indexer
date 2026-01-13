@@ -10,6 +10,7 @@ import {
   type DailyTotal,
 } from "@/hooks/use-transactions-feed";
 import { useTransactionNotifications } from "@/hooks/use-transaction-notifications";
+import { useWalletLabels } from "@/hooks/use-wallet-labels";
 import { NotificationBanner } from "@/components/notification-banner";
 import { cn } from "@/lib/utils";
 import { Inbox, RefreshCw, Clock, Loader2 } from "lucide-react";
@@ -32,6 +33,7 @@ export function TransactionsFeed({
   const { notifyNewTransactions } = useTransactionNotifications({
     walletAddress,
   });
+  const { labels } = useWalletLabels();
 
   const {
     transactions,
@@ -141,6 +143,7 @@ export function TransactionsFeed({
             transactions={dayGroup.transactions}
             walletAddress={walletAddress}
             newSignatures={newSignatures}
+            labels={labels}
           />
         ))}
 
@@ -206,6 +209,7 @@ interface DayGroupProps {
   transactions: ClassifiedTransaction[];
   walletAddress: string;
   newSignatures: Set<string>;
+  labels: Map<string, string>;
 }
 
 function DayGroup({
@@ -214,6 +218,7 @@ function DayGroup({
   transactions,
   walletAddress,
   newSignatures,
+  labels,
 }: DayGroupProps) {
   return (
     <div>
@@ -237,6 +242,7 @@ function DayGroup({
             transaction={tx}
             walletAddress={walletAddress}
             isNew={newSignatures.has(tx.tx.signature)}
+            labels={labels}
           />
         ))}
       </div>

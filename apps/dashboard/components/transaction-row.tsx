@@ -19,6 +19,7 @@ import {
 } from "@/lib/transaction-icons";
 import { TokenIcon } from "@/components/token-icon";
 import { CopyButton } from "@/components/copy-button";
+import { LabeledAddress } from "@/components/labeled-address";
 import { ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
@@ -48,12 +49,12 @@ function TransactionRowHeader({
           <div
             className={cn(
               "p-2 rounded-lg",
-              getTransactionIconBgClass(direction.direction)
+              getTransactionIconBgClass(direction.direction),
             )}
           >
             {getTransactionIcon(
               classification.primaryType,
-              direction.direction
+              direction.direction,
             )}
           </div>
           <div>
@@ -74,7 +75,7 @@ function TransactionRowHeader({
               <p className={cn("font-mono", direction.colorClass)}>
                 {formatAmountWithDirection(
                   classification.primaryAmount,
-                  direction
+                  direction,
                 )}
               </p>
               <div className="w-full max-w-6">
@@ -94,7 +95,7 @@ function TransactionRowHeader({
           <ChevronDown
             className={cn(
               "h-4 w-4 text-neutral-400 transition-transform duration-200",
-              isExpanded && "rotate-180"
+              isExpanded && "rotate-180",
             )}
           />
         </div>
@@ -107,18 +108,20 @@ interface TransactionRowDetailsProps {
   transaction: ClassifiedTransaction;
   walletAddress: string;
   isExpanded: boolean;
+  labels?: Map<string, string>;
 }
 
 function TransactionRowDetails({
   transaction,
   walletAddress,
   isExpanded,
+  labels,
 }: TransactionRowDetailsProps) {
   const { tx, classification } = transaction;
   const isSuccess = tx.err === null;
   const isSwap = classification.primaryType === "swap";
   const isNft = ["nft_purchase", "nft_sale", "nft_mint"].includes(
-    classification.primaryType
+    classification.primaryType,
   );
   const metadata = classification.metadata;
   const nftName =
@@ -135,7 +138,9 @@ function TransactionRowDetails({
     <div
       className={cn(
         "grid transition-all duration-200 ease-out",
-        isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        isExpanded
+          ? "grid-rows-[1fr] opacity-100"
+          : "grid-rows-[0fr] opacity-0",
       )}
     >
       <div className="overflow-hidden">
@@ -147,7 +152,7 @@ function TransactionRowDetails({
                   "text-xs font-medium px-2 py-1 rounded",
                   isSuccess
                     ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
+                    : "bg-red-100 text-red-700",
                 )}
               >
                 {isSuccess ? "success" : "failed"}
@@ -206,24 +211,20 @@ function TransactionRowDetails({
               {classification.sender && (
                 <div>
                   <p className="text-xs text-neutral-500 mb-1">from</p>
-                  <div className="flex items-center gap-1">
-                    <span className="font-mono text-sm">
-                      {truncate(classification.sender)}
-                    </span>
-                    <CopyButton value={classification.sender} />
-                  </div>
+                  <LabeledAddress
+                    address={classification.sender}
+                    label={labels?.get(classification.sender)}
+                  />
                 </div>
               )}
 
               {classification.receiver && (
                 <div>
                   <p className="text-xs text-neutral-500 mb-1">to</p>
-                  <div className="flex items-center gap-1">
-                    <span className="font-mono text-sm">
-                      {truncate(classification.receiver)}
-                    </span>
-                    <CopyButton value={classification.receiver} />
-                  </div>
+                  <LabeledAddress
+                    address={classification.receiver}
+                    label={labels?.get(classification.receiver)}
+                  />
                 </div>
               )}
             </div>
@@ -274,12 +275,14 @@ interface TransactionRowProps {
   transaction: ClassifiedTransaction;
   walletAddress: string;
   isNew?: boolean;
+  labels?: Map<string, string>;
 }
 
 export function TransactionRow({
   transaction,
   walletAddress,
   isNew = false,
+  labels,
 }: TransactionRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showNewAnimation, setShowNewAnimation] = useState(isNew);
@@ -309,7 +312,7 @@ export function TransactionRow({
     <div
       className={cn(
         "border-b border-neutral-100 last:border-b-0 transition-all duration-500",
-        getNewAnimationClass()
+        getNewAnimationClass(),
       )}
     >
       <TransactionRowHeader
@@ -322,6 +325,7 @@ export function TransactionRow({
         transaction={transaction}
         walletAddress={walletAddress}
         isExpanded={isExpanded}
+        labels={labels}
       />
     </div>
   );
