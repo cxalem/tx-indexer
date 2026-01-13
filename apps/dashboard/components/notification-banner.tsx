@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Loader2 } from "lucide-react";
+import { Bell, Loader2, X } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
 
@@ -43,8 +43,16 @@ export function NotificationBanner() {
   };
 
   return (
-    <div className="mb-4 p-4 rounded-lg bg-neutral-50 border border-neutral-200">
-      <div className="flex items-center gap-2 mb-3">
+    <div className="mb-4 p-4 rounded-lg bg-neutral-50 border border-neutral-200 relative">
+      <button
+        type="button"
+        onClick={handleDismiss}
+        className="absolute top-2 right-2 p-1 rounded-md text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors cursor-pointer"
+        aria-label="Dismiss"
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+      <div className="flex items-center gap-2 mb-3 pr-6">
         <Bell className="h-4 w-4 text-neutral-500" />
         <p className="text-sm font-medium text-neutral-700">
           enable notifications?
