@@ -144,7 +144,6 @@ function ConnectWalletButtonInner() {
       const storedSession = getStoredSession();
       if (storedSession) {
         setMobileSession({ publicKey: storedSession.publicKey });
-        void startMobileAuth(storedSession.publicKey);
       }
       router.replace("/", { scroll: false });
       return;
