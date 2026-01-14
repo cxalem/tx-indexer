@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useWallet } from "@solana/react-hooks";
+import { useUnifiedWallet } from "@/hooks/use-unified-wallet";
 import {
   Sheet,
   SheetContent,
@@ -10,7 +10,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { ArrowLeftRight, ArrowUpDown } from "lucide-react";
+import { ArrowLeftRight, ArrowUpDown, AlertCircle } from "lucide-react";
 import { useSwap, formatSwapOutput } from "@/hooks/use-swap";
 import {
   SWAP_TOKENS,
@@ -44,7 +44,11 @@ export function TradeDrawer({
   solBalance,
   tokenBalances = [],
 }: TradeDrawerProps) {
-  const wallet = useWallet();
+  const {
+    status: walletStatus,
+    address: walletAddress,
+    connectionType,
+  } = useUnifiedWallet();
   const {
     status,
     isSwapping,
@@ -60,10 +64,8 @@ export function TradeDrawer({
     refreshQuote,
   } = useSwap();
 
-  const isConnected = wallet.status === "connected";
-  const walletAddress = isConnected
-    ? wallet.session.account.address.toString()
-    : null;
+  const isConnected = walletStatus === "connected";
+  const isMobileDeepLink = connectionType === "mobile";
 
   const [inputToken, setInputToken] = useState<SwapToken>(SWAP_TOKENS[0]!);
   const [outputToken, setOutputToken] = useState<SwapToken>(SWAP_TOKENS[1]!);
@@ -134,6 +136,7 @@ export function TradeDrawer({
 
   const canTrade =
     isConnected &&
+    !isMobileDeepLink &&
     quote &&
     inputAmount &&
     !isSwapping &&
@@ -235,9 +238,19 @@ export function TradeDrawer({
               )}
 
               {quote && <PriceImpactWarning priceImpact={priceImpact} />}
+
+              {isMobileDeepLink && (
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-700">
+                    Trading is not yet supported via mobile deep links. Use
+                    &quot;Open in wallet browser&quot; for full functionality.
+                  </p>
+                </div>
+              )}
             </div>
 
-            <div className="flex gap-3 mt-6 pt-4 border-t border-neutral-200">
+            <div className="flex gap-3 mt-6 pt-4 pb-4 sm:pb-0 border-t border-neutral-200">
               <button
                 type="button"
                 onClick={handleClose}

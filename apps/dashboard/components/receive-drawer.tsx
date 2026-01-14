@@ -92,7 +92,7 @@ export function ReceiveDrawer({
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 pb-8 sm:pb-6 space-y-6">
           <div className="flex justify-center">
             <div className="p-4 bg-white border border-neutral-200 rounded-xl">
               <QRCode value={solanaPayUrl} size={200} level="M" />

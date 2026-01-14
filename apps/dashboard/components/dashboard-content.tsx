@@ -1,8 +1,8 @@
 "use client";
 
-import { useWallet } from "@solana/react-hooks";
 import { useState } from "react";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
+import { useUnifiedWallet } from "@/hooks/use-unified-wallet";
 import { PortfolioCard } from "@/components/portfolio-card";
 import { TransactionsFeed } from "@/components/transactions-feed";
 import { SendTransferDrawer } from "@/components/send-transfer";
@@ -20,15 +20,11 @@ const bitcountFont = localFont({
 });
 
 export function DashboardContent() {
-  const wallet = useWallet();
-  const isConnected = wallet.status === "connected";
+  const { status, address } = useUnifiedWallet();
+  const isConnected = status === "connected";
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false);
   const [tradeDrawerOpen, setTradeDrawerOpen] = useState(false);
   const [fastPolling, setFastPolling] = useState(false);
-
-  const address = isConnected
-    ? wallet.session.account.address.toString()
-    : null;
 
   const { portfolio, balance, usdcBalance, isLoading, refetch } =
     useDashboardData(address, { fastPolling });

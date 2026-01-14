@@ -203,7 +203,7 @@ export function LabelWalletDrawer({
               )}
             </div>
 
-            <div className="flex gap-3 mt-6 pt-4 border-t border-neutral-200">
+            <div className="flex gap-3 mt-6 pt-4 pb-4 sm:pb-0 border-t border-neutral-200">
               <button
                 type="button"
                 onClick={handleClose}

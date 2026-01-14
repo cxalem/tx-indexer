@@ -53,7 +53,7 @@ export function PortfolioActions({
 
   return (
     <>
-      <div className="flex items-center gap-2" ref={menuRef}>
+      <div className="flex items-center gap-1.5 sm:gap-2" ref={menuRef}>
         {isAuthLoading ? (
           <div className="w-9 h-9 rounded-lg bg-neutral-100 animate-pulse" />
         ) : isAuthenticated ? (

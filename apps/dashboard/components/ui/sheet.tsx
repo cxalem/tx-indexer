@@ -35,8 +35,8 @@ interface SheetContentProps extends React.ComponentPropsWithoutRef<
 const sheetVariants = {
   top: "inset-x-0 top-0 border-b",
   bottom: "inset-x-0 bottom-0 border-t",
-  left: "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
-  right: "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-md",
+  left: "inset-y-0 left-0 h-full w-full border-r sm:w-3/4 sm:max-w-sm",
+  right: "inset-y-0 right-0 h-full w-full border-l sm:w-3/4 sm:max-w-md",
 };
 
 const SheetContent = React.forwardRef<
@@ -50,7 +50,7 @@ const SheetContent = React.forwardRef<
       data-sheet-content=""
       onOpenAutoFocus={(e) => e.preventDefault()}
       className={cn(
-        "fixed z-50 gap-4 bg-white p-6 shadow-lg",
+        "fixed z-50 gap-4 bg-white p-4 sm:p-6 shadow-lg pb-8 sm:pb-6",
         sheetVariants[side],
         className,
       )}

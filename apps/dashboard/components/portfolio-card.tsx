@@ -32,16 +32,16 @@ export function PortfolioCard({
   const unpriced = portfolio?.unpricedCount ?? 0;
 
   return (
-    <div className="border border-neutral-200 rounded-lg bg-white p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-neutral-100">
+    <div className="border border-neutral-200 rounded-lg bg-white p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="p-2 rounded-lg bg-neutral-100 shrink-0">
             <Wallet className="h-5 w-5 text-neutral-600" />
           </div>
-          <span className="text-neutral-500">portfolio</span>
+          <span className="text-neutral-500 shrink-0">portfolio</span>
           {walletAddress && (
-            <div className="flex items-center gap-1">
-              <span className="text-sm text-neutral-400 font-mono">
+            <div className="flex items-center gap-1 min-w-0">
+              <span className="text-sm text-neutral-400 font-mono truncate">
                 {truncate(walletAddress)}
               </span>
               <CopyButton value={walletAddress} />
@@ -54,14 +54,22 @@ export function PortfolioCard({
           onTrade={onTrade}
         />
       </div>
-      <p className="text-3xl font-mono text-neutral-900 mb-2">
+      <p className="text-2xl sm:text-3xl font-mono text-neutral-900 mb-2">
         {formatUsd(total)}
       </p>
-      <p className="text-sm text-neutral-500">
-        stablecoins {formatUsd(stablecoins)} · variable assets{" "}
-        {formatUsd(variable)}
+      <p className="text-xs sm:text-sm text-neutral-500">
+        <span className="whitespace-nowrap">
+          stablecoins {formatUsd(stablecoins)}
+        </span>
+        <span className="mx-1">·</span>
+        <span className="whitespace-nowrap">
+          variable assets {formatUsd(variable)}
+        </span>
         {unpriced > 0 && (
-          <span className="text-neutral-400"> · +{unpriced} unpriced</span>
+          <span className="text-neutral-400 whitespace-nowrap">
+            {" "}
+            · +{unpriced} unpriced
+          </span>
         )}
       </p>
     </div>

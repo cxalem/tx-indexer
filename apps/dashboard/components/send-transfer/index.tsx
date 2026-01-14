@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useWallet } from "@solana/react-hooks";
+import { useUnifiedWallet } from "@/hooks/use-unified-wallet";
 import {
   Sheet,
   SheetContent,
@@ -52,8 +52,13 @@ export function SendTransferDrawer({
   onTransferSuccess,
   usdcBalance: externalUsdcBalance,
 }: SendTransferDrawerProps) {
-  const wallet = useWallet();
+  const {
+    status: walletStatus,
+    address: walletAddress,
+    connectionType,
+  } = useUnifiedWallet();
   const { isAuthenticated } = useAuth();
+  const isMobileDeepLink = connectionType === "mobile";
   const {
     needsReauth,
     isReauthenticating,
@@ -90,10 +95,8 @@ export function SendTransferDrawer({
     prevTransferStatus.current = transferStatus;
   }, [transferStatus, onTransferSuccess]);
 
-  const isConnected = wallet.status === "connected";
-  const senderAddress = isConnected
-    ? wallet.session.account.address.toString()
-    : null;
+  const isConnected = walletStatus === "connected";
+  const senderAddress = walletAddress;
 
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -412,7 +415,17 @@ export function SendTransferDrawer({
               />
             )}
 
-            <div className="flex gap-3 mt-6 pt-4 border-t border-neutral-200">
+            {isMobileDeepLink && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 mt-4">
+                <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-amber-700">
+                  Sending is not yet supported via mobile deep links. Use
+                  &quot;Open in wallet browser&quot; for full functionality.
+                </p>
+              </div>
+            )}
+
+            <div className="flex gap-3 mt-6 pt-4 pb-4 sm:pb-0 border-t border-neutral-200">
               <button
                 type="button"
                 onClick={handleClose}
@@ -422,10 +435,10 @@ export function SendTransferDrawer({
               </button>
               <button
                 type="submit"
-                disabled={!isConnected || isTransferring}
+                disabled={!isConnected || isTransferring || isMobileDeepLink}
                 className={cn(
                   "flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2",
-                  isConnected && !isTransferring
+                  isConnected && !isTransferring && !isMobileDeepLink
                     ? "bg-vibrant-red text-white hover:bg-vibrant-red/90 cursor-pointer"
                     : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
                 )}
