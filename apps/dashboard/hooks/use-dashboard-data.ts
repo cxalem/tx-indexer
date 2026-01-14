@@ -1,14 +1,12 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import {
-  getDashboardData,
   getBalanceAndPortfolio,
-  getNewTransactions,
-  type DashboardData,
+  type PortfolioSummary,
 } from "@/app/actions/dashboard";
-import type { ClassifiedTransaction } from "tx-indexer";
+import type { WalletBalance } from "tx-indexer/advanced";
 import {
   USDC_MINT,
   EMPTY_DASHBOARD_QUERY_KEY,
@@ -16,80 +14,50 @@ import {
   FAST_POLLING_INTERVAL_MS,
   STANDARD_STALE_TIME_MS,
   FAST_STALE_TIME_MS,
-  DEFAULT_TRANSACTION_LIMIT,
 } from "@/lib/constants";
 
 // Query key factory for dashboard data
 export const dashboardKeys = {
   all: ["dashboard"] as const,
-  data: (address: string) => [...dashboardKeys.all, "data", address] as const,
+  balanceAndPortfolio: (address: string) =>
+    [...dashboardKeys.all, "balance-portfolio", address] as const,
 };
 
+interface BalanceAndPortfolioData {
+  balance: WalletBalance;
+  portfolio: PortfolioSummary;
+}
+
 interface UseDashboardDataOptions {
-  limit?: number;
   /** Enable faster polling (e.g., after a transaction) */
   fastPolling?: boolean;
 }
 
 /**
- * Hook to fetch and cache dashboard data (balance + transactions)
- * Uses React Query for automatic caching, refetching, and instant updates
+ * Hook to fetch and cache balance + portfolio data
  *
- * Optimized for minimal RPC calls:
- * - Initial load: full fetch (~13 RPC calls)
- * - Subsequent polls: incremental fetch (~4 RPC calls)
+ * NOTE: Transactions are handled separately by useTransactionsFeed
+ * which has its own Redis caching layer. This separation:
+ * - Eliminates duplicate transaction fetches
+ * - Allows independent refresh rates
+ * - Keeps balance/portfolio fast (single RPC call)
  */
 export function useDashboardData(
   address: string | null,
   options: UseDashboardDataOptions = {},
 ) {
-  const { limit = DEFAULT_TRANSACTION_LIMIT, fastPolling = false } = options;
+  const { fastPolling = false } = options;
   const queryClient = useQueryClient();
 
-  const hasInitialData = useRef(false);
-  const latestSignatureRef = useRef<string | null>(null);
-
-  const query = useQuery<DashboardData | null>({
-    queryKey: address ? dashboardKeys.data(address) : EMPTY_DASHBOARD_QUERY_KEY,
-    queryFn: async ({ queryKey }) => {
+  const query = useQuery<BalanceAndPortfolioData | null>({
+    queryKey: address
+      ? dashboardKeys.balanceAndPortfolio(address)
+      : EMPTY_DASHBOARD_QUERY_KEY,
+    queryFn: async () => {
       if (!address) return null;
-
-      const cachedData = queryClient.getQueryData<DashboardData | null>(
-        queryKey,
-      );
-
-      if (
-        cachedData &&
-        cachedData.transactions.length > 0 &&
-        hasInitialData.current
-      ) {
-        const latestSig = cachedData.transactions[0]?.tx.signature;
-
-        const [balanceData, newTxs] = await Promise.all([
-          getBalanceAndPortfolio(address),
-          latestSig
-            ? getNewTransactions(address, latestSig, limit)
-            : Promise.resolve([] as ClassifiedTransaction[]),
-        ]);
-
-        const mergedTransactions = mergeTransactions(
-          newTxs,
-          cachedData.transactions,
-          limit,
-        );
-
-        return {
-          balance: balanceData.balance,
-          portfolio: balanceData.portfolio,
-          transactions: mergedTransactions,
-        };
-      }
-
-      hasInitialData.current = true;
-      return getDashboardData(address, limit);
+      return getBalanceAndPortfolio(address);
     },
     enabled: !!address,
-    // Polling intervals - use constants for consistency
     refetchInterval: fastPolling
       ? FAST_POLLING_INTERVAL_MS
       : STANDARD_POLLING_INTERVAL_MS,
@@ -98,21 +66,15 @@ export function useDashboardData(
     placeholderData: (previousData) => previousData,
   });
 
-  if (query.data?.transactions[0]?.tx.signature) {
-    latestSignatureRef.current = query.data.transactions[0].tx.signature;
-  }
-
   const refetch = useCallback(() => {
     if (address) {
-      hasInitialData.current = false; // Force full fetch
       return queryClient.invalidateQueries({
-        queryKey: dashboardKeys.data(address),
+        queryKey: dashboardKeys.balanceAndPortfolio(address),
       });
     }
   }, [queryClient, address]);
 
   const invalidateAll = useCallback(() => {
-    hasInitialData.current = false;
     return queryClient.invalidateQueries({
       queryKey: dashboardKeys.all,
     });
@@ -128,7 +90,6 @@ export function useDashboardData(
 
   return {
     portfolio: query.data?.portfolio ?? null,
-    transactions: query.data?.transactions ?? [],
     balance: query.data?.balance ?? null,
     usdcBalance,
     isLoading: query.isLoading,
@@ -138,29 +99,4 @@ export function useDashboardData(
     refetch,
     invalidateAll,
   };
-}
-
-/**
- * Merge new transactions with existing ones, maintaining sort order and limit
- */
-function mergeTransactions(
-  newTxs: ClassifiedTransaction[],
-  existingTxs: ClassifiedTransaction[],
-  limit: number,
-): ClassifiedTransaction[] {
-  if (newTxs.length === 0) {
-    return existingTxs;
-  }
-
-  const existingSignatures = new Set(existingTxs.map((tx) => tx.tx.signature));
-
-  const uniqueNewTxs = newTxs.filter(
-    (tx) => !existingSignatures.has(tx.tx.signature),
-  );
-
-  if (uniqueNewTxs.length === 0) {
-    return existingTxs;
-  }
-
-  return [...uniqueNewTxs, ...existingTxs].slice(0, limit);
 }
