@@ -50,6 +50,8 @@ export function TokenSelector({
           <img
             src={selectedToken.logoUrl}
             alt={selectedToken.symbol}
+            width={20}
+            height={20}
             className="w-5 h-5 rounded-full object-cover flex-shrink-0"
           />
         )}
@@ -77,6 +79,8 @@ export function TokenSelector({
                 <img
                   src={token.logoUrl}
                   alt={token.symbol}
+                  width={20}
+                  height={20}
                   className="w-5 h-5 rounded-full object-cover flex-shrink-0"
                 />
               )}

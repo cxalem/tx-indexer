@@ -324,7 +324,7 @@ export const TransactionRow = memo(function TransactionRow({
   return (
     <div
       className={cn(
-        "border-b border-neutral-100 last:border-b-0 transition-all duration-500",
+        "transaction-row border-b border-neutral-100 last:border-b-0 transition-all duration-500",
         newAnimationClass,
       )}
     >

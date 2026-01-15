@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // No need to expose RPC_URL - it's automatically available in server actions
   // NEXT_PUBLIC_* vars are automatically exposed to the client
+  experimental: {
+    // Optimize barrel imports for faster dev boot and smaller bundles
+    // lucide-react has 1500+ icons - direct imports save ~200-800ms cold start
+    optimizePackageImports: ["lucide-react"],
+  },
 };
 
 // Wrap with bundle analyzer when ANALYZE=true

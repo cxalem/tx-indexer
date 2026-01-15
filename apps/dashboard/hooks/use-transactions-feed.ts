@@ -164,16 +164,20 @@ export function useTransactionsFeed(
       : false;
   }, [query.data?.pages]);
 
-  if (
-    !isInitializedRef.current &&
-    allTransactions.length > 0 &&
-    !query.isLoading
-  ) {
-    for (const tx of allTransactions) {
-      polledSignaturesRef.current.add(tx.tx.signature);
+  // Initialize polled signatures when we first load transactions
+  // Using useEffect to avoid side effects during render
+  useEffect(() => {
+    if (
+      !isInitializedRef.current &&
+      allTransactions.length > 0 &&
+      !query.isLoading
+    ) {
+      for (const tx of allTransactions) {
+        polledSignaturesRef.current.add(tx.tx.signature);
+      }
+      isInitializedRef.current = true;
     }
-    isInitializedRef.current = true;
-  }
+  }, [allTransactions, query.isLoading]);
 
   // Check if we got cached data and need to fetch the gap
   const firstPage = query.data?.pages?.[0];
@@ -455,7 +459,7 @@ export function groupTransactionsByDay(
     group.dailyTotal = calculateDailyTotal(group.transactions, walletAddress);
   }
 
-  return Array.from(groups.values()).sort(
+  return Array.from(groups.values()).toSorted(
     (a, b) => b.date.getTime() - a.date.getTime(),
   );
 }

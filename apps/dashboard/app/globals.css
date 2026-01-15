@@ -274,6 +274,12 @@
     color: hsl(var(--foreground));
   }
 
+  /* Content visibility optimization for transaction lists */
+  .transaction-row {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 80px; /* Approximate height of collapsed transaction row */
+  }
+
   /* Touch optimization: prevent 300ms delay on tap for interactive elements */
   button,
   a,
