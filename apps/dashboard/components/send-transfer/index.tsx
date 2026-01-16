@@ -323,10 +323,10 @@ export function SendTransferDrawer({
           <form onSubmit={handleSubmit} className="flex flex-col flex-1 mt-6">
             <div className="space-y-4 flex-1">
               <div>
-                <label className="text-xs text-neutral-500 mb-1 block">
+                <label className="text-xs text-neutral-500 dark:text-neutral-400 mb-1 block">
                   from
                 </label>
-                <div className="w-full px-3 py-2.5 rounded-lg border border-neutral-200 bg-neutral-50 font-mono text-sm text-neutral-500">
+                <div className="w-full px-3 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 font-mono text-sm text-neutral-500 dark:text-neutral-400">
                   {senderAddress ? truncate(senderAddress) : "not connected"}
                 </div>
               </div>
@@ -360,9 +360,9 @@ export function SendTransferDrawer({
               />
 
               <div>
-                <label className="text-xs text-neutral-500 mb-1 block">
+                <label className="text-xs text-neutral-500 dark:text-neutral-400 mb-1 block">
                   note{" "}
-                  <span className="text-neutral-400">
+                  <span className="text-neutral-400 dark:text-neutral-500">
                     (optional, max 256 chars)
                   </span>
                 </label>
@@ -375,9 +375,11 @@ export function SendTransferDrawer({
                   rows={2}
                   maxLength={256}
                   className={cn(
-                    "w-full px-3 py-2.5 rounded-lg border bg-white text-sm transition-colors resize-none",
+                    "w-full px-3 py-2.5 rounded-lg border bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 transition-colors resize-none",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-vibrant-red focus-visible:border-vibrant-red",
-                    memoError ? "border-red-300" : "border-neutral-200",
+                    memoError
+                      ? "border-red-300 dark:border-red-700"
+                      : "border-neutral-200 dark:border-neutral-700",
                   )}
                 />
                 {memoError && (
@@ -421,23 +423,23 @@ export function SendTransferDrawer({
             )}
 
             {isMobileDeepLink && (
-              <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 mt-4">
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 mt-4">
                 <AlertCircle
-                  className="h-4 w-4 text-amber-600 shrink-0 mt-0.5"
+                  className="h-4 w-4 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5"
                   aria-hidden="true"
                 />
-                <p className="text-xs text-amber-700">
+                <p className="text-xs text-amber-700 dark:text-amber-400">
                   Sending is not yet supported via mobile deep links. Use
                   &quot;Open in wallet browser&quot; for full functionality.
                 </p>
               </div>
             )}
 
-            <div className="flex gap-3 mt-6 pt-4 pb-4 sm:pb-0 border-t border-neutral-200">
+            <div className="flex gap-3 mt-6 pt-4 pb-4 sm:pb-0 border-t border-neutral-200 dark:border-neutral-700">
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 px-4 py-2.5 rounded-lg border border-neutral-200 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors cursor-pointer"
+                className="flex-1 px-4 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
               >
                 cancel
               </button>
@@ -448,7 +450,7 @@ export function SendTransferDrawer({
                   "flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2",
                   isConnected && !isTransferring && !isMobileDeepLink
                     ? "bg-vibrant-red text-white hover:bg-vibrant-red/90 cursor-pointer"
-                    : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
+                    : "bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 cursor-not-allowed",
                 )}
               >
                 <Send className="h-4 w-4" aria-hidden="true" />

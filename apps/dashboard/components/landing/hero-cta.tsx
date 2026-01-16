@@ -22,7 +22,7 @@ export function HeroCTA() {
       ) : (
         <ConnectWalletButton />
       )}
-      <p className="text-xs text-neutral-400 lowercase">
+      <p className="text-xs text-neutral-400 dark:text-neutral-500 lowercase">
         {isConnected
           ? "view your classified transactions"
           : "connect your wallet to get started"}

@@ -18,10 +18,12 @@ export function LabeledAddress({ address, label }: LabeledAddressProps) {
     return (
       <div className="flex flex-col">
         <div className="flex items-center gap-1">
-          <span className="text-sm font-medium text-neutral-900">{label}</span>
+          <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+            {label}
+          </span>
           <CopyButton value={address} />
         </div>
-        <span className="font-mono text-xs text-neutral-400">
+        <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">
           {truncate(address)}
         </span>
       </div>
@@ -30,7 +32,9 @@ export function LabeledAddress({ address, label }: LabeledAddressProps) {
 
   return (
     <div className="flex items-center gap-1">
-      <span className="font-mono text-sm">{truncate(address)}</span>
+      <span className="font-mono text-sm text-neutral-900 dark:text-neutral-100">
+        {truncate(address)}
+      </span>
       <CopyButton value={address} />
     </div>
   );

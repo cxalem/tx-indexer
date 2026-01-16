@@ -22,11 +22,11 @@ export function ProtocolDetectionSection() {
   return (
     <section className="max-w-5xl mx-auto px-4 py-16">
       <h2
-        className={`${bitcountFont.className} text-3xl text-neutral-600 text-center mb-4`}
+        className={`${bitcountFont.className} text-3xl text-neutral-600 dark:text-neutral-400 text-center mb-4`}
       >
         <span className="text-vibrant-red">{"//"}</span> protocol detection
       </h2>
-      <p className="text-center text-neutral-500 mb-8 lowercase">
+      <p className="text-center text-neutral-500 dark:text-neutral-400 mb-8 lowercase">
         recognizes 30+ protocols automatically
       </p>
 
@@ -34,12 +34,12 @@ export function ProtocolDetectionSection() {
         {PROTOCOLS.map((protocol) => (
           <span
             key={protocol}
-            className="px-4 py-2 bg-white border border-neutral-200 rounded-full text-sm text-neutral-700 lowercase"
+            className="px-4 py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-sm text-neutral-700 dark:text-neutral-300 lowercase"
           >
             {protocol}
           </span>
         ))}
-        <span className="px-4 py-2 bg-neutral-100 border border-neutral-200 rounded-full text-sm text-neutral-500 lowercase">
+        <span className="px-4 py-2 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-full text-sm text-neutral-500 dark:text-neutral-400 lowercase">
           +20 more
         </span>
       </div>

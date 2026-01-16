@@ -41,11 +41,11 @@ export function TransactionTypesSection() {
   return (
     <section className="max-w-5xl mx-auto px-4 py-16">
       <h2
-        className={`${bitcountFont.className} text-3xl text-neutral-600 text-center mb-4`}
+        className={`${bitcountFont.className} text-3xl text-neutral-600 dark:text-neutral-400 text-center mb-4`}
       >
         <span className="text-vibrant-red">{"//"}</span> transaction types
       </h2>
-      <p className="text-center text-neutral-500 mb-12 lowercase">
+      <p className="text-center text-neutral-500 dark:text-neutral-400 mb-12 lowercase">
         every transaction automatically categorized
       </p>
 
@@ -53,13 +53,13 @@ export function TransactionTypesSection() {
         {CLASSIFICATION_TYPES.map((type) => (
           <div
             key={type.label}
-            className="border border-neutral-200 rounded-lg p-4 bg-white hover:border-vibrant-red/30 transition-colors text-center"
+            className="border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 bg-white dark:bg-neutral-900 hover:border-vibrant-red/30 transition-colors text-center"
           >
             <type.icon className="w-8 h-8 text-vibrant-red mx-auto mb-3" />
-            <p className="font-semibold text-neutral-900 text-sm lowercase">
+            <p className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm lowercase">
               {type.label}
             </p>
-            <p className="text-xs text-neutral-500 mt-1 lowercase">
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 lowercase">
               {type.description}
             </p>
           </div>

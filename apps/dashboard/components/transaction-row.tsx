@@ -43,7 +43,7 @@ function TransactionRowHeader({
     <button
       type="button"
       onClick={onToggle}
-      className="w-full p-4 hover:bg-neutral-50 transition-colors text-left cursor-pointer"
+      className="w-full p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left cursor-pointer"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -59,11 +59,11 @@ function TransactionRowHeader({
             )}
           </div>
           <div>
-            <p className="font-medium text-neutral-700 capitalize">
+            <p className="font-medium text-neutral-700 dark:text-neutral-300 capitalize">
               {direction.label}
             </p>
             <div className="flex items-center gap-1">
-              <span className="text-sm text-neutral-400 font-mono">
+              <span className="text-sm text-neutral-400 dark:text-neutral-500 font-mono">
                 {truncate(tx.signature)}
               </span>
               <CopyButton value={tx.signature} />
@@ -89,13 +89,13 @@ function TransactionRowHeader({
                 )}
               </div>
             </div>
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-neutral-400 dark:text-neutral-500">
               {formatRelativeTime(tx.blockTime)}
             </p>
           </div>
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-neutral-400 transition-transform duration-200",
+              "h-4 w-4 text-neutral-400 dark:text-neutral-500 transition-transform duration-200",
               isExpanded && "rotate-180",
             )}
             aria-hidden="true"
@@ -147,14 +147,14 @@ function TransactionRowDetails({
     >
       <div className="overflow-hidden">
         <div className="px-4 pb-4 pt-0">
-          <div className="bg-neutral-50 rounded-lg p-4 space-y-4">
+          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 space-y-4">
             <div className="flex items-center gap-2">
               <span
                 className={cn(
                   "text-xs font-medium px-2 py-1 rounded",
                   isSuccess
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700",
+                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                    : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
                 )}
               >
                 {isSuccess ? "success" : "failed"}
@@ -165,14 +165,16 @@ function TransactionRowDetails({
               classification.primaryAmount &&
               classification.secondaryAmount && (
                 <div>
-                  <p className="text-xs text-neutral-500 mb-1">trade details</p>
-                  <div className="flex items-center gap-2 bg-white border rounded-lg w-fit px-3 py-2">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                    trade details
+                  </p>
+                  <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg w-fit px-3 py-2">
                     <TokenIcon
                       symbol={classification.primaryAmount.token.symbol}
                       logoURI={classification.primaryAmount.token.logoURI}
                       size="md"
                     />
-                    <span className="font-mono text-neutral-600 text-lg">
+                    <span className="font-mono text-neutral-600 dark:text-neutral-300 text-lg">
                       {classification.primaryAmount.amountUi.toLocaleString()}{" "}
                       {classification.primaryAmount.token.symbol}
                     </span>
@@ -185,7 +187,7 @@ function TransactionRowDetails({
                       logoURI={classification.secondaryAmount.token.logoURI}
                       size="md"
                     />
-                    <span className="font-mono text-neutral-600 text-lg">
+                    <span className="font-mono text-neutral-600 dark:text-neutral-300 text-lg">
                       {classification.secondaryAmount.amountUi.toLocaleString()}{" "}
                       {classification.secondaryAmount.token.symbol}
                     </span>
@@ -195,7 +197,9 @@ function TransactionRowDetails({
 
             {isNft && nftName && (
               <div>
-                <p className="text-xs text-neutral-500 mb-1">nft</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                  nft
+                </p>
                 <div className="flex items-center gap-3">
                   {nftImage && (
                     <Image
@@ -207,7 +211,9 @@ function TransactionRowDetails({
                       unoptimized
                     />
                   )}
-                  <p className="text-sm font-medium">{nftName}</p>
+                  <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                    {nftName}
+                  </p>
                 </div>
               </div>
             )}
@@ -215,7 +221,9 @@ function TransactionRowDetails({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {classification.sender && (
                 <div>
-                  <p className="text-xs text-neutral-500 mb-1">from</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                    from
+                  </p>
                   <LabeledAddress
                     address={classification.sender}
                     label={labels?.get(classification.sender)}
@@ -225,7 +233,9 @@ function TransactionRowDetails({
 
               {classification.receiver && (
                 <div>
-                  <p className="text-xs text-neutral-500 mb-1">to</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                    to
+                  </p>
                   <LabeledAddress
                     address={classification.receiver}
                     label={labels?.get(classification.receiver)}
@@ -236,25 +246,39 @@ function TransactionRowDetails({
 
             {tx.memo && (
               <div>
-                <p className="text-xs text-neutral-500 mb-1">memo</p>
-                <p className="text-sm bg-white rounded p-2 border border-neutral-200">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                  memo
+                </p>
+                <p className="text-sm bg-white dark:bg-neutral-900 rounded p-2 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100">
                   {tx.memo}
                 </p>
               </div>
             )}
 
-            <div className="grid grid-cols-3 gap-4 pt-2 border-t border-neutral-200">
+            <div className="grid grid-cols-3 gap-4 pt-2 border-t border-neutral-200 dark:border-neutral-700">
               <div>
-                <p className="text-xs text-neutral-500 mb-1">date</p>
-                <p className="text-sm">{formatDateOnly(tx.blockTime)}</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                  date
+                </p>
+                <p className="text-sm text-neutral-900 dark:text-neutral-100">
+                  {formatDateOnly(tx.blockTime)}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-neutral-500 mb-1">time</p>
-                <p className="text-sm">{formatTime(tx.blockTime)}</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                  time
+                </p>
+                <p className="text-sm text-neutral-900 dark:text-neutral-100">
+                  {formatTime(tx.blockTime)}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-neutral-500 mb-1">fee</p>
-                <p className="text-sm font-mono">{fee.toFixed(6)} SOL</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                  fee
+                </p>
+                <p className="text-sm font-mono text-neutral-900 dark:text-neutral-100">
+                  {fee.toFixed(6)} SOL
+                </p>
               </div>
             </div>
 
@@ -324,7 +348,7 @@ export const TransactionRow = memo(function TransactionRow({
   return (
     <div
       className={cn(
-        "transaction-row border-b border-neutral-100 last:border-b-0 transition-all duration-500",
+        "transaction-row border-b border-neutral-100 dark:border-neutral-800 last:border-b-0 transition-all duration-500",
         newAnimationClass,
       )}
     >

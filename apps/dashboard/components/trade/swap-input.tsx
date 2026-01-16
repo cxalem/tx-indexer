@@ -33,18 +33,22 @@ export function SwapInput({
   return (
     <div
       className={cn(
-        "rounded-lg border border-neutral-200 p-4",
-        isOutput && "bg-neutral-50",
+        "rounded-lg border border-neutral-200 dark:border-neutral-700 p-4",
+        isOutput && "bg-neutral-50 dark:bg-neutral-800",
       )}
     >
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs text-neutral-500">{label}</p>
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          {label}
+        </p>
         {balance !== null && !isOutput && (
           <div className="flex items-center gap-2">
             <span
               className={cn(
                 "text-xs",
-                hasError ? "text-red-500" : "text-neutral-500",
+                hasError
+                  ? "text-red-500"
+                  : "text-neutral-500 dark:text-neutral-400",
               )}
             >
               balance:{" "}
@@ -66,13 +70,15 @@ export function SwapInput({
       </div>
       <div className="flex items-center gap-3">
         {isOutput ? (
-          <div className="flex-1 text-2xl font-mono text-neutral-700">
+          <div className="flex-1 text-2xl font-mono text-neutral-700 dark:text-neutral-300">
             {isLoading ? (
               <Loader2 className="h-6 w-6 animate-spin text-neutral-400" />
             ) : value ? (
               value
             ) : (
-              <span className="text-neutral-400">0.00</span>
+              <span className="text-neutral-400 dark:text-neutral-500">
+                0.00
+              </span>
             )}
           </div>
         ) : (
@@ -88,7 +94,7 @@ export function SwapInput({
             }}
             placeholder="0.00"
             className={cn(
-              "flex-1 min-w-0 text-2xl font-mono bg-transparent outline-none",
+              "flex-1 min-w-0 text-2xl font-mono bg-transparent outline-none text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500",
               hasError && "text-red-500",
             )}
           />

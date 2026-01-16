@@ -58,7 +58,9 @@ export function RecipientInput({
 
   return (
     <div className="relative" ref={autocompleteRef}>
-      <label className="text-xs text-neutral-500 mb-1 block">to</label>
+      <label className="text-xs text-neutral-500 dark:text-neutral-400 mb-1 block">
+        to
+      </label>
       <div className="relative">
         <input
           type="text"
@@ -81,13 +83,15 @@ export function RecipientInput({
               : "Enter recipient address"
           }
           className={cn(
-            "w-full px-3 py-2.5 rounded-lg border bg-white font-mono text-sm transition-colors",
+            "w-full px-3 py-2.5 rounded-lg border bg-white dark:bg-neutral-800 font-mono text-sm text-neutral-900 dark:text-neutral-100 transition-colors",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-vibrant-red focus-visible:border-vibrant-red",
-            error ? "border-red-400" : "border-neutral-200",
+            error
+              ? "border-red-400 dark:border-red-700"
+              : "border-neutral-200 dark:border-neutral-700",
           )}
         />
         {currentLabel && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-green-50 text-green-700 px-2 py-0.5 rounded text-xs">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded text-xs">
             <Tag className="h-3 w-3" />
             {currentLabel}
           </div>
@@ -95,21 +99,23 @@ export function RecipientInput({
       </div>
 
       {showAutocomplete && filteredLabels.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-neutral-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
           {filteredLabels.map((label) => (
             <button
               key={label.id}
               type="button"
               onClick={() => onSelectLabel(label)}
-              className="w-full px-3 py-2 text-left hover:bg-neutral-50 transition-colors flex items-center justify-between cursor-pointer"
+              className="w-full px-3 py-2 text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex items-center justify-between cursor-pointer"
             >
               <div>
-                <p className="text-sm font-medium">{label.label}</p>
-                <p className="text-xs text-neutral-500 font-mono">
+                <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                  {label.label}
+                </p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
                   {truncate(label.address)}
                 </p>
               </div>
-              <Tag className="h-3 w-3 text-neutral-400" />
+              <Tag className="h-3 w-3 text-neutral-400 dark:text-neutral-500" />
             </button>
           ))}
         </div>
@@ -125,7 +131,7 @@ export function RecipientInput({
           <button
             type="button"
             onClick={onShowSignInPrompt}
-            className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1 cursor-pointer"
+            className="text-xs text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400 flex items-center gap-1 cursor-pointer"
           >
             <LogIn className="h-3 w-3" />
             sign in to use saved contacts

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 
 export function NoisyBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -52,7 +54,7 @@ export function NoisyBackground() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [resolvedTheme]);
 
   return (
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: -1 }}>
@@ -66,7 +68,12 @@ export function NoisyBackground() {
           />
           <feColorMatrix type="saturate" values="0" />
         </filter>
-        <rect width="100%" height="100%" filter="url(#noise)" opacity="0.4" />
+        <rect
+          width="100%"
+          height="100%"
+          filter="url(#noise)"
+          className="opacity-40 dark:opacity-20"
+        />
       </svg>
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
     </div>

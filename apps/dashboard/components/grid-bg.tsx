@@ -16,7 +16,12 @@ export function GridBackground({
   innerOpacity = 0.02,
 }: GridBackgroundProps) {
   return (
-    <div className={cn("fixed inset-0 -z-20", className)}>
+    <div
+      className={cn(
+        "fixed inset-0 -z-20 text-neutral-900 dark:text-neutral-100",
+        className,
+      )}
+    >
       <div
         className="absolute inset-0"
         style={{

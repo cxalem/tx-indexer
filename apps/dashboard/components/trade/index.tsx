@@ -213,10 +213,10 @@ export function TradeDrawer({
                   type="button"
                   onClick={handleSwapDirection}
                   aria-label="Swap token direction"
-                  className="p-2 rounded-full border border-neutral-200 bg-white hover:bg-neutral-50 transition-colors cursor-pointer"
+                  className="p-2 rounded-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                 >
                   <ArrowUpDown
-                    className="h-4 w-4 text-neutral-500"
+                    className="h-4 w-4 text-neutral-500 dark:text-neutral-400"
                     aria-hidden="true"
                   />
                 </button>
@@ -247,12 +247,12 @@ export function TradeDrawer({
               {quote && <PriceImpactWarning priceImpact={priceImpact} />}
 
               {isMobileDeepLink && (
-                <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
                   <AlertCircle
-                    className="h-4 w-4 text-amber-600 shrink-0 mt-0.5"
+                    className="h-4 w-4 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5"
                     aria-hidden="true"
                   />
-                  <p className="text-xs text-amber-700">
+                  <p className="text-xs text-amber-700 dark:text-amber-400">
                     Trading is not yet supported via mobile deep links. Use
                     &quot;Open in wallet browser&quot; for full functionality.
                   </p>
@@ -260,11 +260,11 @@ export function TradeDrawer({
               )}
             </div>
 
-            <div className="flex gap-3 mt-6 pt-4 pb-4 sm:pb-0 border-t border-neutral-200">
+            <div className="flex gap-3 mt-6 pt-4 pb-4 sm:pb-0 border-t border-neutral-200 dark:border-neutral-700">
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 px-4 py-2.5 rounded-lg border border-neutral-200 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors cursor-pointer"
+                className="flex-1 px-4 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
               >
                 cancel
               </button>
@@ -276,7 +276,7 @@ export function TradeDrawer({
                   "flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2",
                   canTrade
                     ? "bg-vibrant-red text-white hover:bg-vibrant-red/90 cursor-pointer"
-                    : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
+                    : "bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 cursor-not-allowed",
                 )}
               >
                 <ArrowLeftRight className="h-4 w-4" aria-hidden="true" />

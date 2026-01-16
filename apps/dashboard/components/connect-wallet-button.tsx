@@ -558,27 +558,27 @@ function ConnectWalletButtonInner() {
           <div
             role="menu"
             aria-orientation="vertical"
-            className="absolute right-0 z-10 mt-2 w-full min-w-[240px] rounded-lg border border-neutral-200 bg-white shadow-lg animate-dropdown-in"
+            className="absolute right-0 z-10 mt-2 w-full min-w-[240px] rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg animate-dropdown-in"
           >
             {isConnected ? (
               <div className="p-2 space-y-2">
-                <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
+                <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 px-3 py-2">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-xs font-medium text-neutral-500">
+                    <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
                       {isSessionExpired ? "wallet connected" : "signed in"}
                     </p>
                     {isAuthenticated ? (
-                      <span className="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                      <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-1.5 py-0.5 rounded">
                         active
                       </span>
                     ) : (
-                      <span className="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded flex items-center gap-1">
+                      <span className="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" aria-hidden="true" />
                         session expired
                       </span>
                     )}
                   </div>
-                  <p className="font-mono text-sm text-neutral-900">
+                  <p className="font-mono text-sm text-neutral-900 dark:text-neutral-100">
                     {truncate(address ?? "")}
                   </p>
                 </div>
@@ -619,7 +619,7 @@ function ConnectWalletButtonInner() {
                   type="button"
                   role="menuitem"
                   onClick={() => void handleDisconnect()}
-                  className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer"
+                  className="w-full px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer text-neutral-900 dark:text-neutral-100"
                 >
                   sign out
                 </button>
@@ -628,7 +628,7 @@ function ConnectWalletButtonInner() {
               <div className="pb-2">
                 {showDesktopOptions && (
                   <>
-                    <p className="text-xs font-medium text-neutral-500 px-3 py-2">
+                    <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 px-3 py-2">
                       browser wallets
                     </p>
                     <div className="space-y-1">
@@ -640,10 +640,13 @@ function ConnectWalletButtonInner() {
                           onClick={() =>
                             void handleDesktopConnect(connector.id)
                           }
-                          className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors flex justify-between items-center cursor-pointer"
+                          className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex justify-between items-center cursor-pointer text-neutral-900 dark:text-neutral-100"
                         >
                           <span>{connector.label}</span>
-                          <span className="text-neutral-400" aria-hidden="true">
+                          <span
+                            className="text-neutral-400 dark:text-neutral-500"
+                            aria-hidden="true"
+                          >
                             →
                           </span>
                         </button>
@@ -654,7 +657,7 @@ function ConnectWalletButtonInner() {
 
                 {showMobileOptions && (
                   <>
-                    <p className="text-xs font-medium text-neutral-500 px-3 py-2">
+                    <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 px-3 py-2">
                       mobile wallets
                     </p>
                     <div className="space-y-1">
@@ -664,16 +667,19 @@ function ConnectWalletButtonInner() {
                           type="button"
                           role="menuitem"
                           onClick={() => handleMobileConnect(mobileWallet.id)}
-                          className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors flex justify-between items-center cursor-pointer"
+                          className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex justify-between items-center cursor-pointer text-neutral-900 dark:text-neutral-100"
                         >
                           <div className="flex items-center gap-2">
                             <Smartphone
-                              className="h-4 w-4 text-neutral-400"
+                              className="h-4 w-4 text-neutral-400 dark:text-neutral-500"
                               aria-hidden="true"
                             />
                             <span>{mobileWallet.label}</span>
                           </div>
-                          <span className="text-neutral-400" aria-hidden="true">
+                          <span
+                            className="text-neutral-400 dark:text-neutral-500"
+                            aria-hidden="true"
+                          >
                             →
                           </span>
                         </button>
@@ -682,10 +688,13 @@ function ConnectWalletButtonInner() {
                         type="button"
                         role="menuitem"
                         onClick={handleOpenInWallet}
-                        className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors flex justify-between items-center cursor-pointer text-neutral-500"
+                        className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex justify-between items-center cursor-pointer text-neutral-500 dark:text-neutral-400"
                       >
                         <span>open in wallet browser</span>
-                        <span className="text-neutral-400" aria-hidden="true">
+                        <span
+                          className="text-neutral-400 dark:text-neutral-500"
+                          aria-hidden="true"
+                        >
                           →
                         </span>
                       </button>
@@ -696,7 +705,7 @@ function ConnectWalletButtonInner() {
                 {showPWAOptions && (
                   <>
                     <div className="px-3 py-2">
-                      <p className="text-xs text-neutral-500 mb-2">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">
                         For the best experience, open this app in your
                         wallet&apos;s browser
                       </p>
@@ -706,16 +715,19 @@ function ConnectWalletButtonInner() {
                         type="button"
                         role="menuitem"
                         onClick={handleOpenInWallet}
-                        className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors flex justify-between items-center cursor-pointer"
+                        className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex justify-between items-center cursor-pointer text-neutral-900 dark:text-neutral-100"
                       >
                         <div className="flex items-center gap-2">
                           <Smartphone
-                            className="h-4 w-4 text-neutral-400"
+                            className="h-4 w-4 text-neutral-400 dark:text-neutral-500"
                             aria-hidden="true"
                           />
                           <span>open in Phantom</span>
                         </div>
-                        <span className="text-neutral-400" aria-hidden="true">
+                        <span
+                          className="text-neutral-400 dark:text-neutral-500"
+                          aria-hidden="true"
+                        >
                           →
                         </span>
                       </button>
@@ -724,7 +736,7 @@ function ConnectWalletButtonInner() {
                 )}
 
                 {connectionMode === "desktop" && (
-                  <div className="border-t border-neutral-100 mt-2 pt-2">
+                  <div className="border-t border-neutral-100 dark:border-neutral-700 mt-2 pt-2">
                     <button
                       type="button"
                       role="menuitem"
@@ -732,13 +744,16 @@ function ConnectWalletButtonInner() {
                         setOpen(false);
                         setShowQrModal(true);
                       }}
-                      className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors flex justify-between items-center cursor-pointer text-neutral-500"
+                      className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex justify-between items-center cursor-pointer text-neutral-500 dark:text-neutral-400"
                     >
                       <div className="flex items-center gap-2">
                         <QrCode className="h-4 w-4" aria-hidden="true" />
                         <span>scan with mobile</span>
                       </div>
-                      <span className="text-neutral-400" aria-hidden="true">
+                      <span
+                        className="text-neutral-400 dark:text-neutral-500"
+                        aria-hidden="true"
+                      >
                         →
                       </span>
                     </button>
@@ -746,7 +761,11 @@ function ConnectWalletButtonInner() {
                 )}
               </div>
             )}
-            {error && <p className="px-3 pb-2 text-sm text-red-600">{error}</p>}
+            {error && (
+              <p className="px-3 pb-2 text-sm text-red-600 dark:text-red-400">
+                {error}
+              </p>
+            )}
           </div>
         )}
       </div>

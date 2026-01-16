@@ -69,39 +69,48 @@ export function DashboardContent() {
     return (
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <div className="border border-neutral-200 rounded-lg bg-white p-6">
+          <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-lg bg-neutral-100">
+              <div className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800">
                 <Wallet
-                  className="h-5 w-5 text-neutral-400"
+                  className="h-5 w-5 text-neutral-400 dark:text-neutral-500"
                   aria-hidden="true"
                 />
               </div>
-              <span className="text-neutral-500">portfolio</span>
+              <span className="text-neutral-500 dark:text-neutral-400">
+                portfolio
+              </span>
             </div>
-            <p className="text-2xl font-mono text-neutral-300">—</p>
+            <p className="text-2xl font-mono text-neutral-300 dark:text-neutral-600">
+              —
+            </p>
           </div>
         </div>
 
         <div>
           <div className="mb-4">
             <h2
-              className={`${bitcountFont.className} text-2xl text-neutral-600`}
+              className={`${bitcountFont.className} text-2xl text-neutral-600 dark:text-neutral-400`}
             >
               <span className="text-vibrant-red">{"//"}</span> recent
               transactions
             </h2>
-            <p className="text-sm text-neutral-400 mt-1 flex items-center gap-1.5">
+            <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-1 flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5" aria-hidden="true" />
               Statement window: last {STATEMENT_WINDOW_DAYS} days
             </p>
           </div>
-          <div className="border border-neutral-200 rounded-lg bg-white p-8 text-center">
-            <div className="w-12 h-12 rounded-full bg-neutral-100 mx-auto mb-4 flex items-center justify-center">
-              <Inbox className="h-6 w-6 text-neutral-400" aria-hidden="true" />
+          <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 p-8 text-center">
+            <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 mx-auto mb-4 flex items-center justify-center">
+              <Inbox
+                className="h-6 w-6 text-neutral-400 dark:text-neutral-500"
+                aria-hidden="true"
+              />
             </div>
-            <p className="text-neutral-600 mb-1">connect your wallet</p>
-            <p className="text-sm text-neutral-400">
+            <p className="text-neutral-600 dark:text-neutral-400 mb-1">
+              connect your wallet
+            </p>
+            <p className="text-sm text-neutral-400 dark:text-neutral-500">
               to view your recent transactions
             </p>
           </div>
@@ -120,12 +129,12 @@ export function DashboardContent() {
         <div>
           <div className="mb-4">
             <h2
-              className={`${bitcountFont.className} text-2xl text-neutral-600`}
+              className={`${bitcountFont.className} text-2xl text-neutral-600 dark:text-neutral-400`}
             >
               <span className="text-vibrant-red">{"//"}</span> recent
               transactions
             </h2>
-            <p className="text-sm text-neutral-400 mt-1 flex items-center gap-1.5">
+            <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-1 flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5" aria-hidden="true" />
               Statement window: last {STATEMENT_WINDOW_DAYS} days
             </p>

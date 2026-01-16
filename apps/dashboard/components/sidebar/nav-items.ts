@@ -5,7 +5,6 @@ import {
   Target,
   Settings,
   Coins,
-  Send,
   type LucideIcon,
 } from "lucide-react";
 

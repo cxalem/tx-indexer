@@ -11,7 +11,7 @@ export function FooterCTA() {
 
   return (
     <>
-      <p className="text-neutral-600 mb-8 lowercase">
+      <p className="text-neutral-600 dark:text-neutral-400 mb-8 lowercase">
         {isConnected
           ? "your wallet is connected. view your transactions."
           : "connect your wallet to get started."}

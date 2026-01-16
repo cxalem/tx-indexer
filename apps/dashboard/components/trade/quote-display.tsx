@@ -30,9 +30,9 @@ export function QuoteDisplay({
 
   return (
     <div className="text-center py-2">
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-neutral-500 dark:text-neutral-400">
         1 {inputToken.symbol} ≈{" "}
-        <span className="font-medium text-neutral-700">
+        <span className="font-medium text-neutral-700 dark:text-neutral-300">
           {rate.toFixed(inputToken.symbol === "SOL" ? 2 : 6)}{" "}
           {outputToken.symbol}
         </span>
@@ -42,7 +42,7 @@ export function QuoteDisplay({
           <button
             type="button"
             onClick={onRefresh}
-            className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1 cursor-pointer"
+            className="text-xs text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400 flex items-center gap-1 cursor-pointer"
           >
             <RefreshCw className="h-3 w-3" />
             Quote expired - click to refresh
@@ -52,8 +52,8 @@ export function QuoteDisplay({
             className={cn(
               "text-xs",
               quoteSecondsRemaining <= 10
-                ? "text-amber-600"
-                : "text-neutral-400",
+                ? "text-amber-600 dark:text-amber-500"
+                : "text-neutral-400 dark:text-neutral-500",
             )}
           >
             Quote updates in {quoteSecondsRemaining}s
@@ -72,8 +72,8 @@ export function PriceImpactWarning({ priceImpact }: PriceImpactWarningProps) {
   if (priceImpact <= 1) return null;
 
   return (
-    <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
-      <p className="text-sm text-amber-700">
+    <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3">
+      <p className="text-sm text-amber-700 dark:text-amber-400">
         This trade may result in less tokens than expected due to low liquidity.
         Consider trading a smaller amount.
       </p>

@@ -8,6 +8,7 @@ import { SidebarNav } from "./sidebar-nav";
 import { mainNavItems, bottomNavItems } from "./nav-items";
 import { useUnifiedWallet } from "@/hooks/use-unified-wallet";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const SendTransferDrawer = dynamic(
   () =>
@@ -80,7 +81,7 @@ export function MobileSidebar() {
       {/* Hamburger button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden p-2 -ml-2 text-neutral-600 hover:text-neutral-900 transition-colors"
+        className="md:hidden p-2 -ml-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
         aria-label="Open menu"
       >
         <Menu className="w-6 h-6" />
@@ -96,18 +97,20 @@ export function MobileSidebar() {
 
       {/* Drawer */}
       <div
-        className={`fixed inset-y-0 left-0 w-64 bg-white z-50 transform transition-transform duration-200 ease-out md:hidden flex flex-col ${
+        className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-neutral-900 z-50 transform transition-transform duration-200 ease-out md:hidden flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-neutral-200">
-          <h1 className={`${bitcountFont.className} text-xl text-neutral-900`}>
+        <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
+          <h1
+            className={`${bitcountFont.className} text-xl text-neutral-900 dark:text-neutral-100`}
+          >
             <span className="text-vibrant-red">{"//"}</span> dashboard
           </h1>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-1 text-neutral-600 hover:text-neutral-900 transition-colors"
+            className="p-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />
@@ -125,7 +128,7 @@ export function MobileSidebar() {
             <button
               type="button"
               onClick={handleReceive}
-              className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer w-full border border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+              className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer w-full border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
             >
               <QrCode className="w-4 h-4" />
               <span className="lowercase">receive</span>
@@ -142,8 +145,9 @@ export function MobileSidebar() {
         )}
 
         {/* Bottom nav */}
-        <div className="p-3 border-t border-neutral-200">
+        <div className="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
           <SidebarNav items={bottomNavItems} onAction={handleAction} />
+          <ThemeToggle />
         </div>
       </div>
 

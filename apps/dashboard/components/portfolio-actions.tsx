@@ -55,14 +55,14 @@ export function PortfolioActions({
     <>
       <div className="flex items-center gap-1.5 sm:gap-2" ref={menuRef}>
         {isAuthLoading ? (
-          <div className="w-9 h-9 rounded-lg bg-neutral-100 animate-pulse" />
+          <div className="w-9 h-9 rounded-lg bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
         ) : isAuthenticated ? (
           <button
             type="button"
             onClick={() => setLabelDrawerOpen(true)}
             className={cn(
-              "p-2 rounded-lg border border-neutral-200 transition-colors cursor-pointer",
-              "hover:bg-neutral-50 text-neutral-500",
+              "p-2 rounded-lg border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer",
+              "hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400",
             )}
             title="Label a wallet"
           >
@@ -87,24 +87,24 @@ export function PortfolioActions({
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
             className={cn(
-              "p-1.5 rounded-lg border border-neutral-200 transition-colors cursor-pointer",
-              "hover:bg-neutral-50 text-neutral-500",
+              "p-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer",
+              "hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400",
             )}
           >
             <MoreHorizontal className="h-4 w-4" />
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-full mt-1 z-20 min-w-[120px] rounded-lg border border-neutral-200 bg-white shadow-lg py-1">
+            <div className="absolute right-0 top-full mt-1 z-20 min-w-[120px] rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg py-1">
               <button
                 type="button"
                 onClick={() => {
                   setReceiveOpen(true);
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
               >
-                <QrCode className="h-4 w-4 text-neutral-400" />
+                <QrCode className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                 receive
               </button>
               <button
@@ -113,9 +113,9 @@ export function PortfolioActions({
                   onTrade();
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
               >
-                <ArrowLeftRight className="h-4 w-4 text-neutral-400" />
+                <ArrowLeftRight className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                 trade
               </button>
               <button
@@ -124,9 +124,9 @@ export function PortfolioActions({
                   onEarn();
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors cursor-pointer"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
               >
-                <TrendingUp className="h-4 w-4 text-neutral-400" />
+                <TrendingUp className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                 earn
               </button>
             </div>

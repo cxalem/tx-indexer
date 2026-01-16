@@ -34,11 +34,15 @@ export function AmountInput({
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <label className="text-xs text-neutral-500">amount</label>
+        <label className="text-xs text-neutral-500 dark:text-neutral-400">
+          amount
+        </label>
         <span
           className={cn(
             "text-xs",
-            insufficientBalance ? "text-red-500" : "text-neutral-500",
+            insufficientBalance
+              ? "text-red-500"
+              : "text-neutral-500 dark:text-neutral-400",
           )}
         >
           {isLoadingBalance ? (
@@ -54,7 +58,7 @@ export function AmountInput({
         </span>
       </div>
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-neutral-400 font-medium">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-neutral-400 dark:text-neutral-500 font-medium">
           $
         </span>
         <input
@@ -70,12 +74,14 @@ export function AmountInput({
           onBlur={onBlur}
           placeholder="0.00"
           className={cn(
-            "w-full pl-10 pr-16 py-4 rounded-lg border bg-white font-mono text-2xl transition-colors",
+            "w-full pl-10 pr-16 py-4 rounded-lg border bg-white dark:bg-neutral-800 font-mono text-2xl text-neutral-900 dark:text-neutral-100 transition-colors",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-vibrant-red focus-visible:border-vibrant-red",
-            error ? "border-red-400" : "border-neutral-200",
+            error
+              ? "border-red-400 dark:border-red-700"
+              : "border-neutral-200 dark:border-neutral-700",
           )}
         />
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-neutral-500 font-medium">
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
           USDC
         </div>
       </div>

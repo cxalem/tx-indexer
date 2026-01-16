@@ -32,16 +32,21 @@ export function PortfolioCard({
   const unpriced = portfolio?.unpricedCount ?? 0;
 
   return (
-    <div className="border border-neutral-200 rounded-lg bg-white p-4 sm:p-6">
+    <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-2 rounded-lg bg-neutral-100 shrink-0">
-            <Wallet className="h-5 w-5 text-neutral-600" aria-hidden="true" />
+          <div className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 shrink-0">
+            <Wallet
+              className="h-5 w-5 text-neutral-600 dark:text-neutral-400"
+              aria-hidden="true"
+            />
           </div>
-          <span className="text-neutral-500 shrink-0">portfolio</span>
+          <span className="text-neutral-500 dark:text-neutral-400 shrink-0">
+            portfolio
+          </span>
           {walletAddress && (
             <div className="flex items-center gap-1 min-w-0">
-              <span className="text-sm text-neutral-400 font-mono truncate">
+              <span className="text-sm text-neutral-400 dark:text-neutral-500 font-mono truncate">
                 {truncate(walletAddress)}
               </span>
               <CopyButton value={walletAddress} />
@@ -54,10 +59,10 @@ export function PortfolioCard({
           onTrade={onTrade}
         />
       </div>
-      <p className="text-2xl sm:text-3xl font-mono text-neutral-900 mb-2">
+      <p className="text-2xl sm:text-3xl font-mono text-neutral-900 dark:text-neutral-100 mb-2">
         {formatUsd(total)}
       </p>
-      <p className="text-xs sm:text-sm text-neutral-500">
+      <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
         <span className="whitespace-nowrap">
           stablecoins {formatUsd(stablecoins)}
         </span>
@@ -66,7 +71,7 @@ export function PortfolioCard({
           variable assets {formatUsd(variable)}
         </span>
         {unpriced > 0 && (
-          <span className="text-neutral-400 whitespace-nowrap">
+          <span className="text-neutral-400 dark:text-neutral-500 whitespace-nowrap">
             {" "}
             · +{unpriced} unpriced
           </span>

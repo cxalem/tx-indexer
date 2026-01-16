@@ -29,7 +29,7 @@ export function HowItWorksSection() {
   return (
     <section className="max-w-4xl mx-auto px-4 py-16">
       <h2
-        className={`${bitcountFont.className} text-3xl text-neutral-600 text-center mb-12`}
+        className={`${bitcountFont.className} text-3xl text-neutral-600 dark:text-neutral-400 text-center mb-12`}
       >
         <span className="text-vibrant-red">{"//"}</span> how it works
       </h2>
@@ -40,10 +40,10 @@ export function HowItWorksSection() {
             <div className="w-12 h-12 bg-vibrant-red text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
               {step.number}
             </div>
-            <h3 className="font-semibold text-neutral-900 mb-2 lowercase">
+            <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-2 lowercase">
               {step.title}
             </h3>
-            <p className="text-sm text-neutral-600 lowercase">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 lowercase">
               {step.description}
             </p>
           </div>

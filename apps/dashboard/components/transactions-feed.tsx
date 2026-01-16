@@ -124,12 +124,17 @@ export function TransactionsFeed({
     return (
       <div>
         <FeedHeader onRefresh={handleRefresh} isRefreshing={isFetching} />
-        <div className="border border-neutral-200 rounded-lg bg-white p-8 text-center">
-          <div className="w-12 h-12 rounded-full bg-neutral-100 mx-auto mb-4 flex items-center justify-center">
-            <Inbox className="h-6 w-6 text-neutral-400" aria-hidden="true" />
+        <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 p-8 text-center">
+          <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 mx-auto mb-4 flex items-center justify-center">
+            <Inbox
+              className="h-6 w-6 text-neutral-400 dark:text-neutral-500"
+              aria-hidden="true"
+            />
           </div>
-          <p className="text-neutral-600 mb-1">no transactions found</p>
-          <p className="text-sm text-neutral-400">
+          <p className="text-neutral-600 dark:text-neutral-400 mb-1">
+            no transactions found
+          </p>
+          <p className="text-sm text-neutral-400 dark:text-neutral-500">
             your recent activity will appear here
           </p>
         </div>
@@ -195,16 +200,18 @@ function FeedHeader({
     <div className="mb-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className={`${bitcountFont.className} text-2xl text-neutral-600`}>
+          <h2
+            className={`${bitcountFont.className} text-2xl text-neutral-600 dark:text-neutral-400`}
+          >
             <span className="text-vibrant-red">{"//"}</span> recent transactions
           </h2>
           <div className="flex items-center gap-2 mt-1">
-            <p className="text-sm text-neutral-400 flex items-center gap-1.5">
+            <p className="text-sm text-neutral-400 dark:text-neutral-500 flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5" aria-hidden="true" />
               Statement window: last {STATEMENT_WINDOW_DAYS} days
             </p>
             {isCheckingForNew && (
-              <span className="text-xs text-neutral-400 flex items-center gap-1 bg-neutral-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-neutral-400 dark:text-neutral-500 flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-full">
                 <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
                 Checking for new…
               </span>
@@ -217,7 +224,7 @@ function FeedHeader({
           disabled={isRefreshing}
           aria-label="Refresh transactions"
           className={cn(
-            "p-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-colors cursor-pointer",
+            "p-2 rounded-lg text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer",
             isRefreshing && "animate-spin",
           )}
         >
@@ -248,9 +255,15 @@ const DayGroup = memo(function DayGroup({
   return (
     <div>
       <div className="flex items-center justify-between px-1 mb-2">
-        <span className="font-bold text-neutral-600">{displayDate}</span>
+        <span className="font-bold text-neutral-600 dark:text-neutral-400">
+          {displayDate}
+        </span>
         {dailyTotal && (
-          <span className={"text-sm font-mono text-neutral-400"}>
+          <span
+            className={
+              "text-sm font-mono text-neutral-400 dark:text-neutral-500"
+            }
+          >
             {dailyTotal.isPositive ? "+" : ""}
             {dailyTotal.netAmount.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -260,7 +273,7 @@ const DayGroup = memo(function DayGroup({
           </span>
         )}
       </div>
-      <div className="border border-neutral-200 rounded-lg bg-white overflow-hidden">
+      <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 overflow-hidden">
         {transactions.map((tx) => (
           <TransactionRow
             key={tx.tx.signature}
@@ -279,10 +292,10 @@ function DayGroupSkeleton() {
   return (
     <div>
       <div className="flex items-center justify-between px-1 mb-2">
-        <div className="h-4 w-16 bg-neutral-200 rounded animate-pulse" />
-        <div className="h-4 w-20 bg-neutral-200 rounded animate-pulse" />
+        <div className="h-4 w-16 bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse" />
+        <div className="h-4 w-20 bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse" />
       </div>
-      <div className="border border-neutral-200 rounded-lg bg-white overflow-hidden">
+      <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 overflow-hidden">
         {Array.from({ length: 3 }).map((_, i) => (
           <TransactionRowSkeleton key={i} />
         ))}
@@ -295,16 +308,16 @@ function StatementCutoffFooter() {
   return (
     <div className="py-6 text-center">
       <div className="flex items-center justify-center gap-3 mb-3">
-        <div className="h-px flex-1 bg-neutral-200" />
-        <span className="text-sm font-medium text-neutral-500">
+        <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
+        <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
           End of statement
         </span>
-        <div className="h-px flex-1 bg-neutral-200" />
+        <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
       </div>
-      <p className="text-sm text-neutral-500 mb-1">
+      <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-1">
         You&apos;re viewing the last 31 days.
       </p>
-      <p className="text-sm text-neutral-400">
+      <p className="text-sm text-neutral-400 dark:text-neutral-500">
         Older statements require a request (coming soon).
       </p>
     </div>

@@ -40,8 +40,8 @@ export function TokenSelector({
         onClick={() => !disabled && setOpen(!open)}
         disabled={disabled}
         className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 bg-white",
-          "hover:bg-neutral-50 transition-colors min-w-[120px] cursor-pointer",
+          "flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800",
+          "hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors min-w-[120px] cursor-pointer",
           disabled && "opacity-50 cursor-not-allowed",
         )}
       >
@@ -55,12 +55,14 @@ export function TokenSelector({
             className="w-5 h-5 rounded-full object-cover flex-shrink-0"
           />
         )}
-        <span className="font-medium">{selectedToken.symbol}</span>
-        <ChevronDown className="h-4 w-4 text-neutral-400 ml-auto flex-shrink-0" />
+        <span className="font-medium text-neutral-900 dark:text-neutral-100">
+          {selectedToken.symbol}
+        </span>
+        <ChevronDown className="h-4 w-4 text-neutral-400 dark:text-neutral-500 ml-auto flex-shrink-0" />
       </button>
 
       {open && (
-        <div className="absolute z-10 mt-1 w-full min-w-[160px] rounded-lg border border-neutral-200 bg-white shadow-lg py-1">
+        <div className="absolute z-10 mt-1 w-full min-w-[160px] rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg py-1">
           {tokens.map((token) => (
             <button
               key={token.mint}
@@ -70,8 +72,9 @@ export function TokenSelector({
                 setOpen(false);
               }}
               className={cn(
-                "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 transition-colors cursor-pointer",
-                token.mint === selectedToken.mint && "bg-neutral-50",
+                "w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer",
+                token.mint === selectedToken.mint &&
+                  "bg-neutral-50 dark:bg-neutral-700",
               )}
             >
               {token.logoUrl && (
@@ -85,8 +88,12 @@ export function TokenSelector({
                 />
               )}
               <div>
-                <p className="font-medium">{token.symbol}</p>
-                <p className="text-xs text-neutral-500">{token.name}</p>
+                <p className="font-medium text-neutral-900 dark:text-neutral-100">
+                  {token.symbol}
+                </p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {token.name}
+                </p>
               </div>
             </button>
           ))}
