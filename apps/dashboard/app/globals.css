@@ -105,7 +105,7 @@
     forwards;
 }
 
-/* New transaction animations */
+/* New transaction animations - Light mode */
 @keyframes new-transaction-incoming {
   0% {
     background-color: rgb(187 247 208 / 0.7); /* green-200 with opacity */
@@ -151,6 +151,52 @@
   }
 }
 
+/* New transaction animations - Dark mode */
+@keyframes new-transaction-incoming-dark {
+  0% {
+    background-color: rgb(22 101 52 / 0.7); /* green-800 with opacity */
+    transform: scale(1.01);
+  }
+  50% {
+    background-color: rgb(22 101 52 / 0.4);
+    transform: scale(1);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+@keyframes new-transaction-outgoing-dark {
+  0% {
+    background-color: rgb(153 27 27 / 0.7); /* red-800 with opacity */
+    transform: scale(1.01);
+  }
+  50% {
+    background-color: rgb(153 27 27 / 0.4);
+    transform: scale(1);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+@keyframes new-transaction-neutral-dark {
+  0% {
+    background-color: rgb(64 64 64 / 0.7); /* neutral-700 with opacity */
+    transform: scale(1.01);
+  }
+  50% {
+    background-color: rgb(64 64 64 / 0.4);
+    transform: scale(1);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
 .animate-new-transaction-incoming {
   animation: new-transaction-incoming 3s ease-out forwards;
 }
@@ -161,6 +207,19 @@
 
 .animate-new-transaction-neutral {
   animation: new-transaction-neutral 3s ease-out forwards;
+}
+
+/* Dark mode animations */
+:is(.dark .animate-new-transaction-incoming) {
+  animation: new-transaction-incoming-dark 3s ease-out forwards;
+}
+
+:is(.dark .animate-new-transaction-outgoing) {
+  animation: new-transaction-outgoing-dark 3s ease-out forwards;
+}
+
+:is(.dark .animate-new-transaction-neutral) {
+  animation: new-transaction-neutral-dark 3s ease-out forwards;
 }
 
 /* Dropdown animation */

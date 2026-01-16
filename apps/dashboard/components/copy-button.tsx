@@ -35,7 +35,7 @@ export function CopyButton({ value, className }: CopyButtonProps) {
         }
       }}
       className={cn(
-        "p-1 rounded hover:bg-neutral-100 transition-colors text-neutral-400 hover:text-neutral-600 cursor-pointer inline-flex",
+        "p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 cursor-pointer inline-flex",
         className,
       )}
     >

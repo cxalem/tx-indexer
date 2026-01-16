@@ -38,14 +38,18 @@ export function TransactionToast({
         {getTransactionIcon(classification.primaryType, direction)}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-neutral-900 text-sm">{title}</p>
-        <p className="text-neutral-500 text-sm mt-0.5">{body}</p>
+        <p className="font-medium text-neutral-900 dark:text-neutral-100 text-sm">
+          {title}
+        </p>
+        <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-0.5">
+          {body}
+        </p>
       </div>
       <a
         href={detailUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+        className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors cursor-pointer"
         onClick={(e) => e.stopPropagation()}
       >
         view details
