@@ -29,6 +29,7 @@ interface TransactionRowHeaderProps {
   direction: ReturnType<typeof getTransactionDirection>;
   isExpanded: boolean;
   onToggle: () => void;
+  disableHover?: boolean;
 }
 
 function TransactionRowHeader({
@@ -36,6 +37,7 @@ function TransactionRowHeader({
   direction,
   isExpanded,
   onToggle,
+  disableHover = false,
 }: TransactionRowHeaderProps) {
   const { tx, classification } = transaction;
 
@@ -43,7 +45,11 @@ function TransactionRowHeader({
     <button
       type="button"
       onClick={onToggle}
-      className="w-full p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left cursor-pointer"
+      className={cn(
+        "w-full p-4 text-left cursor-pointer",
+        !disableHover &&
+          "hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors duration-200 ease-out",
+      )}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -70,7 +76,7 @@ function TransactionRowHeader({
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3 w-full max-w-40">
+        <div className="flex items-center gap-3 w-full max-w-52">
           <div className="text-right flex flex-col w-full">
             <div className="flex justify-end gap-2">
               <p className={cn("font-mono", direction.colorClass)}>
@@ -305,6 +311,7 @@ interface TransactionRowProps {
   walletAddress: string;
   isNew?: boolean;
   labels?: Map<string, string>;
+  disableHover?: boolean;
 }
 
 export const TransactionRow = memo(function TransactionRow({
@@ -312,6 +319,7 @@ export const TransactionRow = memo(function TransactionRow({
   walletAddress,
   isNew = false,
   labels,
+  disableHover = false,
 }: TransactionRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showNewAnimation, setShowNewAnimation] = useState(isNew);
@@ -357,6 +365,7 @@ export const TransactionRow = memo(function TransactionRow({
         direction={direction}
         isExpanded={isExpanded}
         onToggle={() => setIsExpanded(!isExpanded)}
+        disableHover={disableHover}
       />
       <TransactionRowDetails
         transaction={transaction}

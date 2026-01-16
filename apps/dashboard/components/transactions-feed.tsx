@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useMemo, useCallback, memo } from "react";
 import type { ClassifiedTransaction } from "tx-indexer";
-import { TransactionRow } from "@/components/transaction-row";
+import { TransactionListWithHover } from "@/components/transaction-list-hover";
 import { TransactionRowSkeleton } from "@/components/skeletons";
 import {
   useTransactionsFeed,
@@ -273,17 +273,12 @@ const DayGroup = memo(function DayGroup({
           </span>
         )}
       </div>
-      <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 overflow-hidden">
-        {transactions.map((tx) => (
-          <TransactionRow
-            key={tx.tx.signature}
-            transaction={tx}
-            walletAddress={walletAddress}
-            isNew={newSignatures.has(tx.tx.signature)}
-            labels={labels}
-          />
-        ))}
-      </div>
+      <TransactionListWithHover
+        transactions={transactions}
+        walletAddress={walletAddress}
+        newSignatures={newSignatures}
+        labels={labels}
+      />
     </div>
   );
 });
