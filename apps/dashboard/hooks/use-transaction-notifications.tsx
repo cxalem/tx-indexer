@@ -182,7 +182,7 @@ export function useTransactionNotifications(
           {
             duration: 5000,
             className:
-              "bg-white border border-neutral-200 rounded-lg shadow-lg p-4",
+              "bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg p-4",
           },
         );
 
