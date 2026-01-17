@@ -8,7 +8,7 @@ const bitcountFont = localFont({
 
 export function HeroSection() {
   return (
-    <section className="max-w-5xl mx-auto text-center py-20 px-4 md:my-5">
+    <section className="max-w-5xl mx-auto text-center py-20 px-4 md:mt-10">
       <h1
         className={`${bitcountFont.className} text-5xl md:text-6xl text-neutral-900 dark:text-neutral-100 mb-6`}
       >
