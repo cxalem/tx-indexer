@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { ClassifiedTransaction } from "tx-indexer";
 import { TransactionRow } from "@/components/transaction-row";
 
@@ -31,19 +31,23 @@ export function TransactionListWithHover({
           className="relative"
           onMouseEnter={() => setHoveredIndex(index)}
         >
-          {/* Shared hover background - only rendered on the hovered item */}
-          {hoveredIndex === index && (
-            <motion.div
-              layoutId="transaction-hover"
-              className="absolute inset-0 bg-neutral-50 dark:bg-neutral-800 z-0"
-              initial={false}
-              transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 35,
-              }}
-            />
-          )}
+          {/* Shared hover background with fade out on mouse leave */}
+          <AnimatePresence>
+            {hoveredIndex === index && (
+              <motion.div
+                layoutId="transaction-hover"
+                className="absolute inset-0 bg-neutral-50 dark:bg-neutral-800 z-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 35,
+                }}
+              />
+            )}
+          </AnimatePresence>
 
           {/* Transaction content - always on top */}
           <div className="relative z-10">
