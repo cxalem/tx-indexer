@@ -5,7 +5,6 @@ import {
   ProtocolDetectionSection,
   FeaturesSection,
   TrustSection,
-  HowItWorksSection,
   DevelopersSection,
   FooterSection,
 } from "@/components/landing";
@@ -19,7 +18,6 @@ export default function HomePage() {
       <ProtocolDetectionSection />
       <FeaturesSection />
       <TrustSection />
-      <HowItWorksSection />
       <DevelopersSection />
       <FooterSection />
     </div>

@@ -238,6 +238,36 @@
   animation: dropdown-in 0.15s ease-out forwards;
 }
 
+/* Protocol marquee animations */
+/* Items are tripled, so we animate 33.333% to loop through one set */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-33.333%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 50s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 50s linear infinite;
+  will-change: transform;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-new-transaction-incoming,
@@ -268,6 +298,11 @@
   }
 
   .animate-pulse {
+    animation: none;
+  }
+
+  .animate-marquee-left,
+  .animate-marquee-right {
     animation: none;
   }
 }
