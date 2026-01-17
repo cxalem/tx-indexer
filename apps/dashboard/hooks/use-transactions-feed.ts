@@ -54,8 +54,13 @@ export function useTransactionsFeed(
   const polledSignaturesRef = useRef<Set<string>>(new Set());
   const [newSignatures, setNewSignatures] = useState<Set<string>>(new Set());
   const [isCheckingForNew, setIsCheckingForNew] = useState(false);
+  const [isFillingGap, setIsFillingGap] = useState(false);
+  const [gapFillProgress, setGapFillProgress] = useState<{
+    fetched: number;
+    hasMore: boolean;
+  } | null>(null);
   const isInitializedRef = useRef(false);
-  const hasCheckedGapRef = useRef(false);
+  const lastCheckedGapSignatureRef = useRef<string | null>(null);
 
   const statementCutoffTimestamp = useMemo(() => {
     const now = Date.now();
@@ -184,45 +189,84 @@ export function useTransactionsFeed(
   const cachedLatestSignature = firstPage?.cachedLatestSignature;
   const wasFromCache = firstPage?.fromCache;
 
-  // Fetch gap when we get cached data (only once per mount)
-  useEffect(() => {
-    if (
-      !address ||
-      !wasFromCache ||
-      !cachedLatestSignature ||
-      hasCheckedGapRef.current
-    ) {
-      return;
-    }
+  /**
+   * Fetch gap between cached data and current state.
+   * Handles large gaps by continuing to fetch until caught up.
+   */
+  const fetchGapTransactions = useCallback(
+    async (untilSignature: string, isWindowFocus = false) => {
+      if (!address) return;
 
-    hasCheckedGapRef.current = true;
+      // Only skip if we've already checked THIS specific signature
+      // (allows re-checking when cache updates or on focus)
+      if (
+        !isWindowFocus &&
+        lastCheckedGapSignatureRef.current === untilSignature
+      ) {
+        return;
+      }
 
-    const fetchGap = async () => {
+      lastCheckedGapSignatureRef.current = untilSignature;
+      setIsFillingGap(true);
       setIsCheckingForNew(true);
+      setGapFillProgress({ fetched: 0, hasMore: true });
 
       if (process.env.NODE_ENV === "development") {
         console.log(
-          `[Transactions] Checking for new transactions since ${cachedLatestSignature.slice(0, 8)}...`,
+          `[Transactions] ${isWindowFocus ? "(Focus) " : ""}Checking for new transactions since ${untilSignature.slice(0, 8)}...`,
         );
       }
 
       try {
-        const newTxs = await getNewTransactions(
-          address,
-          cachedLatestSignature,
-          pageSize,
-        );
+        let currentUntil = untilSignature;
+        let totalFetched = 0;
+        let allNewTxs: ClassifiedTransaction[] = [];
+        const maxIterations = 5; // Safety limit for large gaps
+        let iteration = 0;
 
-        if (newTxs.length > 0) {
+        // Fetch in batches until we're caught up or hit the limit
+        while (iteration < maxIterations) {
+          iteration++;
+          const newTxs = await getNewTransactions(
+            address,
+            currentUntil,
+            pageSize,
+          );
+
+          if (newTxs.length === 0) {
+            break; // No more transactions to fetch
+          }
+
+          allNewTxs = [...allNewTxs, ...newTxs];
+          totalFetched += newTxs.length;
+          setGapFillProgress({ fetched: totalFetched, hasMore: true });
+
+          // If we got fewer than pageSize, we're caught up
+          if (newTxs.length < pageSize) {
+            break;
+          }
+
+          // Update cursor to continue fetching
+          const oldestFetched = newTxs[newTxs.length - 1];
+          if (oldestFetched) {
+            currentUntil = oldestFetched.tx.signature;
+          } else {
+            break;
+          }
+        }
+
+        setGapFillProgress({ fetched: totalFetched, hasMore: false });
+
+        if (allNewTxs.length > 0) {
           if (process.env.NODE_ENV === "development") {
             console.log(
-              `[Transactions] Found ${newTxs.length} new transactions!`,
+              `[Transactions] Found ${allNewTxs.length} new transactions in gap!`,
             );
           }
 
           // Track new signatures for animation
           const trulyNewSigs = new Set<string>();
-          for (const tx of newTxs) {
+          for (const tx of allNewTxs) {
             if (!polledSignaturesRef.current.has(tx.tx.signature)) {
               trulyNewSigs.add(tx.tx.signature);
               polledSignaturesRef.current.add(tx.tx.signature);
@@ -234,7 +278,7 @@ export function useTransactionsFeed(
             setTimeout(() => setNewSignatures(new Set()), 3000);
 
             // Notify callback
-            const trulyNewTxs = newTxs.filter((tx) =>
+            const trulyNewTxs = allNewTxs.filter((tx) =>
               trulyNewSigs.has(tx.tx.signature),
             );
             if (onNewTransactions && trulyNewTxs.length > 0) {
@@ -273,18 +317,47 @@ export function useTransactionsFeed(
         console.error("Failed to fetch transaction gap:", error);
       } finally {
         setIsCheckingForNew(false);
+        setIsFillingGap(false);
+        setGapFillProgress(null);
+      }
+    },
+    [address, pageSize, queryClient, onNewTransactions],
+  );
+
+  // Fetch gap when we get cached data
+  useEffect(() => {
+    if (!address || !wasFromCache || !cachedLatestSignature) {
+      return;
+    }
+
+    fetchGapTransactions(cachedLatestSignature);
+  }, [address, wasFromCache, cachedLatestSignature, fetchGapTransactions]);
+
+  // Re-check gap on window focus
+  useEffect(() => {
+    if (!address || !cachedLatestSignature) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && cachedLatestSignature) {
+        // Re-check for new transactions when tab becomes visible
+        fetchGapTransactions(cachedLatestSignature, true);
       }
     };
 
-    fetchGap();
-  }, [
-    address,
-    wasFromCache,
-    cachedLatestSignature,
-    pageSize,
-    queryClient,
-    onNewTransactions,
-  ]);
+    const handleWindowFocus = () => {
+      if (cachedLatestSignature) {
+        fetchGapTransactions(cachedLatestSignature, true);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleWindowFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleWindowFocus);
+    };
+  }, [address, cachedLatestSignature, fetchGapTransactions]);
 
   const pollNewTransactions = useCallback(async () => {
     if (!address || allTransactions.length === 0) return;
@@ -384,12 +457,15 @@ export function useTransactionsFeed(
     isFetching: query.isFetching,
     isFetchingNextPage: query.isFetchingNextPage,
     isCheckingForNew, // True when fetching gap after cache hit
+    isFillingGap, // True when filling a large gap (multiple pages)
+    gapFillProgress, // Progress info when filling a large gap
     hasMore,
     reachedStatementCutoff,
     error: query.error,
     loadMore,
     refresh,
     pollNewTransactions,
+    fetchGapTransactions, // Manual gap fill trigger
   };
 }
 
