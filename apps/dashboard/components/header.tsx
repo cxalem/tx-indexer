@@ -1,6 +1,12 @@
 import Link from "next/link";
+import localFont from "next/font/local";
 import { ConnectWalletButton } from "./connect-wallet-button";
 import { MobileSidebar } from "./sidebar";
+
+const bitcountFont = localFont({
+  src: "../app/fonts/Bitcount.ttf",
+  variable: "--font-bitcount",
+});
 
 interface HeaderProps {
   showMobileNav?: boolean;
@@ -31,9 +37,9 @@ export function Header({ showMobileNav = true }: HeaderProps) {
           <div className="flex items-center gap-4">
             <Link
               href="/home"
-              className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 hover:text-vibrant-red dark:hover:text-vibrant-red transition-colors lowercase"
+              className={`${bitcountFont.className} text-3xl leading-none text-vibrant-red hover:text-vibrant-red/80 transition-colors`}
             >
-              itx-indexer
+              //
             </Link>
             <a
               href="https://github.com/cxalem/tx-indexer"
