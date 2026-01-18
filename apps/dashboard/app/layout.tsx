@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { NoisyBackground } from "@/components/noisy-bg";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { GridBackground } from "@/components/grid-bg";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = localFont({
@@ -47,11 +45,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased bg-white dark:bg-neutral-950`}
       >
         <ThemeProvider>
-          <Providers>
-            <NoisyBackground />
-            <GridBackground />
-            {children}
-          </Providers>
+          <Providers>{children}</Providers>
         </ThemeProvider>
       </body>
     </html>

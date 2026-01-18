@@ -6,6 +6,7 @@ interface GridBackgroundProps {
   innerGridSize?: number;
   outerOpacity?: number;
   innerOpacity?: number;
+  contained?: boolean;
 }
 
 export function GridBackground({
@@ -14,11 +15,13 @@ export function GridBackground({
   innerGridSize = 20,
   outerOpacity = 0.04,
   innerOpacity = 0.02,
+  contained = false,
 }: GridBackgroundProps) {
   return (
     <div
       className={cn(
-        "fixed inset-0 -z-20 text-neutral-900 dark:text-neutral-100",
+        "inset-0 text-neutral-900 dark:text-neutral-100",
+        contained ? "absolute z-0" : "fixed -z-20",
         className,
       )}
     >

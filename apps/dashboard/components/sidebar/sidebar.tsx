@@ -66,9 +66,9 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="hidden md:flex flex-col w-56 border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 fixed top-0 left-0 h-screen overflow-y-auto z-30">
+      <aside className="hidden md:flex flex-col w-56 fixed top-0 left-0 h-screen overflow-y-auto z-30">
         {/* Logo */}
-        <div className="p-4 border-b border-neutral-200 dark:border-neutral-800">
+        <div className="p-4">
           <h1
             className={`${bitcountFont.className} text-xl text-neutral-900 dark:text-neutral-100`}
           >

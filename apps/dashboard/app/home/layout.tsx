@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/header";
+import { NoisyBackground } from "@/components/noisy-bg";
+import { GridBackground } from "@/components/grid-bg";
 
 export const metadata: Metadata = {
   title: "itx-indexer | The Solana Transaction Indexer",
@@ -26,6 +28,8 @@ export default function HomeLayout({
 }) {
   return (
     <>
+      <NoisyBackground showDots />
+      <GridBackground />
       <Header showMobileNav={false} />
       <main>{children}</main>
     </>

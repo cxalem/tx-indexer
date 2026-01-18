@@ -1,65 +1,79 @@
-"use client";
+import { cn } from "@/lib/utils";
 
-import { useEffect, useRef } from "react";
-import { useTheme } from "next-themes";
+interface NoisyBackgroundProps {
+  contained?: boolean;
+  showDots?: boolean;
+}
 
-export function NoisyBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { resolvedTheme } = useTheme();
+// Static dots with fixed positions (percentages of viewport)
+const STATIC_DOTS = [
+  { x: 5, y: 12, size: 1.2 },
+  { x: 15, y: 8, size: 0.8 },
+  { x: 23, y: 45, size: 1.0 },
+  { x: 8, y: 67, size: 1.4 },
+  { x: 35, y: 23, size: 0.9 },
+  { x: 42, y: 78, size: 1.1 },
+  { x: 55, y: 15, size: 0.7 },
+  { x: 67, y: 34, size: 1.3 },
+  { x: 78, y: 56, size: 1.0 },
+  { x: 85, y: 12, size: 0.8 },
+  { x: 92, y: 45, size: 1.2 },
+  { x: 12, y: 89, size: 0.9 },
+  { x: 28, y: 72, size: 1.1 },
+  { x: 45, y: 91, size: 0.8 },
+  { x: 62, y: 67, size: 1.0 },
+  { x: 73, y: 82, size: 1.3 },
+  { x: 88, y: 73, size: 0.7 },
+  { x: 95, y: 28, size: 1.1 },
+  { x: 18, y: 34, size: 0.9 },
+  { x: 33, y: 56, size: 1.2 },
+  { x: 48, y: 42, size: 0.8 },
+  { x: 58, y: 88, size: 1.0 },
+  { x: 72, y: 19, size: 1.4 },
+  { x: 82, y: 95, size: 0.9 },
+  { x: 3, y: 48, size: 1.1 },
+  { x: 25, y: 15, size: 0.8 },
+  { x: 38, y: 83, size: 1.0 },
+  { x: 52, y: 28, size: 1.2 },
+  { x: 65, y: 52, size: 0.7 },
+  { x: 77, y: 38, size: 1.3 },
+  { x: 89, y: 61, size: 0.9 },
+  { x: 7, y: 76, size: 1.1 },
+  { x: 19, y: 52, size: 0.8 },
+  { x: 31, y: 38, size: 1.0 },
+  { x: 44, y: 65, size: 1.2 },
+  { x: 56, y: 5, size: 0.9 },
+  { x: 68, y: 92, size: 1.1 },
+  { x: 81, y: 8, size: 0.8 },
+  { x: 93, y: 85, size: 1.0 },
+  { x: 11, y: 22, size: 1.3 },
+  { x: 22, y: 95, size: 0.7 },
+  { x: 36, y: 11, size: 1.1 },
+  { x: 49, y: 73, size: 0.9 },
+  { x: 61, y: 41, size: 1.2 },
+  { x: 74, y: 67, size: 0.8 },
+  { x: 86, y: 33, size: 1.0 },
+  { x: 97, y: 58, size: 1.1 },
+  { x: 14, y: 81, size: 0.9 },
+  { x: 27, y: 29, size: 1.3 },
+  { x: 41, y: 52, size: 0.8 },
+];
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles: Array<{ x: number; y: number; size: number }> = [];
-    const particleCount = 50;
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 1 + 0.5,
-      });
-    }
-
-    function draw() {
-      if (!canvas || !ctx) return;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach((particle) => {
-        ctx.fillStyle = `rgba(239, 68, 68, 0.6)`;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    }
-
-    draw();
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      draw();
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [resolvedTheme]);
+export function NoisyBackground({
+  contained = false,
+  showDots = false,
+}: NoisyBackgroundProps) {
+  const filterId = contained ? "noise-contained" : "noise";
 
   return (
-    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: -1 }}>
+    <div
+      className={cn(
+        "inset-0 pointer-events-none overflow-hidden",
+        contained ? "absolute z-0" : "fixed -z-10",
+      )}
+    >
       <svg className="absolute inset-0 h-full w-full">
-        <filter id="noise">
+        <filter id={filterId}>
           <feTurbulence
             type="fractalNoise"
             baseFrequency="0.8"
@@ -71,11 +85,23 @@ export function NoisyBackground() {
         <rect
           width="100%"
           height="100%"
-          filter="url(#noise)"
+          filter={`url(#${filterId})`}
           className="opacity-40 dark:opacity-20"
         />
       </svg>
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+      {showDots &&
+        STATIC_DOTS.map((dot, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-red-500/60"
+            style={{
+              left: `${dot.x}%`,
+              top: `${dot.y}%`,
+              width: `${dot.size * 2}px`,
+              height: `${dot.size * 2}px`,
+            }}
+          />
+        ))}
     </div>
   );
 }

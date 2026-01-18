@@ -27,7 +27,13 @@ function GitHubIcon({ className }: { className?: string }) {
 
 export function Header({ showMobileNav = true }: HeaderProps) {
   return (
-    <header className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+    <header
+      className={
+        showMobileNav
+          ? "md:rounded-tl-2xl bg-white dark:bg-neutral-950"
+          : "bg-white dark:bg-neutral-900"
+      }
+    >
       <div
         className={`px-4 py-3 flex items-center justify-between ${!showMobileNav ? "max-w-6xl mx-auto" : ""}`}
       >
