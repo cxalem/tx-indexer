@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.1
+
+### Patch Changes
+
+- Improve cross-platform compatibility:
+  - Replace `process.env` with `globalThis.process?.env` for edge runtime compatibility in token-fetcher
+  - Replace Node.js Buffer with Uint8Array/atob for browser compatibility in memo-parser
+  - Code formatting improvements (tabs, quote style consistency)
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
