@@ -1,5 +1,43 @@
 # Changelog
 
+## 1.3.0
+
+### Minor Changes
+
+- Add devnet and testnet support with cluster-aware token resolution:
+  - New `cluster` option in `createIndexer()` to specify network ("mainnet-beta", "devnet", "testnet")
+  - New `customTokens` option to provide custom token metadata
+  - Added `DEVNET_KNOWN_TOKENS` and `DEVNET_TOKEN_INFO` exports for devnet token addresses
+  - Token fetcher automatically uses appropriate registry based on cluster
+  - Jupiter API is only called on mainnet; devnet/testnet use static registries
+  - Export `Cluster` type for TypeScript users
+
+  Example usage:
+
+  ```typescript
+  import { createIndexer, DEVNET_KNOWN_TOKENS } from "tx-indexer";
+
+  // Devnet indexer
+  const indexer = createIndexer({
+    rpcUrl: "https://api.devnet.solana.com",
+    cluster: "devnet",
+  });
+
+  // With custom tokens
+  const indexer = createIndexer({
+    rpcUrl: "https://api.devnet.solana.com",
+    cluster: "devnet",
+    customTokens: {
+      "MyMintAddress...": {
+        mint: "MyMintAddress...",
+        symbol: "TEST",
+        name: "Test Token",
+        decimals: 9,
+      },
+    },
+  });
+  ```
+
 ## 1.2.1
 
 ### Patch Changes

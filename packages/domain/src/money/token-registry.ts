@@ -315,3 +315,70 @@ export const LIQUID_STAKING_TOKENS = [
   KNOWN_TOKENS.JITOSOL,
   KNOWN_TOKENS.BSOL,
 ] as const;
+
+// =============================================================================
+// Devnet Token Registry
+// =============================================================================
+
+/**
+ * Well-known token mint addresses on Solana devnet.
+ * These are official devnet faucet tokens and popular test tokens.
+ */
+export const DEVNET_KNOWN_TOKENS = {
+  // Native (same across all networks)
+  SOL: "So11111111111111111111111111111111111111112",
+
+  // Official SPL Token Faucet tokens (devnet)
+  // https://spl-token-faucet.com/
+  USDC: "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+  USDT: "EJwZgeZrdC8TXTQbQBoL6bfuAnFUUy1PVCMB4DYPzVaS",
+
+  // Solana Program Library test tokens
+  DUMMY: "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+
+  // Wrapped SOL (same across all networks)
+  WSOL: "So11111111111111111111111111111111111111112",
+} as const;
+
+/**
+ * Token metadata for devnet tokens.
+ */
+export const DEVNET_TOKEN_INFO: Record<string, TokenInfo> = {
+  // Native SOL (same as mainnet)
+  [DEVNET_KNOWN_TOKENS.SOL]: {
+    mint: DEVNET_KNOWN_TOKENS.SOL,
+    symbol: "SOL",
+    name: "Solana",
+    decimals: 9,
+    logoURI:
+      "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
+  },
+
+  // Devnet USDC (from SPL Token Faucet)
+  [DEVNET_KNOWN_TOKENS.USDC]: {
+    mint: DEVNET_KNOWN_TOKENS.USDC,
+    symbol: "USDC",
+    name: "USD Coin (Devnet)",
+    decimals: 6,
+    logoURI:
+      "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+  },
+
+  // Devnet USDT
+  [DEVNET_KNOWN_TOKENS.USDT]: {
+    mint: DEVNET_KNOWN_TOKENS.USDT,
+    symbol: "USDT",
+    name: "Tether USD (Devnet)",
+    decimals: 6,
+    logoURI:
+      "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg",
+  },
+
+  // Dummy test token
+  [DEVNET_KNOWN_TOKENS.DUMMY]: {
+    mint: DEVNET_KNOWN_TOKENS.DUMMY,
+    symbol: "DUMMY",
+    name: "Dummy Token (Devnet)",
+    decimals: 9,
+  },
+};

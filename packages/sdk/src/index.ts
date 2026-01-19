@@ -8,8 +8,15 @@
  * ```typescript
  * import { createIndexer } from "tx-indexer";
  *
+ * // Mainnet (default)
  * const indexer = createIndexer({ rpcUrl: "https://api.mainnet-beta.solana.com" });
  * const txs = await indexer.getTransactions("YourWalletAddress...", { limit: 10 });
+ *
+ * // Devnet
+ * const devnetIndexer = createIndexer({
+ *   rpcUrl: "https://api.devnet.solana.com",
+ *   cluster: "devnet",
+ * });
  * ```
  *
  * @module tx-indexer
@@ -56,11 +63,19 @@ export { parseAddress, parseSignature } from "@tx-indexer/solana/rpc/client";
 export {
   KNOWN_TOKENS,
   TOKEN_INFO,
+  DEVNET_KNOWN_TOKENS,
+  DEVNET_TOKEN_INFO,
   getTokenInfo,
   createUnknownToken,
   SUPPORTED_STABLECOINS,
   LIQUID_STAKING_TOKENS,
 } from "@tx-indexer/core/money/token-registry";
+
+// ============================================================================
+// Network Types
+// ============================================================================
+
+export type { Cluster } from "@tx-indexer/core/core/network.types";
 
 // ============================================================================
 // JSON Serialization (for server-side usage)

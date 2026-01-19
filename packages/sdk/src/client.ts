@@ -30,6 +30,7 @@ import type {
   TokenInfo,
   MoneyAmount,
 } from "@tx-indexer/core/money/money.types";
+import type { Cluster } from "@tx-indexer/core/core/network.types";
 import {
   createTokenFetcher,
   type TokenFetcher,
@@ -215,14 +216,61 @@ async function enrichNftClassification(
   };
 }
 
+/**
+ * Base options shared across all indexer configurations.
+ */
+interface TxIndexerBaseOptions {
+  /**
+   * The Solana cluster to use for token resolution.
+   * - "mainnet-beta": Uses Jupiter API and mainnet token registry (default)
+   * - "devnet": Uses devnet token registry, skips Jupiter API
+   * - "testnet": Uses devnet token registry, skips Jupiter API
+   *
+   * @default "mainnet-beta"
+   *
+   * @example
+   * ```typescript
+   * // Devnet indexer
+   * const indexer = createIndexer({
+   *   rpcUrl: "https://api.devnet.solana.com",
+   *   cluster: "devnet",
+   * });
+   * ```
+   */
+  cluster?: Cluster;
+
+  /**
+   * Custom token metadata to use for token resolution.
+   * These tokens take priority over built-in registries and Jupiter API.
+   * Useful for custom tokens, test tokens, or overriding metadata.
+   *
+   * @example
+   * ```typescript
+   * const indexer = createIndexer({
+   *   rpcUrl: "https://api.devnet.solana.com",
+   *   cluster: "devnet",
+   *   customTokens: {
+   *     "MyTokenMintAddress...": {
+   *       mint: "MyTokenMintAddress...",
+   *       symbol: "TEST",
+   *       name: "Test Token",
+   *       decimals: 9,
+   *     },
+   *   },
+   * });
+   * ```
+   */
+  customTokens?: Record<string, TokenInfo>;
+}
+
 export type TxIndexerOptions =
-  | {
+  | (TxIndexerBaseOptions & {
       rpcUrl: string;
       wsUrl?: string;
-    }
-  | {
+    })
+  | (TxIndexerBaseOptions & {
       client: SolanaClient;
-    };
+    });
 
 export interface GetTransactionsOptions {
   limit?: number;
@@ -550,7 +598,14 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       ? options.client
       : createSolanaClient(options.rpcUrl, options.wsUrl);
 
-  const tokenFetcher = createTokenFetcher();
+  // Extract cluster and customTokens from options
+  const cluster = options.cluster ?? "mainnet-beta";
+  const customTokens = options.customTokens;
+
+  const tokenFetcher = createTokenFetcher({
+    cluster,
+    customTokens,
+  });
 
   return {
     rpc: client.rpc,
