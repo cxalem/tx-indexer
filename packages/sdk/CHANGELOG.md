@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0
+
+### Minor Changes
+
+- Add Privacy Cash protocol support:
+  - New Privacy Cash protocol detection and classification
+  - New transaction types for privacy operations (shield/unshield)
+  - Expanded SDK documentation for privacy-related behavior and limitations
+
 ## 1.3.2
 
 ### Patch Changes
