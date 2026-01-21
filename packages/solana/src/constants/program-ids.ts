@@ -105,6 +105,27 @@ export const MAGIC_EDEN_CANDY_MACHINE_ID =
   "CMZYPASGWeTz7RNGHaRJfCq2XQ5pYK6nDvVQxzkH51zb";
 
 // ============================================
+// Privacy Programs
+// ============================================
+
+// Privacy Cash - ZK-proof based private transfers
+// Docs: https://github.com/Privacy-Cash/privacy-cash-sdk
+// Bounty: $15,000 (Best Integration to Existing App: $6k)
+export const PRIVACY_CASH_PROGRAM_ID =
+  "9fhQBbumKEFuXtMBDw8AaQyAjCorLGJQiS3skWZdQyQD";
+export const PRIVACY_CASH_DEVNET_PROGRAM_ID =
+  "ATZj4jZ4FFzkvAcvk27DW9GRkgSbFnHo49fKKPQXU7VS";
+export const PRIVACY_CASH_ADMIN =
+  "AWexibGxNFKTa1b5R5MN4PJr9HWnWRwf8EW9g8cLx3dM";
+export const PRIVACY_CASH_ALT = "HEN49U2ySJ85Vc78qprSW9y6mFDhs1NczRxyppNHjofe";
+
+// Privacy Cash Instruction Discriminators (first 8 bytes of instruction data)
+// Used to identify transaction type: transact = SOL, transact_spl = SPL tokens
+// Deposit vs Withdraw determined by ext_amount sign (positive = deposit, negative = withdraw)
+export const PRIVACY_CASH_TRANSACT_DISCRIMINATOR = "d99582f8dd34fc77";
+export const PRIVACY_CASH_TRANSACT_SPL_DISCRIMINATOR = "9a42f4cc4ee1a397";
+
+// ============================================
 // Bridge Programs
 // ============================================
 
@@ -176,6 +197,8 @@ export const BRIDGE_PROGRAM_IDS = [
   DEBRIDGE_PROGRAM_ID,
   ALLBRIDGE_PROGRAM_ID,
 ] as const;
+
+export const PRIVACY_PROGRAM_IDS = [PRIVACY_CASH_PROGRAM_ID] as const;
 
 export const KNOWN_FACILITATORS = [PAYAI_FACILITATOR] as const;
 

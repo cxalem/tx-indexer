@@ -3,7 +3,12 @@ import { z } from "zod";
 import type { Signature } from "@solana/kit";
 import type { MoneyAmount } from "@tx-indexer/core/money/money.types";
 
-export const TxDirectionSchema = z.enum(["incoming", "outgoing", "self", "neutral"]);
+export const TxDirectionSchema = z.enum([
+  "incoming",
+  "outgoing",
+  "self",
+  "neutral",
+]);
 
 export const TxPrimaryTypeSchema = z.enum([
   "transfer",
@@ -21,6 +26,9 @@ export const TxPrimaryTypeSchema = z.enum([
   "reward",
   "fee_only",
   "other",
+  // Privacy transaction types (Solana Privacy Hack 2026)
+  "privacy_deposit", // Shielding funds into privacy pool
+  "privacy_withdraw", // Unshielding funds from pool
 ]);
 
 export const TxCategorySchema = z.enum([

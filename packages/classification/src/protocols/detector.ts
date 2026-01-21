@@ -42,6 +42,8 @@ import {
   DEGODS_BRIDGE_PROGRAM_ID,
   DEBRIDGE_PROGRAM_ID,
   ALLBRIDGE_PROGRAM_ID,
+  // Privacy programs
+  PRIVACY_CASH_PROGRAM_ID,
 } from "@tx-indexer/solana/constants/program-ids";
 
 const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
@@ -218,10 +220,18 @@ const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
     id: "allbridge",
     name: "Allbridge",
   },
+
+  // Privacy protocols
+  [PRIVACY_CASH_PROGRAM_ID]: {
+    id: "privacy-cash",
+    name: "Privacy Cash",
+  },
 };
 
 const PRIORITY_ORDER = [
-  // Bridge protocols (highest priority - cross-chain operations)
+  // Privacy protocols (highest priority - privacy-preserving operations)
+  "privacy-cash",
+  // Bridge protocols (cross-chain operations)
   "wormhole",
   "wormhole-token-bridge",
   "degods-bridge",
@@ -320,6 +330,12 @@ const BRIDGE_PROTOCOL_IDS = new Set([
   "allbridge",
 ]);
 
+// Privacy protocol IDs - protocols that provide private/shielded transactions
+const PRIVACY_PROTOCOL_IDS = new Set([
+  "privacy-cash",
+  // TODO: Add more privacy protocols as needed (e.g., "silent-swap" if on-chain detectable)
+]);
+
 /**
  * Checks if a protocol is a DEX (decentralized exchange) that performs swaps.
  * DEX protocols should have their legs tagged as "protocol:" with deposit/withdraw roles.
@@ -358,6 +374,20 @@ export function isStakeProtocolById(protocolId: string | undefined): boolean {
  */
 export function isBridgeProtocolById(protocolId: string | undefined): boolean {
   return protocolId !== undefined && BRIDGE_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a privacy protocol.
+ * Privacy protocols provide shielded/private transactions using ZK-proofs.
+ *
+ * @example
+ * isPrivacyCashProtocolById("privacy-cash") // true
+ * isPrivacyCashProtocolById("jupiter") // false
+ */
+export function isPrivacyCashProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && PRIVACY_PROTOCOL_IDS.has(protocolId);
 }
 
 /**

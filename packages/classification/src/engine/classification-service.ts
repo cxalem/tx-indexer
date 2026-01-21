@@ -10,12 +10,15 @@ import { NftMintClassifier } from "../classifiers/nft-mint-classifier";
 import { StakeDepositClassifier } from "../classifiers/stake-deposit-classifier";
 import { StakeWithdrawClassifier } from "../classifiers/stake-withdraw-classifier";
 import { BridgeClassifier } from "../classifiers/bridge-classifier";
+// Privacy classifiers (Solana Privacy Hack 2026)
+import { PrivacyCashClassifier } from "../classifiers/privacy-cash-classifier";
 
 export class ClassificationService {
   private classifiers: Classifier[] = [];
 
   constructor() {
     this.registerClassifier(new SolanaPayClassifier());
+    this.registerClassifier(new PrivacyCashClassifier()); // Privacy Hack 2026
     this.registerClassifier(new BridgeClassifier());
     this.registerClassifier(new NftMintClassifier());
     this.registerClassifier(new StakeDepositClassifier());
@@ -31,7 +34,11 @@ export class ClassificationService {
     this.classifiers.sort((a, b) => b.priority - a.priority);
   }
 
-  classify(legs: TxLeg[], tx: RawTransaction, walletAddress?: string): TransactionClassification {
+  classify(
+    legs: TxLeg[],
+    tx: RawTransaction,
+    walletAddress?: string,
+  ): TransactionClassification {
     const context: ClassifierContext = { legs, tx, walletAddress };
 
     for (const classifier of this.classifiers) {
@@ -60,7 +67,7 @@ export const classificationService = new ClassificationService();
 /**
  * Classifies a transaction based on its accounting legs and context.
  *
- * Uses a priority-ordered chain of classifiers (Solana Pay > Bridge > NFT Mint > Stake Deposit > Stake Withdraw > Swap > Airdrop > Transfer > Fee-only)
+ * Uses a priority-ordered chain of classifiers (Solana Pay > Privacy Cash > Bridge > NFT Mint > Stake Deposit > Stake Withdraw > Swap > Airdrop > Transfer > Fee-only)
  * to determine the transaction type, direction, amounts, sender, and receiver.
  *
  * @param legs - Transaction legs representing all balance movements
@@ -71,7 +78,7 @@ export const classificationService = new ClassificationService();
 export function classifyTransaction(
   legs: TxLeg[],
   tx: RawTransaction,
-  walletAddress?: string
+  walletAddress?: string,
 ): TransactionClassification {
   return classificationService.classify(legs, tx, walletAddress);
 }
