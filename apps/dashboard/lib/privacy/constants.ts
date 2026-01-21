@@ -61,6 +61,22 @@ export type PrivacyCashToken = keyof typeof PRIVACY_CASH_SUPPORTED_TOKENS;
 // =============================================================================
 
 /**
+ * IMPORTANT: SilentSwap does NOT have a dedicated Solana program ID.
+ *
+ * How it works:
+ * 1. SilentSwap creates single-use "facilitator" accounts off-chain
+ * 2. Solana swaps use relay.link for actual bridging
+ * 3. Privacy comes from the facilitator account obfuscation, not on-chain
+ *
+ * This means we CANNOT classify SilentSwap transactions on-chain.
+ * Instead, we track them via:
+ * - Order IDs stored locally when users initiate swaps
+ * - Transaction signatures tagged in local storage/database
+ *
+ * The underlying transactions appear as normal relay.link bridge transactions.
+ */
+
+/**
  * SilentSwap Environment
  * Use STAGING for development, MAINNET for production
  */
