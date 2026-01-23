@@ -7,6 +7,10 @@ import {
   createUsdcAmount,
   createTokenAmount,
 } from "../fixtures/mock-factories";
+import {
+  PRIVACY_CASH_SPL_POOL,
+  PRIVACY_CASH_FEE_RECIPIENT,
+} from "@tx-indexer/solana/constants/program-ids";
 
 describe("PrivacyCashClassifier", () => {
   const classifier = new PrivacyCashClassifier();
@@ -342,6 +346,142 @@ describe("PrivacyCashClassifier", () => {
       expect(result?.counterparty).not.toBeNull();
       expect(result?.counterparty?.type).toBe("protocol");
       expect(result?.counterparty?.name).toBe("Privacy Cash");
+    });
+  });
+
+  describe("pool-based detection (relayer-submitted transactions)", () => {
+    test("should detect withdrawal when tokens flow from pool to user (no protocol)", () => {
+      const receiverAddress = "USER_WALLET_123";
+      const legs = [
+        // Pool sends tokens (debit)
+        createMockLeg({
+          accountId: `external:${PRIVACY_CASH_SPL_POOL}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(2.5),
+        }),
+        // User receives tokens (credit)
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(1.728446),
+        }),
+        // Fee recipient gets fee
+        createMockLeg({
+          accountId: `external:${PRIVACY_CASH_FEE_RECIPIENT}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(0.771554),
+        }),
+      ];
+      // No protocol detected (relayer-submitted tx)
+      const tx = createMockTransaction({
+        protocol: null,
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.primaryType).toBe("privacy_withdraw");
+      expect(result?.primaryAmount?.amountUi).toBe(1.728446);
+      expect(result?.primaryAmount?.token.symbol).toBe("USDC");
+      expect(result?.receiver).toBe(receiverAddress);
+      expect(result?.metadata?.privacy_operation).toBe("unshield");
+    });
+
+    test("should detect withdrawal when only fee recipient is involved", () => {
+      const receiverAddress = "USER_WALLET_123";
+      const legs = [
+        // Fee recipient sends tokens (acts as pool in some cases)
+        createMockLeg({
+          accountId: `external:${PRIVACY_CASH_FEE_RECIPIENT}`,
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(0.5),
+        }),
+        // User receives tokens
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createSolAmount(0.45),
+        }),
+      ];
+      const tx = createMockTransaction({
+        protocol: null,
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.primaryType).toBe("privacy_withdraw");
+      expect(result?.receiver).toBe(receiverAddress);
+    });
+
+    test("should not classify regular transfer without pool accounts", () => {
+      const senderAddress = "SENDER123";
+      const receiverAddress = "RECEIVER456";
+      const legs = [
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(1.0),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createSolAmount(1.0),
+        }),
+      ];
+      const tx = createMockTransaction({
+        protocol: null,
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      // Should return null - this is a regular transfer, not Privacy Cash
+      expect(result).toBeNull();
+    });
+
+    test("should exclude pool accounts from user legs calculation", () => {
+      const receiverAddress = "USER_WALLET_123";
+      const legs = [
+        // Pool debit should NOT be counted as user debit
+        createMockLeg({
+          accountId: `external:${PRIVACY_CASH_SPL_POOL}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(100.0),
+        }),
+        // User credit
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(95.0),
+        }),
+        // Fee recipient credit should NOT be counted as user credit
+        createMockLeg({
+          accountId: `external:${PRIVACY_CASH_FEE_RECIPIENT}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(5.0),
+        }),
+      ];
+      const tx = createMockTransaction({
+        protocol: { id: "privacy-cash", name: "Privacy Cash" },
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.primaryType).toBe("privacy_withdraw");
+      // Should be the user's received amount, not the pool's or fee recipient's
+      expect(result?.primaryAmount?.amountUi).toBe(95.0);
+      expect(result?.receiver).toBe(receiverAddress);
     });
   });
 });

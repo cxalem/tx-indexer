@@ -113,6 +113,12 @@ export const PRIVACY_CASH_PROGRAM_ID =
 export const PRIVACY_CASH_DEVNET_PROGRAM_ID =
   "ATZj4jZ4FFzkvAcvk27DW9GRkgSbFnHo49fKKPQXU7VS";
 
+// Privacy Cash pool accounts (data accounts, not programs)
+export const PRIVACY_CASH_SPL_POOL =
+  "2vV7xhCMWRrcLiwGoTaTRgvx98ku98TRJKPXhsS8jvBV";
+export const PRIVACY_CASH_FEE_RECIPIENT =
+  "AWexibGxNFKTa1b5R5MN4PJr9HWnWRwf8EW9g8cLx3dM";
+
 // ============================================
 // Bridge Programs
 // ============================================
@@ -187,6 +193,12 @@ export const BRIDGE_PROGRAM_IDS = [
 ] as const;
 
 export const PRIVACY_PROGRAM_IDS = [PRIVACY_CASH_PROGRAM_ID] as const;
+
+/** Privacy Cash pool and fee accounts - used to identify private transfers */
+export const PRIVACY_CASH_ACCOUNTS = [
+  PRIVACY_CASH_SPL_POOL,
+  PRIVACY_CASH_FEE_RECIPIENT,
+] as const;
 
 export const KNOWN_FACILITATORS = [PAYAI_FACILITATOR] as const;
 

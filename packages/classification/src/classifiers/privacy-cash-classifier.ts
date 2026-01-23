@@ -8,6 +8,11 @@
  * Transaction data IS visible on-chain (amount, recipient, token),
  * but which deposit corresponds to which withdrawal remains private.
  *
+ * Detection methods:
+ * 1. Protocol-based: Transaction uses Privacy Cash program ID
+ * 2. Account-based: Tokens flow from/to known Privacy Cash pool accounts
+ *    (for relayer-submitted withdrawals where program isn't in tx)
+ *
  * @see https://github.com/Privacy-Cash/privacy-cash-sdk
  */
 
@@ -18,6 +23,10 @@ import type {
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isPrivacyCashProtocolById } from "../protocols/detector";
+import {
+  PRIVACY_CASH_SPL_POOL,
+  PRIVACY_CASH_FEE_RECIPIENT,
+} from "@tx-indexer/solana/constants/program-ids";
 
 /**
  * Known Privacy Cash supported token mints for metadata enrichment
@@ -47,6 +56,33 @@ function getLargestLeg(legs: TxLeg[]): TxLeg | null {
   );
 }
 
+/**
+ * Check if any leg involves a Privacy Cash pool account.
+ * This catches relayer-submitted withdrawals where the program ID
+ * might not be in the transaction's program list.
+ */
+function hasPrivacyCashPoolAccount(legs: TxLeg[]): boolean {
+  const privacyCashAccounts = new Set([
+    PRIVACY_CASH_SPL_POOL,
+    PRIVACY_CASH_FEE_RECIPIENT,
+  ]);
+
+  return legs.some((leg) => {
+    const address = leg.accountId.replace(/^(external|wallet|protocol):/, "");
+    return privacyCashAccounts.has(address);
+  });
+}
+
+/**
+ * Check if a leg is from/to a Privacy Cash pool account.
+ */
+function isPrivacyCashPoolLeg(leg: TxLeg): boolean {
+  const address = leg.accountId.replace(/^(external|wallet|protocol):/, "");
+  return (
+    address === PRIVACY_CASH_SPL_POOL || address === PRIVACY_CASH_FEE_RECIPIENT
+  );
+}
+
 export class PrivacyCashClassifier implements Classifier {
   name = "privacy-cash";
   priority = 86;
@@ -54,41 +90,71 @@ export class PrivacyCashClassifier implements Classifier {
   classify(context: ClassifierContext): TransactionClassification | null {
     const { legs, tx } = context;
 
-    if (!isPrivacyCashProtocolById(tx.protocol?.id)) {
+    // Detect Privacy Cash transactions by:
+    // 1. Protocol ID match (shield/deposit transactions)
+    // 2. Pool account involvement (relayer-submitted unshield/withdraw)
+    const isPrivacyCashProtocol = isPrivacyCashProtocolById(tx.protocol?.id);
+    const hasPoolAccount = hasPrivacyCashPoolAccount(legs);
+
+    if (!isPrivacyCashProtocol && !hasPoolAccount) {
       return null;
     }
 
+    // Filter legs: user debits are outflows from non-pool accounts
     const userDebits = legs.filter(
       (leg) =>
         leg.accountId.startsWith("external:") &&
         leg.side === "debit" &&
-        leg.role !== "fee",
+        leg.role !== "fee" &&
+        !isPrivacyCashPoolLeg(leg),
     );
 
+    // User credits are inflows to non-pool accounts
     const userCredits = legs.filter(
       (leg) =>
         leg.accountId.startsWith("external:") &&
         leg.side === "credit" &&
-        leg.role !== "fee",
+        leg.role !== "fee" &&
+        !isPrivacyCashPoolLeg(leg),
+    );
+
+    // Check if tokens are coming FROM the pool (withdrawal/unshield)
+    const poolDebits = legs.filter(
+      (leg) => isPrivacyCashPoolLeg(leg) && leg.side === "debit",
     );
 
     let primaryType: "privacy_deposit" | "privacy_withdraw";
     let primaryLeg: TxLeg | null = null;
     let participant: string | null = null;
 
-    if (userDebits.length > 0 && userCredits.length === 0) {
+    // Detection logic:
+    // 1. If pool has debits (sends tokens) -> withdrawal/unshield
+    // 2. If user has debits (sends tokens) -> deposit/shield
+    // 3. Mixed case: compare amounts to determine primary operation
+
+    if (poolDebits.length > 0 && userCredits.length > 0) {
+      // Tokens flowing FROM pool TO user = withdrawal/unshield
+      primaryType = "privacy_withdraw";
+      primaryLeg = getLargestLeg(userCredits);
+      if (primaryLeg) {
+        participant = primaryLeg.accountId.replace("external:", "");
+      }
+    } else if (userDebits.length > 0 && userCredits.length === 0) {
+      // User sending tokens, not receiving = deposit/shield
       primaryType = "privacy_deposit";
       primaryLeg = getLargestLeg(userDebits);
       if (primaryLeg) {
         participant = primaryLeg.accountId.replace("external:", "");
       }
     } else if (userCredits.length > 0 && userDebits.length === 0) {
+      // User receiving tokens, not sending = withdrawal/unshield
       primaryType = "privacy_withdraw";
       primaryLeg = getLargestLeg(userCredits);
       if (primaryLeg) {
         participant = primaryLeg.accountId.replace("external:", "");
       }
     } else if (userCredits.length > 0 && userDebits.length > 0) {
+      // Mixed case: compare amounts
       const largestDebit = getLargestLeg(userDebits);
       const largestCredit = getLargestLeg(userCredits);
 
