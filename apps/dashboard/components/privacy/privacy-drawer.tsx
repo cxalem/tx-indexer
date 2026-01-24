@@ -38,7 +38,8 @@ export function PrivacyDrawer({
   onSuccess,
 }: PrivacyDrawerProps) {
   const { address: walletAddress, status: walletStatus } = useUnifiedWallet();
-  const { balance: dashboardBalance } = useDashboardData(walletAddress);
+  const { balance: dashboardBalance, refetch: refetchDashboardBalance } =
+    useDashboardData(walletAddress);
   const { labelsList } = useWalletLabels();
   const {
     privateBalance,
@@ -58,7 +59,17 @@ export function PrivacyDrawer({
   const [mode, setMode] = useState<OperationMode>("deposit");
   const [amount, setAmount] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
-  const [selectedToken, setSelectedToken] = useState<PrivacyCashToken>("SOL");
+  const [selectedToken, setSelectedToken] = useState<PrivacyCashToken>("USDC");
+  const [walletBalanceAdjustment, setWalletBalanceAdjustment] = useState(0);
+  const [privateBalanceAdjustment, setPrivateBalanceAdjustment] = useState(0);
+  const prevRawWalletBalanceRef = useRef<number | null>(null);
+  const prevRawPrivateBalanceRef = useRef<number | null>(null);
+
+  // Store values at submission time for use in success effect
+  const submittedValuesRef = useRef<{
+    amount: number;
+    mode: OperationMode;
+  } | null>(null);
 
   const onSuccessRef = useRef(onSuccess);
   useEffect(() => {
@@ -70,13 +81,38 @@ export function PrivacyDrawer({
   const showResultState = status === "success" || status === "error";
 
   const tokenConfig = PRIVACY_CASH_SUPPORTED_TOKENS[selectedToken];
-  const walletBalance =
+  const rawWalletBalance =
     selectedToken === "SOL"
       ? (dashboardBalance?.sol.ui ?? 0)
       : (dashboardBalance?.tokens.find((t) => t.mint === tokenConfig.mint)
           ?.amount.ui ?? 0);
 
-  const privateBalanceAmount = privateBalance?.amount ?? 0;
+  // Apply optimistic adjustments for immediate feedback
+  const walletBalance = Math.max(0, rawWalletBalance + walletBalanceAdjustment);
+
+  const rawPrivateBalance = privateBalance?.amount ?? 0;
+  const privateBalanceAmount = Math.max(
+    0,
+    rawPrivateBalance + privateBalanceAdjustment,
+  );
+
+  // Reset balance adjustments when real balances change
+  useEffect(() => {
+    if (
+      prevRawWalletBalanceRef.current !== null &&
+      prevRawWalletBalanceRef.current !== rawWalletBalance
+    ) {
+      setWalletBalanceAdjustment(0);
+    }
+    if (
+      prevRawPrivateBalanceRef.current !== null &&
+      prevRawPrivateBalanceRef.current !== rawPrivateBalance
+    ) {
+      setPrivateBalanceAdjustment(0);
+    }
+    prevRawWalletBalanceRef.current = rawWalletBalance;
+    prevRawPrivateBalanceRef.current = rawPrivateBalance;
+  }, [rawWalletBalance, rawPrivateBalance]);
 
   useEffect(() => {
     if (open && isConnected && !isInitialized) {
@@ -91,16 +127,35 @@ export function PrivacyDrawer({
   }, [open, isInitialized, refreshBalance, selectedToken]);
 
   useEffect(() => {
-    if (status === "success") {
-      const timer = setTimeout(() => onSuccessRef.current?.(), 2000);
-      return () => clearTimeout(timer);
+    if (status === "success" && submittedValuesRef.current) {
+      const { amount, mode: submittedMode } = submittedValuesRef.current;
+
+      // Apply optimistic balance adjustments for immediate feedback
+      if (submittedMode === "deposit") {
+        setWalletBalanceAdjustment(-amount);
+        setPrivateBalanceAdjustment(amount);
+      } else {
+        // send mode - private balance goes down
+        setPrivateBalanceAdjustment(-amount);
+      }
+
+      // Refresh both wallet and private balance after successful operation
+      // Use silent mode to avoid overwriting the success status
+      refreshBalance(selectedToken, true);
+      refetchDashboardBalance();
+
+      const callbackTimer = setTimeout(() => onSuccessRef.current?.(), 2000);
+      return () => clearTimeout(callbackTimer);
     }
-  }, [status]);
+  }, [status, refreshBalance, refetchDashboardBalance, selectedToken]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (!isConnected || isProcessing || amountNum <= 0) return;
+
+      // Store values at submission time for use in success effect
+      submittedValuesRef.current = { amount: amountNum, mode };
 
       if (mode === "deposit") {
         await shield({ amount: amountNum, token: selectedToken });
@@ -128,6 +183,8 @@ export function PrivacyDrawer({
   const handleClose = useCallback(() => {
     setAmount("");
     setRecipientAddress(walletAddress || "");
+    setWalletBalanceAdjustment(0);
+    setPrivateBalanceAdjustment(0);
     reset();
     onOpenChange(false);
   }, [walletAddress, reset, onOpenChange]);
@@ -179,8 +236,9 @@ export function PrivacyDrawer({
             private balance
           </SheetTitle>
           <SheetDescription>
-            Move funds between your wallet and private balance. Withdrawals
-            can&apos;t be linked to your deposits.
+            {mode === "deposit"
+              ? "Shield your funds by depositing into the private pool. Your balance becomes untraceable using zero-knowledge proofs."
+              : "Send funds from your private balance to any wallet. The transaction can't be linked back to your original deposit."}
           </SheetDescription>
         </SheetHeader>
 
@@ -193,6 +251,7 @@ export function PrivacyDrawer({
             token={selectedToken}
             recipientAddress={recipientAddress}
             signature={signature}
+            walletAddress={walletAddress}
             onClose={handleClose}
           />
         )}
@@ -264,12 +323,12 @@ export function PrivacyDrawer({
                 {mode === "deposit" ? (
                   <>
                     <ArrowDownToLine className="h-4 w-4" aria-hidden="true" />
-                    deposit to private balance
+                    shield
                   </>
                 ) : (
                   <>
                     <ArrowUpFromLine className="h-4 w-4" aria-hidden="true" />
-                    withdraw from private balance
+                    send
                   </>
                 )}
               </button>

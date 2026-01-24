@@ -236,6 +236,10 @@ function TransactionRowDetails({
                   <LabeledAddress
                     address={classification.sender}
                     label={labels?.get(classification.sender)}
+                    isYou={
+                      classification.sender.toLowerCase() ===
+                      walletAddress.toLowerCase()
+                    }
                   />
                 </div>
               )}
@@ -248,6 +252,10 @@ function TransactionRowDetails({
                   <LabeledAddress
                     address={classification.receiver}
                     label={labels?.get(classification.receiver)}
+                    isYou={
+                      classification.receiver.toLowerCase() ===
+                      walletAddress.toLowerCase()
+                    }
                   />
                 </div>
               )}

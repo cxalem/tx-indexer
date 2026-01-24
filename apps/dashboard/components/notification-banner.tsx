@@ -43,22 +43,25 @@ export function NotificationBanner() {
   };
 
   return (
-    <div className="mb-4 p-4 rounded-lg bg-neutral-50 border border-neutral-200 relative">
+    <div className="mb-4 p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 relative">
       <button
         type="button"
         onClick={handleDismiss}
-        className="absolute top-2 right-2 p-1 rounded-md text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors cursor-pointer"
+        className="absolute top-2 right-2 p-1 rounded-md text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
         aria-label="Dismiss"
       >
         <X className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
       <div className="flex items-center gap-2 mb-3 pr-6">
-        <Bell className="h-4 w-4 text-neutral-500" aria-hidden="true" />
-        <p className="text-sm font-medium text-neutral-700">
+        <Bell
+          className="h-4 w-4 text-neutral-500 dark:text-neutral-400"
+          aria-hidden="true"
+        />
+        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
           enable notifications?
         </p>
       </div>
-      <p className="text-xs text-neutral-500 mb-3">
+      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">
         Get notified when you receive transactions, even when this tab is in the
         background.
       </p>
@@ -66,7 +69,7 @@ export function NotificationBanner() {
         <button
           type="button"
           onClick={handleDismiss}
-          className="flex-1 px-3 py-1.5 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer"
+          className="flex-1 px-3 py-1.5 text-sm text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg transition-colors cursor-pointer"
         >
           not now
         </button>
@@ -78,7 +81,7 @@ export function NotificationBanner() {
             "flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center justify-center gap-1",
             !isRequesting
               ? "bg-vibrant-red text-white hover:bg-vibrant-red/90 cursor-pointer"
-              : "bg-neutral-200 text-neutral-400 cursor-not-allowed",
+              : "bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 cursor-not-allowed",
           )}
         >
           {isRequesting ? (

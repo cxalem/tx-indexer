@@ -52,10 +52,7 @@ export function getTransactionDirection(
     direction: "neutral",
     prefix: "",
     colorClass: "text-neutral-600",
-    label:
-      classification.primaryType === "swap"
-        ? "trade"
-        : classification.primaryType.replace("_", " "),
+    label: getTransactionLabel(classification.primaryType, "neutral"),
   };
 }
 
@@ -71,15 +68,14 @@ function getTransactionLabel(
   // Short labels that work on mobile, with clear meaning
   if (type === "privacy_deposit" || type === "privacy_withdraw") {
     if (direction === "outgoing") {
-      // I deposited to my private balance
       return "deposited to private";
     }
     if (direction === "incoming") {
-      // Someone sent me money via private transfer
       return "received private";
     }
-    // Neutral case
-    return "private transfer";
+    if (direction === "neutral") {
+      return "private transfer";
+    }
   }
 
   const formattedType = type.replace("_", " ");

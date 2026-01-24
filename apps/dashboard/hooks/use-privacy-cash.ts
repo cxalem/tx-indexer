@@ -143,8 +143,8 @@ export interface UsePrivacyCashReturn {
   shield: (params: ShieldParams) => Promise<PrivacyOperationResult>;
   /** Unshield funds from the private pool */
   unshield: (params: UnshieldParams) => Promise<PrivacyOperationResult>;
-  /** Refresh the private balance */
-  refreshBalance: (token?: PrivacyCashToken) => Promise<void>;
+  /** Refresh the private balance (silent mode skips status updates) */
+  refreshBalance: (token?: PrivacyCashToken, silent?: boolean) => Promise<void>;
   /** Reset state to idle */
   reset: () => void;
   /** Check if a token is supported */
@@ -338,7 +338,10 @@ export function usePrivacyCash(
   }, [getClient]);
 
   const refreshBalance = useCallback(
-    async (token: PrivacyCashToken = defaultToken): Promise<void> => {
+    async (
+      token: PrivacyCashToken = defaultToken,
+      silent = false,
+    ): Promise<void> => {
       const client = getClient();
       if (!client) {
         return;
@@ -355,18 +358,25 @@ export function usePrivacyCash(
         return;
       }
 
-      setStatus("loading_balance");
-      setError(null);
+      // Only update status if not in silent mode (e.g., after success)
+      if (!silent) {
+        setStatus("loading_balance");
+        setError(null);
+      }
 
       try {
         const balance = await client.getBalance(token);
         setPrivateBalance(balance);
-        setStatus("idle");
+        if (!silent) {
+          setStatus("idle");
+        }
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to fetch balance";
-        setError(errorMessage);
-        setStatus("error");
+        if (!silent) {
+          const errorMessage =
+            err instanceof Error ? err.message : "Failed to fetch balance";
+          setError(errorMessage);
+          setStatus("error");
+        }
       }
     },
     [getClient, initialize, defaultToken],
@@ -409,9 +419,6 @@ export function usePrivacyCash(
 
         setSignature(result.signature);
         setStatus("success");
-
-        // Refresh balance in background (non-blocking)
-        refreshBalance(token).catch(console.error);
 
         return { signature: result.signature, error: null };
       } catch (err) {
@@ -469,9 +476,6 @@ export function usePrivacyCash(
 
         setSignature(result.signature);
         setStatus("success");
-
-        // Refresh balance in background (non-blocking)
-        refreshBalance(token).catch(console.error);
 
         return {
           signature: result.signature,

@@ -25,6 +25,8 @@ export function RecipientSelector({
   }, [recipientAddress, isMyWalletSelected, labelsList]);
 
   useEffect(() => {
+    if (!showAutocomplete) return;
+
     function handleClickOutside(event: MouseEvent) {
       if (
         autocompleteRef.current &&
@@ -35,7 +37,7 @@ export function RecipientSelector({
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [showAutocomplete]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 200);

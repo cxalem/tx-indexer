@@ -36,7 +36,7 @@ export function ModeTabs({ mode, onModeChange }: ModeTabsProps) {
         )}
       >
         <ArrowUpFromLine className="h-4 w-4" />
-        Withdraw
+        Send
       </button>
     </div>
   );
