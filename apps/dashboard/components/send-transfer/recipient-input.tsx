@@ -94,34 +94,42 @@ export function RecipientInput({
             </span>
           </div>
         ) : (
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => {
-              onChange(e.target.value);
-              if (e.target.value && savedLabels.length > 0) {
-                onShowAutocomplete(true);
+          <>
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => {
+                onChange(e.target.value);
+                if (e.target.value && savedLabels.length > 0) {
+                  onShowAutocomplete(true);
+                }
+              }}
+              onFocus={() => {
+                if (savedLabels.length > 0) {
+                  onShowAutocomplete(true);
+                }
+              }}
+              onBlur={onBlur}
+              placeholder={
+                savedLabels.length > 0
+                  ? "Enter address or search saved contacts"
+                  : "Enter recipient address"
               }
-            }}
-            onFocus={() => {
-              if (savedLabels.length > 0) {
-                onShowAutocomplete(true);
-              }
-            }}
-            onBlur={onBlur}
-            placeholder={
-              savedLabels.length > 0
-                ? "Enter address or search saved contacts"
-                : "Enter recipient address"
-            }
-            className={cn(
-              "w-full px-3 py-2.5 pr-10 rounded-lg border bg-white dark:bg-neutral-800 font-mono text-sm text-neutral-900 dark:text-neutral-100 transition-colors",
-              "focus:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-red focus-visible:border-vibrant-red",
-              error
-                ? "border-red-400 dark:border-red-700"
-                : "border-neutral-200 dark:border-neutral-700",
-            )}
-          />
+              className={cn(
+                "w-full px-3 py-2.5 pr-10 rounded-lg border bg-white dark:bg-neutral-800 font-mono text-sm text-neutral-900 dark:text-neutral-100 transition-colors",
+                "focus:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-red focus-visible:border-vibrant-red",
+                "peer",
+                error
+                  ? "border-red-400 dark:border-red-700"
+                  : "border-neutral-200 dark:border-neutral-700",
+              )}
+            />
+            {/* Fade overlay for text overflow */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute right-9 top-[1px] bottom-[1px] w-12 rounded-r-lg bg-gradient-to-r from-transparent to-white dark:to-neutral-800 peer-focus:opacity-0 transition-opacity"
+            />
+          </>
         )}
         {value && (
           <button
