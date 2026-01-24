@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { cn, truncate } from "@/lib/utils";
 import { Tag, AlertCircle, LogIn, X } from "lucide-react";
 import type { WalletLabel } from "@/app/actions/wallet-labels";
@@ -38,24 +38,36 @@ export function RecipientInput({
 }: RecipientInputProps) {
   const autocompleteRef = useRef<HTMLDivElement>(null);
 
+  // Ref for callback to avoid effect re-subscriptions
+  const onShowAutocompleteRef = useRef(onShowAutocomplete);
+  useEffect(() => {
+    onShowAutocompleteRef.current = onShowAutocomplete;
+  }, [onShowAutocomplete]);
+
+  // Click outside handler - only subscribes once
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
         autocompleteRef.current &&
         !autocompleteRef.current.contains(event.target as Node)
       ) {
-        onShowAutocomplete(false);
+        onShowAutocompleteRef.current(false);
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onShowAutocomplete]);
+  }, []);
 
-  const filteredLabels = savedLabels.filter(
-    (l) =>
-      l.label.toLowerCase().includes(value.toLowerCase()) ||
-      l.address.toLowerCase().includes(value.toLowerCase()),
+  // Memoize filtered labels to avoid recalculating on every render
+  const filteredLabels = useMemo(
+    () =>
+      savedLabels.filter(
+        (l) =>
+          l.label.toLowerCase().includes(value.toLowerCase()) ||
+          l.address.toLowerCase().includes(value.toLowerCase()),
+      ),
+    [savedLabels, value],
   );
 
   return (

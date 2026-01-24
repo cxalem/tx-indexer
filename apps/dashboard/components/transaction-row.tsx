@@ -56,7 +56,10 @@ function TransactionRowHeader({
           <div
             className={cn(
               "p-2 rounded-lg",
-              getTransactionIconBgClass(direction.direction),
+              getTransactionIconBgClass(
+                direction.direction,
+                classification.primaryType,
+              ),
             )}
           >
             {getTransactionIcon(

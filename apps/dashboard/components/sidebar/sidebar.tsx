@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { motion, useAnimationControls } from "framer-motion";
 import { QrCode, Send } from "lucide-react";
 import { SidebarNav } from "./sidebar-nav";
+import { AnimatedPrivacyButtonWrapper } from "./animated-privacy-button";
 import { mainNavItems, bottomNavItems } from "./nav-items";
 import { useUnifiedWallet } from "@/hooks/use-unified-wallet";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
+import { usePrivacyFeature } from "@/hooks/use-privacy-feature";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { bitcountFont } from "@/lib/fonts";
 
@@ -26,21 +29,104 @@ const ReceiveDrawer = dynamic(
   { ssr: false },
 );
 
+const PrivacyDrawer = dynamic(
+  () => import("@/components/privacy").then((mod) => mod.PrivacyDrawer),
+  { ssr: false },
+);
+
+interface SidebarActionButtonsProps {
+  animationTrigger: "enter" | "exit" | null;
+  isPrivacyEnabled: boolean;
+  onReceiveClick: () => void;
+  onPrivacyClick: () => void;
+  onSendClick: () => void;
+  onAnimationComplete: () => void;
+}
+
+function SidebarActionButtons({
+  animationTrigger,
+  isPrivacyEnabled,
+  onReceiveClick,
+  onPrivacyClick,
+  onSendClick,
+  onAnimationComplete,
+}: SidebarActionButtonsProps) {
+  const receiveControls = useAnimationControls();
+
+  useEffect(() => {
+    if (animationTrigger === "exit") {
+      receiveControls.start({
+        y: [0, 4, 6, 4, 0, -3, 0, -1, 0],
+        transition: {
+          duration: 0.9,
+          times: [0, 0.15, 0.35, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+          ease: "easeOut",
+        },
+      });
+    } else if (animationTrigger === "enter") {
+      receiveControls.start({
+        y: [0, -2, -4, -3, 0],
+        transition: {
+          duration: 1.0,
+          times: [0, 0.2, 0.5, 0.75, 1],
+          ease: "easeInOut",
+        },
+      });
+    }
+  }, [animationTrigger, receiveControls]);
+
+  return (
+    <div className="px-3 pb-3 space-y-2">
+      <motion.button
+        type="button"
+        onClick={onReceiveClick}
+        animate={receiveControls}
+        className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer w-full border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+      >
+        <QrCode className="w-4 h-4" />
+        <span className="lowercase">receive</span>
+      </motion.button>
+      <AnimatedPrivacyButtonWrapper
+        isEnabled={isPrivacyEnabled}
+        animationTrigger={animationTrigger}
+        onClick={onPrivacyClick}
+        onAnimationComplete={onAnimationComplete}
+      />
+      <button
+        type="button"
+        onClick={onSendClick}
+        className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer w-full bg-vibrant-red text-white hover:bg-vibrant-red/90"
+      >
+        <Send className="w-4 h-4" />
+        <span className="lowercase">send</span>
+      </button>
+    </div>
+  );
+}
+
 export function Sidebar() {
   const { status, address } = useUnifiedWallet();
   const isConnected = status === "connected";
+  const {
+    isEnabled: isPrivacyEnabled,
+    animationTrigger,
+    clearAnimation,
+  } = usePrivacyFeature();
 
   const [sendDrawerOpen, setSendDrawerOpen] = useState(false);
   const [tradeDrawerOpen, setTradeDrawerOpen] = useState(false);
   const [receiveDrawerOpen, setReceiveDrawerOpen] = useState(false);
+  const [privacyDrawerOpen, setPrivacyDrawerOpen] = useState(false);
 
   const sendDrawerMounted = useRef(false);
   const tradeDrawerMounted = useRef(false);
   const receiveDrawerMounted = useRef(false);
+  const privacyDrawerMounted = useRef(false);
 
   if (sendDrawerOpen) sendDrawerMounted.current = true;
   if (tradeDrawerOpen) tradeDrawerMounted.current = true;
   if (receiveDrawerOpen) receiveDrawerMounted.current = true;
+  if (privacyDrawerOpen) privacyDrawerMounted.current = true;
 
   const { balance, usdcBalance } = useDashboardData(address, {
     fastPolling: false,
@@ -64,12 +150,12 @@ export function Sidebar() {
 
   const openReceiveDrawer = useCallback(() => setReceiveDrawerOpen(true), []);
   const openSendDrawer = useCallback(() => setSendDrawerOpen(true), []);
+  const openPrivacyDrawer = useCallback(() => setPrivacyDrawerOpen(true), []);
   const closeReceiveDrawer = useCallback(() => setReceiveDrawerOpen(false), []);
 
   return (
     <>
       <aside className="hidden md:flex flex-col w-56 fixed top-0 left-0 h-screen overflow-y-auto z-30">
-        {/* Logo */}
         <div className="p-4">
           <h1
             className={`${bitcountFont.className} text-xl text-neutral-900 dark:text-neutral-100`}
@@ -78,41 +164,27 @@ export function Sidebar() {
           </h1>
         </div>
 
-        {/* Main nav */}
         <div className="flex-1 p-3">
           <SidebarNav items={mainNavItems} onAction={handleAction} />
         </div>
 
-        {/* Receive & Send buttons */}
         {isConnected && (
-          <div className="px-3 pb-3 space-y-2">
-            <button
-              type="button"
-              onClick={openReceiveDrawer}
-              className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer w-full border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-            >
-              <QrCode className="w-4 h-4" />
-              <span className="lowercase">receive</span>
-            </button>
-            <button
-              type="button"
-              onClick={openSendDrawer}
-              className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer w-full bg-vibrant-red text-white hover:bg-vibrant-red/90"
-            >
-              <Send className="w-4 h-4" />
-              <span className="lowercase">send</span>
-            </button>
-          </div>
+          <SidebarActionButtons
+            animationTrigger={animationTrigger}
+            isPrivacyEnabled={isPrivacyEnabled}
+            onReceiveClick={openReceiveDrawer}
+            onPrivacyClick={openPrivacyDrawer}
+            onSendClick={openSendDrawer}
+            onAnimationComplete={clearAnimation}
+          />
         )}
 
-        {/* Bottom nav */}
         <div className="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
           <SidebarNav items={bottomNavItems} onAction={handleAction} />
           <ThemeToggle />
         </div>
       </aside>
 
-      {/* Drawers */}
       {sendDrawerMounted.current && (
         <SendTransferDrawer
           open={sendDrawerOpen}
@@ -135,6 +207,13 @@ export function Sidebar() {
           isOpen={receiveDrawerOpen}
           onClose={closeReceiveDrawer}
           walletAddress={address}
+        />
+      )}
+
+      {privacyDrawerMounted.current && (
+        <PrivacyDrawer
+          open={privacyDrawerOpen}
+          onOpenChange={setPrivacyDrawerOpen}
         />
       )}
     </>

@@ -1,266 +1,278 @@
-/**
- * Privacy Cash Client Configuration
- *
- * Wrapper for the Privacy Cash SDK with proper initialization.
- *
- * =============================================================================
- * HACKATHON: Solana Privacy Hack 2026
- * BOUNTY: Privacy Cash - $15,000 (Best Integration to Existing App: $6,000)
- * DOCS: https://github.com/Privacy-Cash/privacy-cash-sdk
- * NPM: privacycash
- * =============================================================================
- *
- * INSTALLATION:
- * ```bash
- * bun add privacycash
- * ```
- *
- * IMPORTANT: Next.js requires postinstall script for WASM files:
- * ```json
- * {
- *   "scripts": {
- *     "postinstall": "cp node_modules/@lightprotocol/hasher.rs/dist/hasher_wasm_simd_bg.wasm node_modules/@lightprotocol/hasher.rs/dist/browser-fat/es/ && cp node_modules/@lightprotocol/hasher.rs/dist/light_wasm_hasher_bg.wasm node_modules/@lightprotocol/hasher.rs/dist/browser-fat/es/"
- *   }
- * }
- * ```
- *
- * =============================================================================
- * IMPLEMENTATION TODOS:
- * =============================================================================
- */
+"use client";
 
+import { Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import {
-  PRIVACY_CASH_API_URL,
   PRIVACY_CASH_SUPPORTED_TOKENS,
+  PRIVACY_CASH_CIRCUIT_URL,
+  PRIVACY_CASH_SIGN_MESSAGE,
+  STORAGE_KEY_UTXO_CACHE_PREFIX,
   type PrivacyCashToken,
 } from "./constants";
 
-// =============================================================================
-// TODO 1: Import Privacy Cash SDK
-// =============================================================================
-// Uncomment after installing the package:
-//
-// import {
-//   deposit,
-//   withdraw,
-//   getPrivateBalance,
-//   depositSPL,
-//   withdrawSPL,
-//   getPrivateBalanceSpl,
-// } from "privacycash";
+const DEBUG = process.env.NODE_ENV === "development";
 
-// =============================================================================
-// Types
-// =============================================================================
+const debugLog = (...args: Parameters<typeof console.log>) => {
+  if (DEBUG) console.log(...args);
+};
 
-export interface PrivacyCashConfig {
-  /** Use devnet instead of mainnet */
-  devnet?: boolean;
-  /** Custom RPC URL (uses Helius by default) */
-  rpcUrl?: string;
-}
+const debugError = (...args: Parameters<typeof console.error>) => {
+  if (DEBUG) console.error(...args);
+};
 
-export interface PrivacyDepositParams {
-  /** Amount in UI units (e.g., 1.5 for 1.5 SOL) */
-  amount: number;
-  /** Token to deposit (SOL, USDC, USDT) */
-  token: PrivacyCashToken;
-}
-
-export interface PrivacyWithdrawParams {
-  /** Amount in UI units */
-  amount: number;
-  /** Token to withdraw */
-  token: PrivacyCashToken;
-  /** Recipient Solana address */
-  recipientAddress: string;
+export interface PrivacyCashClientConfig {
+  connection: Connection;
+  publicKey: PublicKey;
+  signTransaction: (tx: VersionedTransaction) => Promise<VersionedTransaction>;
+  signMessage: (message: Uint8Array) => Promise<Uint8Array>;
 }
 
 export interface PrivacyBalance {
-  /** Balance in UI units */
   amount: number;
-  /** Token symbol */
   token: PrivacyCashToken;
-  /** Balance in smallest units (lamports/base units) */
   rawAmount: bigint;
 }
 
-// =============================================================================
-// TODO 2: Create Privacy Cash Client Class
-// =============================================================================
-
-/**
- * Privacy Cash client wrapper
- *
- * Provides a simplified interface for Privacy Cash SDK operations.
- *
- * @example
- * ```typescript
- * const client = new PrivacyCashClient({ devnet: false });
- *
- * // Check shielded balance
- * const balance = await client.getBalance("SOL");
- *
- * // Shield funds
- * await client.deposit({ amount: 1.0, token: "SOL" });
- *
- * // Unshield to recipient
- * await client.withdraw({
- *   amount: 0.5,
- *   token: "SOL",
- *   recipientAddress: "...",
- * });
- * ```
- */
-export class PrivacyCashClient {
-  private config: PrivacyCashConfig;
-
-  constructor(config: PrivacyCashConfig = {}) {
-    this.config = config;
-  }
-
-  // ===========================================================================
-  // TODO 3: Implement getBalance
-  // ===========================================================================
-  /**
-   * Get the shielded balance for a token
-   *
-   * @param token - Token to check balance for
-   * @returns Promise<PrivacyBalance>
-   */
-  async getBalance(token: PrivacyCashToken): Promise<PrivacyBalance> {
-    // TODO: Implement using Privacy Cash SDK
-    //
-    // For SOL:
-    // const balance = await getPrivateBalance();
-    // return {
-    //   amount: balance / 1e9,
-    //   token: "SOL",
-    //   rawAmount: BigInt(balance),
-    // };
-    //
-    // For SPL tokens:
-    // const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
-    // const balance = await getPrivateBalanceSpl(tokenInfo.mint);
-    // return {
-    //   amount: balance / Math.pow(10, tokenInfo.decimals),
-    //   token,
-    //   rawAmount: BigInt(balance),
-    // };
-
-    throw new Error("Not implemented: Privacy Cash SDK integration required");
-  }
-
-  // ===========================================================================
-  // TODO 4: Implement deposit (shield)
-  // ===========================================================================
-  /**
-   * Deposit/shield funds into the privacy pool
-   *
-   * @param params - Deposit parameters
-   * @returns Promise<string> - Transaction signature
-   */
-  async deposit(params: PrivacyDepositParams): Promise<string> {
-    const { amount, token } = params;
-    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
-
-    // TODO: Implement using Privacy Cash SDK
-    //
-    // For SOL:
-    // const lamports = Math.floor(amount * 1e9);
-    // const result = await deposit({ lamports });
-    // return result.signature;
-    //
-    // For SPL tokens:
-    // const baseUnits = Math.floor(amount * Math.pow(10, tokenInfo.decimals));
-    // const result = await depositSPL({
-    //   base_units: baseUnits,
-    //   mintAddress: tokenInfo.mint,
-    // });
-    // return result.signature;
-
-    throw new Error("Not implemented: Privacy Cash SDK integration required");
-  }
-
-  // ===========================================================================
-  // TODO 5: Implement withdraw (unshield)
-  // ===========================================================================
-  /**
-   * Withdraw/unshield funds from the privacy pool
-   *
-   * @param params - Withdraw parameters
-   * @returns Promise<string> - Transaction signature
-   */
-  async withdraw(params: PrivacyWithdrawParams): Promise<string> {
-    const { amount, token, recipientAddress } = params;
-    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
-
-    // TODO: Implement using Privacy Cash SDK
-    //
-    // For SOL:
-    // const lamports = Math.floor(amount * 1e9);
-    // const result = await withdraw({
-    //   lamports,
-    //   recipientAddress,
-    // });
-    // return result.signature;
-    //
-    // For SPL tokens:
-    // const baseUnits = Math.floor(amount * Math.pow(10, tokenInfo.decimals));
-    // const result = await withdrawSPL({
-    //   base_units: baseUnits,
-    //   mintAddress: tokenInfo.mint,
-    //   recipientAddress,
-    // });
-    // return result.signature;
-
-    throw new Error("Not implemented: Privacy Cash SDK integration required");
-  }
-
-  // ===========================================================================
-  // TODO 6: Helper methods
-  // ===========================================================================
-
-  /**
-   * Convert UI amount to smallest units
-   */
-  toSmallestUnit(amount: number, token: PrivacyCashToken): bigint {
-    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
-    const decimals = tokenInfo.decimals;
-    return BigInt(Math.floor(amount * Math.pow(10, decimals)));
-  }
-
-  /**
-   * Convert smallest units to UI amount
-   */
-  toUiAmount(rawAmount: bigint, token: PrivacyCashToken): number {
-    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
-    const decimals = tokenInfo.decimals;
-    return Number(rawAmount) / Math.pow(10, decimals);
-  }
-
-  /**
-   * Check if a token is supported
-   */
-  isTokenSupported(token: string): token is PrivacyCashToken {
-    return token in PRIVACY_CASH_SUPPORTED_TOKENS;
-  }
+export interface PrivacyCashResult {
+  signature: string;
+  isPartial?: boolean;
+  fee?: number;
 }
 
-// =============================================================================
-// Singleton instance (optional)
-// =============================================================================
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let sdkModule: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let lightWasmInstance: any = null;
 
-let _client: PrivacyCashClient | null = null;
-
-/**
- * Get or create a Privacy Cash client instance
- */
-export function getPrivacyCashClient(
-  config?: PrivacyCashConfig,
-): PrivacyCashClient {
-  if (!_client) {
-    _client = new PrivacyCashClient(config);
+async function loadSDK() {
+  if (!sdkModule) {
+    sdkModule = await import("privacycash/utils");
   }
-  return _client;
+  return sdkModule;
+}
+
+async function getLightWasm() {
+  if (!lightWasmInstance) {
+    const hasher = await import("@lightprotocol/hasher.rs");
+    lightWasmInstance = await hasher.WasmFactory.getInstance();
+  }
+  return lightWasmInstance;
+}
+
+export class PrivacyCashClient {
+  private readonly connection: Connection;
+  private readonly publicKey: PublicKey;
+  private readonly signTransaction: (
+    tx: VersionedTransaction,
+  ) => Promise<VersionedTransaction>;
+  private readonly signMessage: (message: Uint8Array) => Promise<Uint8Array>;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private encryptionService: any = null;
+  private initialized = false;
+
+  constructor(config: PrivacyCashClientConfig) {
+    this.connection = config.connection;
+    this.publicKey = config.publicKey;
+    this.signTransaction = config.signTransaction;
+    this.signMessage = config.signMessage;
+  }
+
+  private getMintAddress(token: PrivacyCashToken): PublicKey {
+    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
+    if (!tokenInfo.mint) {
+      throw new Error(`Token ${token} does not have a mint address`);
+    }
+    return new PublicKey(tokenInfo.mint);
+  }
+
+  async initialize(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
+
+    const sdk = await loadSDK();
+    const message = new TextEncoder().encode(PRIVACY_CASH_SIGN_MESSAGE);
+    const signature = await this.signMessage(message);
+
+    this.encryptionService = new sdk.EncryptionService();
+    this.encryptionService.deriveEncryptionKeyFromSignature(signature);
+    this.initialized = true;
+  }
+
+  private async ensureInitialized(): Promise<void> {
+    if (!this.initialized) {
+      await this.initialize();
+    }
+  }
+
+  async getBalance(token: PrivacyCashToken): Promise<PrivacyBalance> {
+    await this.ensureInitialized();
+    const sdk = await loadSDK();
+    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
+
+    if (token === "SOL") {
+      const utxos = await sdk.getUtxos({
+        publicKey: this.publicKey,
+        connection: this.connection,
+        encryptionService: this.encryptionService,
+        storage: localStorage,
+      });
+      if (!utxos || utxos.length === 0) {
+        return {
+          amount: 0,
+          token: "SOL",
+          rawAmount: BigInt(0),
+        };
+      }
+      const { lamports } = sdk.getBalanceFromUtxos(utxos);
+      return {
+        amount: lamports / 1e9,
+        token: "SOL",
+        rawAmount: BigInt(lamports),
+      };
+    }
+
+    const mintAddress = this.getMintAddress(token);
+    const utxos = await sdk.getUtxosSPL({
+      publicKey: this.publicKey,
+      connection: this.connection,
+      encryptionService: this.encryptionService,
+      storage: localStorage,
+      mintAddress,
+    });
+    if (!utxos || utxos.length === 0) {
+      return {
+        amount: 0,
+        token,
+        rawAmount: BigInt(0),
+      };
+    }
+    const { base_units } = sdk.getBalanceFromUtxosSPL(utxos);
+    return {
+      amount: base_units / Math.pow(10, tokenInfo.decimals),
+      token,
+      rawAmount: BigInt(base_units),
+    };
+  }
+
+  async deposit(
+    amount: number,
+    token: PrivacyCashToken,
+  ): Promise<PrivacyCashResult> {
+    await this.ensureInitialized();
+    const sdk = await loadSDK();
+    const lightWasm = await getLightWasm();
+    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
+
+    if (token === "SOL") {
+      debugLog("[PrivacyCash] Starting SOL deposit:", {
+        amount,
+        lamports: Math.floor(amount * 1e9),
+        publicKey: this.publicKey.toBase58(),
+        circuitUrl: PRIVACY_CASH_CIRCUIT_URL,
+      });
+      try {
+        const result = await sdk.deposit({
+          lightWasm,
+          connection: this.connection,
+          amount_in_lamports: Math.floor(amount * 1e9),
+          keyBasePath: PRIVACY_CASH_CIRCUIT_URL,
+          publicKey: this.publicKey,
+          transactionSigner: this.signTransaction,
+          storage: localStorage,
+          encryptionService: this.encryptionService,
+        });
+        debugLog("[PrivacyCash] SOL deposit result:", result);
+        return { signature: result.tx };
+      } catch (err) {
+        debugError("[PrivacyCash] SOL deposit error:", err);
+        debugError(
+          "[PrivacyCash] Error stack:",
+          err instanceof Error ? err.stack : "no stack",
+        );
+        throw err;
+      }
+    }
+
+    const mintAddress = this.getMintAddress(token);
+
+    try {
+      const result = await sdk.depositSPL({
+        lightWasm,
+        connection: this.connection,
+        base_units: Math.floor(amount * Math.pow(10, tokenInfo.decimals)),
+        keyBasePath: PRIVACY_CASH_CIRCUIT_URL,
+        publicKey: this.publicKey,
+        transactionSigner: this.signTransaction,
+        storage: localStorage,
+        encryptionService: this.encryptionService,
+        mintAddress,
+      });
+      return { signature: result.tx };
+    } catch (err) {
+      debugError("[PrivacyCash] depositSPL error:", err);
+      throw err;
+    }
+  }
+
+  async withdraw(
+    amount: number,
+    token: PrivacyCashToken,
+    recipientAddress: string,
+  ): Promise<PrivacyCashResult> {
+    await this.ensureInitialized();
+    const sdk = await loadSDK();
+    const lightWasm = await getLightWasm();
+    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
+
+    if (token === "SOL") {
+      const result = await sdk.withdraw({
+        lightWasm,
+        connection: this.connection,
+        amount_in_lamports: Math.floor(amount * 1e9),
+        keyBasePath: PRIVACY_CASH_CIRCUIT_URL,
+        publicKey: this.publicKey,
+        storage: localStorage,
+        encryptionService: this.encryptionService,
+        recipient: new PublicKey(recipientAddress),
+      });
+      return {
+        signature: result.tx,
+        isPartial: result.isPartial,
+        fee: result.fee_in_lamports / 1e9,
+      };
+    }
+
+    const mintAddress = this.getMintAddress(token);
+
+    const result = await sdk.withdrawSPL({
+      lightWasm,
+      connection: this.connection,
+      base_units: Math.floor(amount * Math.pow(10, tokenInfo.decimals)),
+      keyBasePath: PRIVACY_CASH_CIRCUIT_URL,
+      publicKey: this.publicKey,
+      storage: localStorage,
+      encryptionService: this.encryptionService,
+      mintAddress,
+      recipient: new PublicKey(recipientAddress),
+    });
+    return {
+      signature: result.tx,
+      isPartial: result.isPartial,
+      fee: result.fee_base_units / Math.pow(10, tokenInfo.decimals),
+    };
+  }
+
+  clearCache(): void {
+    const key = `${STORAGE_KEY_UTXO_CACHE_PREFIX}${this.publicKey.toBase58()}`;
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // localStorage may not be available
+    }
+  }
+
+  get isInitialized(): boolean {
+    return this.initialized;
+  }
 }

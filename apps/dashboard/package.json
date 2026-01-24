@@ -8,11 +8,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint --max-warnings 0",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "postinstall": "cp node_modules/@lightprotocol/hasher.rs/dist/hasher_wasm_simd_bg.wasm node_modules/@lightprotocol/hasher.rs/dist/browser-fat/es/ 2>/dev/null && cp node_modules/@lightprotocol/hasher.rs/dist/light_wasm_hasher_bg.wasm node_modules/@lightprotocol/hasher.rs/dist/browser-fat/es/ 2>/dev/null || true"
   },
   "dependencies": {
+    "@lightprotocol/hasher.rs": "^0.2.1",
     "@next/bundle-analyzer": "^16.1.1",
     "@radix-ui/react-dialog": "^1.1.15",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
     "@solana/client": "^1.1.4",
     "@solana/kit": "^5.0.0",
     "@solana/react-hooks": "^1.1.4",
@@ -28,13 +32,15 @@
     "lucide-react": "^0.560.0",
     "next": "16.1.1",
     "next-themes": "^0.4.6",
+    "privacycash": "^1.1.11",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-qr-code": "^2.0.18",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
+    "three": "^0.182.0",
     "tweetnacl": "^1.0.3",
-    "tx-indexer": "^1.4.0",
+    "tx-indexer": "workspace:*",
     "zod": "^4.3.5"
   },
   "devDependencies": {
@@ -44,6 +50,7 @@
     "@types/node": "^22.15.3",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
+    "@types/three": "^0.182.0",
     "eslint": "^9.39.1",
     "tailwindcss": "^4",
     "typescript": "5.9.2"

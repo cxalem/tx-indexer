@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     // lucide-react has 1500+ icons - direct imports save ~200-800ms cold start
     optimizePackageImports: ["lucide-react"],
   },
+  // Exclude problematic WASM packages from bundling
+  // @lightprotocol/hasher.rs has WASM files that Turbopack can't handle
+  serverExternalPackages: ["@lightprotocol/hasher.rs", "privacycash"],
 };
 
 // Wrap with bundle analyzer when ANALYZE=true

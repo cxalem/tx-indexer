@@ -58,7 +58,5 @@ export const bottomNavItems: NavItem[] = [
     label: "settings",
     href: "/settings",
     icon: Settings,
-    disabled: true,
-    comingSoon: true,
   },
 ];

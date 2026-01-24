@@ -410,6 +410,64 @@
   }
 }
 
+/* Privacy button confetti animations */
+@keyframes confetti-in {
+  0% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) rotate(0deg) scale(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(calc(var(--tx) * 0.3), calc(var(--ty) * 0.3))
+      rotate(180deg) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(360deg) scale(0);
+  }
+}
+
+@keyframes confetti-out {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5))
+      rotate(720deg) scale(0.3);
+  }
+}
+
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-confetti-in {
+  animation: confetti-in var(--duration, 0.5s) ease-out forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+.animate-confetti-out {
+  animation: confetti-out var(--duration, 0.4s) ease-out forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+.animate-shine {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%
+  );
+  animation: shine-sweep 0.4s ease-in-out forwards;
+}
+
 @media print {
   [data-print-hide] {
     display: none !important;

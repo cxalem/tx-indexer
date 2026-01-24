@@ -30,6 +30,8 @@ interface SheetContentProps extends React.ComponentPropsWithoutRef<
   typeof DialogPrimitive.Content
 > {
   side?: "top" | "bottom" | "left" | "right";
+  /** Prevent closing on outside interaction (useful during wallet signing) */
+  preventClose?: boolean;
 }
 
 const sheetVariants = {
@@ -42,13 +44,25 @@ const sheetVariants = {
 const SheetContent = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
+>(({ side = "right", className, children, preventClose, ...props }, ref) => (
   <SheetPortal>
     <SheetOverlay />
     <DialogPrimitive.Content
       ref={ref}
       data-sheet-content=""
       onOpenAutoFocus={(e) => e.preventDefault()}
+      onInteractOutside={(e) => {
+        // Prevent closing when preventClose is true (e.g., during wallet signing)
+        if (preventClose) {
+          e.preventDefault();
+        }
+      }}
+      onEscapeKeyDown={(e) => {
+        // Also prevent ESC key from closing during processing
+        if (preventClose) {
+          e.preventDefault();
+        }
+      }}
       className={cn(
         "fixed z-50 gap-4 bg-white dark:bg-neutral-900 p-4 sm:p-6 shadow-lg pb-8 sm:pb-6 overflow-y-auto overscroll-contain border-neutral-200 dark:border-neutral-800",
         sheetVariants[side],
