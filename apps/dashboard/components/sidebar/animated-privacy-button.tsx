@@ -6,6 +6,7 @@ import { Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PrivacyAnimationTrigger } from "@/hooks/use-privacy-feature";
 import { PrivacyParticles3D } from "./privacy-particles-3d";
+import { ButtonParticles } from "./button-particles";
 
 interface AnimatedPrivacyButtonProps {
   isEnabled: boolean;
@@ -50,6 +51,7 @@ export function AnimatedPrivacyButton({
   const [buttonPosition, setButtonPosition] = useState({ x: 100, y: 200 });
   const [particleMode, setParticleMode] =
     useState<PrivacyAnimationTrigger>(null);
+  const [particlesFadingOut, setParticlesFadingOut] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const onAnimationCompleteRef = useRef(onAnimationComplete);
   useEffect(() => {
@@ -77,11 +79,13 @@ export function AnimatedPrivacyButton({
       setShowButton(true);
       setIsExiting(false);
       setParticleMode("enter");
+      setParticlesFadingOut(false);
 
       const shineTimer = setTimeout(() => setShowShine(true), 1400);
       const endTimer = setTimeout(() => {
         setShowShine(false);
         setParticleMode(null);
+        setParticlesFadingOut(true);
         onAnimationCompleteRef.current?.();
       }, 1700);
 
@@ -125,7 +129,7 @@ export function AnimatedPrivacyButton({
     <div className="relative">
       <PrivacyParticles3D
         mode={particleMode}
-        particleCount={36}
+        particleCount={100}
         buttonX={buttonPosition.x}
         buttonY={buttonPosition.y}
         onComplete={handleParticlesComplete}
@@ -148,8 +152,8 @@ export function AnimatedPrivacyButton({
             }}
             className={cn(
               "relative flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm w-full",
-              "border border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300",
-              "hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors",
+              "bg-purple-600 dark:bg-purple-700 text-white",
+              "hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors",
               "overflow-hidden",
               "will-change-[transform,opacity,filter]",
               isExiting
@@ -160,8 +164,15 @@ export function AnimatedPrivacyButton({
               transformOrigin: "center center",
             }}
           >
-            <Shield className="w-4 h-4" />
-            <span className="lowercase">privacy</span>
+            <ButtonParticles
+              particleCount={12}
+              isActive={!isExiting}
+              isFadingOut={particlesFadingOut}
+            />
+            <Shield className="w-4 h-4 relative z-10" />
+            <span className="lowercase relative z-10 font-semibold">
+              privacy
+            </span>
 
             {showShine && (
               <span className="absolute inset-0 animate-shine pointer-events-none" />

@@ -64,8 +64,6 @@ function getTransactionLabel(
     return "trade";
   }
 
-  // Privacy Cash specific labels (user-friendly, from connected wallet's perspective)
-  // Short labels that work on mobile, with clear meaning
   if (type === "privacy_deposit" || type === "privacy_withdraw") {
     if (direction === "outgoing") {
       return "deposited to private";

@@ -2,7 +2,21 @@ import type { WalletLabel } from "@/app/actions/wallet-labels";
 import type { useDashboardData } from "@/hooks/use-dashboard-data";
 import type { PrivacyCashToken } from "@/lib/privacy/constants";
 
+export type HubTab = "transfer" | "swap";
 export type OperationMode = "deposit" | "withdraw";
+
+export type SwapStep =
+  | "idle"
+  | "initializing"
+  | "withdrawing"
+  | "waiting_funds"
+  | "quoting"
+  | "swapping"
+  | "confirming_swap"
+  | "depositing"
+  | "confirming_deposit"
+  | "success"
+  | "error";
 
 export interface PrivacyDrawerProps {
   open: boolean;
@@ -24,6 +38,16 @@ export interface RecipientSelectorProps {
   walletAddress: string | null;
   labelsList: WalletLabel[];
   onRecipientChange: (address: string) => void;
+}
+
+export interface SwapState {
+  fromToken: PrivacyCashToken;
+  toToken: PrivacyCashToken;
+  amount: string;
+  estimatedOutput: string;
+  step: SwapStep;
+  error: string | null;
+  signature: string | null;
 }
 
 export const TOKEN_LOGOS: Record<string, string> = {

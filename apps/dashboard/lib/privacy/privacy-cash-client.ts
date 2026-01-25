@@ -1,6 +1,11 @@
 "use client";
 
-import { Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  VersionedTransaction,
+  Keypair,
+} from "@solana/web3.js";
 import {
   PRIVACY_CASH_SUPPORTED_TOKENS,
   PRIVACY_CASH_CIRCUIT_URL,
@@ -10,6 +15,7 @@ import {
 } from "./constants";
 
 const DEBUG = process.env.NODE_ENV === "development";
+const SIGNATURE_CACHE_KEY_PREFIX = "privacycash-signature-";
 
 const debugLog = (...args: Parameters<typeof console.log>) => {
   if (DEBUG) console.log(...args);
@@ -39,7 +45,7 @@ export interface PrivacyCashResult {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let sdkModule: any = null;
+let sdkModule: typeof import("privacycash/utils") | null = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let lightWasmInstance: any = null;
 
@@ -56,6 +62,54 @@ async function getLightWasm() {
     lightWasmInstance = await hasher.WasmFactory.getInstance();
   }
   return lightWasmInstance;
+}
+
+function getSignatureCacheKey(publicKey: string): string {
+  return `${SIGNATURE_CACHE_KEY_PREFIX}${publicKey}`;
+}
+
+function getCachedSignature(publicKey: string): Uint8Array | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const cached = sessionStorage.getItem(getSignatureCacheKey(publicKey));
+    if (!cached) return null;
+    const arr = JSON.parse(cached);
+    if (!Array.isArray(arr)) return null;
+    return new Uint8Array(arr);
+  } catch {
+    return null;
+  }
+}
+
+function cacheSignature(publicKey: string, signature: Uint8Array): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(
+      getSignatureCacheKey(publicKey),
+      JSON.stringify(Array.from(signature)),
+    );
+  } catch {}
+}
+
+function normalizeSignature(result: unknown): Uint8Array {
+  if (
+    result &&
+    typeof result === "object" &&
+    "signature" in result &&
+    (result as { signature: unknown }).signature instanceof Uint8Array
+  ) {
+    return (result as { signature: Uint8Array }).signature;
+  }
+  if (result instanceof Uint8Array) {
+    return result;
+  }
+  throw new Error("Signature is not a Uint8Array");
+}
+
+function isUserRejection(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message.toLowerCase();
+  return msg.includes("user rejected") || msg.includes("rejected");
 }
 
 export class PrivacyCashClient {
@@ -91,8 +145,34 @@ export class PrivacyCashClient {
     }
 
     const sdk = await loadSDK();
-    const message = new TextEncoder().encode(PRIVACY_CASH_SIGN_MESSAGE);
-    const signature = await this.signMessage(message);
+    const publicKeyBase58 = this.publicKey.toBase58();
+
+    let signature = getCachedSignature(publicKeyBase58);
+
+    if (!signature) {
+      const capturedPublicKey = publicKeyBase58;
+      const message = new TextEncoder().encode(PRIVACY_CASH_SIGN_MESSAGE);
+
+      let rawSignature: unknown;
+      try {
+        rawSignature = await this.signMessage(message);
+      } catch (err) {
+        if (isUserRejection(err)) {
+          throw new Error("User rejected the signature request");
+        }
+        throw err;
+      }
+
+      signature = normalizeSignature(rawSignature);
+
+      if (this.publicKey.toBase58() !== capturedPublicKey) {
+        throw new Error(
+          "Don't switch accounts while signing in. Refresh and try again.",
+        );
+      }
+
+      cacheSignature(publicKeyBase58, signature);
+    }
 
     this.encryptionService = new sdk.EncryptionService();
     this.encryptionService.deriveEncryptionKeyFromSignature(signature);
@@ -261,6 +341,98 @@ export class PrivacyCashClient {
       isPartial: result.isPartial,
       fee: result.fee_base_units / Math.pow(10, tokenInfo.decimals),
     };
+  }
+
+  async withdrawForSwap(
+    amount: number,
+    recipientPubkey: PublicKey,
+  ): Promise<{ signature: string; fee: number; netAmount: number }> {
+    await this.ensureInitialized();
+    const sdk = await loadSDK();
+    const lightWasm = await getLightWasm();
+
+    const result = await sdk.withdraw({
+      lightWasm,
+      connection: this.connection,
+      amount_in_lamports: Math.floor(amount * 1e9),
+      keyBasePath: PRIVACY_CASH_CIRCUIT_URL,
+      publicKey: this.publicKey,
+      storage: localStorage,
+      encryptionService: this.encryptionService,
+      recipient: recipientPubkey,
+    });
+
+    const fee = result.fee_in_lamports / 1e9;
+    const netAmount =
+      (result.amount_in_lamports - result.fee_in_lamports) / 1e9;
+
+    return {
+      signature: result.tx,
+      fee,
+      netAmount,
+    };
+  }
+
+  async depositFromEphemeral(
+    amount: number,
+    token: PrivacyCashToken,
+    ephemeralKeypair: Keypair,
+  ): Promise<{ signature: string }> {
+    await this.ensureInitialized();
+    const sdk = await loadSDK();
+    const lightWasm = await getLightWasm();
+    const tokenInfo = PRIVACY_CASH_SUPPORTED_TOKENS[token];
+
+    const transactionSigner = async (
+      tx: VersionedTransaction,
+    ): Promise<VersionedTransaction> => {
+      tx.sign([ephemeralKeypair]);
+      return tx;
+    };
+
+    if (token === "SOL") {
+      const result = await sdk.deposit({
+        lightWasm,
+        connection: this.connection,
+        amount_in_lamports: Math.floor(amount * 1e9),
+        keyBasePath: PRIVACY_CASH_CIRCUIT_URL,
+        publicKey: this.publicKey,
+        signer: ephemeralKeypair.publicKey,
+        transactionSigner,
+        storage: localStorage,
+        encryptionService: this.encryptionService,
+      });
+      return { signature: result.tx };
+    }
+
+    const mintAddress = this.getMintAddress(token);
+
+    const result = await sdk.depositSPL({
+      lightWasm,
+      connection: this.connection,
+      base_units: Math.floor(amount * Math.pow(10, tokenInfo.decimals)),
+      keyBasePath: PRIVACY_CASH_CIRCUIT_URL,
+      publicKey: this.publicKey,
+      signer: ephemeralKeypair.publicKey,
+      transactionSigner,
+      storage: localStorage,
+      encryptionService: this.encryptionService,
+      mintAddress,
+    });
+
+    return { signature: result.tx };
+  }
+
+  getConnection(): Connection {
+    return this.connection;
+  }
+
+  getPublicKey(): PublicKey {
+    return this.publicKey;
+  }
+
+  getEncryptionService() {
+    return this.encryptionService;
   }
 
   clearCache(): void {

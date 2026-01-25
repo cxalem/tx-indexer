@@ -60,6 +60,99 @@ export function SuccessState({
   );
 }
 
+interface SwapSuccessStateProps {
+  fromAmount: string;
+  fromToken: string;
+  toAmount: string;
+  toToken: string;
+  onClose: () => void;
+}
+
+export function SwapSuccessState({
+  fromAmount,
+  fromToken,
+  toAmount,
+  toToken,
+  onClose,
+}: SwapSuccessStateProps) {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center p-6">
+      <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+        <CheckCircle2
+          className="h-8 w-8 text-green-600 dark:text-green-400"
+          aria-hidden="true"
+        />
+      </div>
+      <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
+        Swap complete!
+      </h3>
+      <p className="text-lg font-mono text-neutral-700 dark:text-neutral-300 mb-2">
+        {fromAmount} {fromToken} → {toAmount} {toToken}
+      </p>
+      <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center mb-6">
+        Your {toToken} is now in your private balance.
+      </p>
+      <button
+        type="button"
+        onClick={onClose}
+        className="px-6 py-2.5 rounded-lg bg-purple-500 text-white text-sm font-medium hover:bg-purple-500/90 transition-colors cursor-pointer"
+      >
+        Done
+      </button>
+    </div>
+  );
+}
+
+interface SwapErrorStateProps {
+  error: string | null;
+  onClose: () => void;
+  onRetry: () => void;
+}
+
+export function SwapErrorState({
+  error,
+  onClose,
+  onRetry,
+}: SwapErrorStateProps) {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center p-6">
+      <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+        <XCircle
+          className="h-8 w-8 text-red-600 dark:text-red-400"
+          aria-hidden="true"
+        />
+      </div>
+      <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
+        Something went wrong
+      </h3>
+      <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center mb-2">
+        Don&apos;t worry — your funds are safe in your private balance.
+      </p>
+      {error && (
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center mb-6">
+          {error}
+        </p>
+      )}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="px-4 py-2.5 rounded-lg bg-purple-500 text-white text-sm font-medium hover:bg-purple-500/90 transition-colors cursor-pointer"
+        >
+          Try again
+        </button>
+      </div>
+    </div>
+  );
+}
+
 interface ErrorStateProps {
   error: string | null;
   onClose: () => void;

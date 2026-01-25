@@ -149,6 +149,8 @@ export interface UsePrivacyCashReturn {
   reset: () => void;
   /** Check if a token is supported */
   isTokenSupported: (token: string) => boolean;
+  /** Get the underlying client instance (null if not connected) */
+  getClient: () => PrivacyCashClient | null;
 }
 
 // =============================================================================
@@ -531,6 +533,7 @@ export function usePrivacyCash(
     refreshBalance,
     reset,
     isTokenSupported,
+    getClient,
   };
 }
 
