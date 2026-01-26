@@ -5,7 +5,7 @@ import type { ClassifiedTransaction } from "tx-indexer";
 import { formatAddress, formatDateOnly, formatTime } from "@/lib/utils";
 import { CopyButton } from "@/components/copy-button";
 import { ArrowRight, Palette } from "lucide-react";
-import { getDisplayData } from "./tx-receipt.utils";
+import { getDisplayData, formatUsd } from "./tx-receipt.utils";
 
 interface TransactionReceiptProps {
   transaction: ClassifiedTransaction;
@@ -32,7 +32,7 @@ export function TransactionReceipt({
   const feeInLamports = tx.fee ?? 5000;
   const feeInSol = feeInLamports / 1e9;
   const feeInUsd = solPrice ? feeInSol * solPrice : null;
-  
+
   const display = getDisplayData(classification, metadata, solPrice);
 
   return (
@@ -127,7 +127,7 @@ export function TransactionReceipt({
               <>
                 <div className="text-4xl font-bold text-foreground print:text-3xl">
                   {display.usdValue !== null
-                    ? `$${display.usdValue.toFixed(2)}`
+                    ? `$${formatUsd(display.usdValue)}`
                     : `${display.secondaryAmount.formatted} ${display.secondaryAmount.symbol}`}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1 print:text-xs print:mt-0.5">
@@ -141,7 +141,7 @@ export function TransactionReceipt({
               <>
                 <div className="text-4xl font-bold text-foreground print:text-3xl">
                   {display.usdValue !== null
-                    ? `$${display.usdValue.toFixed(2)}`
+                    ? `$${formatUsd(display.usdValue)}`
                     : `${display.secondaryAmount.formatted} ${display.secondaryAmount.symbol}`}
                 </div>
                 <div className="text-sm text-muted-foreground mt-2 print:text-xs print:mt-1">
@@ -156,7 +156,7 @@ export function TransactionReceipt({
               <>
                 <div className="text-4xl font-bold text-foreground print:text-3xl">
                   {display.usdValue !== null
-                    ? `$${display.usdValue.toFixed(2)}`
+                    ? `$${formatUsd(display.usdValue)}`
                     : `${display.primaryAmount.formatted} ${display.primaryAmount.symbol}`}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1 print:text-xs print:mt-0.5">
@@ -207,7 +207,7 @@ export function TransactionReceipt({
               <div className="flex justify-between font-bold print:text-sm">
                 <span>Total</span>
                 <span className="font-mono">
-                  ${(display.usdValue + (feeInUsd || 0)).toFixed(2)}
+                  ${formatUsd(display.usdValue + (feeInUsd || 0))}
                 </span>
               </div>
             )}

@@ -39,10 +39,21 @@ export const isSolToken = (symbol: string) => {
 export const formatAmount = (
   amount: number,
   symbol: string,
-  decimals?: number
+  decimals?: number,
 ) => {
-  if (decimals === 0) return String(Math.round(amount));
-  return isStablecoin(symbol) ? amount.toFixed(2) : amount.toFixed(4);
+  if (decimals === 0) return Math.round(amount).toLocaleString("en-US");
+  const fractionDigits = isStablecoin(symbol) ? 2 : 4;
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  });
+};
+
+export const formatUsd = (amount: number) => {
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 };
 
 const formatTitle = (type: string) =>
@@ -55,11 +66,11 @@ const formatTitle = (type: string) =>
 export function getDisplayData(
   classification: ClassifiedTransaction["classification"],
   metadata: Record<string, unknown> | undefined,
-  solPrice: number | null | undefined
+  solPrice: number | null | undefined,
 ): DisplayData {
   const primaryType = classification.primaryType;
   const isNft = NFT_TRANSACTION_TYPES.includes(
-    primaryType as (typeof NFT_TRANSACTION_TYPES)[number]
+    primaryType as (typeof NFT_TRANSACTION_TYPES)[number],
   );
   const isSwap = primaryType === "swap";
   const isTransfer = primaryType === "transfer";
@@ -75,7 +86,7 @@ export function getDisplayData(
         formatted: formatAmount(
           primary.amountUi,
           primary.token.symbol,
-          primary.token.decimals
+          primary.token.decimals,
         ),
       }
     : null;
@@ -88,7 +99,7 @@ export function getDisplayData(
         formatted: formatAmount(
           secondary.amountUi,
           secondary.token.symbol,
-          secondary.token.decimals
+          secondary.token.decimals,
         ),
       }
     : null;
