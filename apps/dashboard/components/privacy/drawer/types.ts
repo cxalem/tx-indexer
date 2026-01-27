@@ -30,6 +30,8 @@ export interface AssetSelectorProps {
   privateBalance: number;
   mode: OperationMode;
   dashboardBalance: ReturnType<typeof useDashboardData>["balance"];
+  privateBalances: Record<PrivacyCashToken, number>;
+  isLoadingPrivateBalances?: boolean;
   onTokenSelect: (token: PrivacyCashToken) => void;
 }
 

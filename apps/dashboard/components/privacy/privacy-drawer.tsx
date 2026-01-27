@@ -22,6 +22,7 @@ import { useDashboardData } from "@/hooks/use-dashboard-data";
 import { useWalletLabels } from "@/hooks/use-wallet-labels";
 import {
   PRIVACY_CASH_SUPPORTED_TOKENS,
+  PRIVACY_CASH_TOKEN_LIST,
   type PrivacyCashToken,
 } from "@/lib/privacy/constants";
 import {
@@ -83,6 +84,17 @@ export function PrivacyDrawer({
   const prevRawWalletBalanceRef = useRef<number | null>(null);
   const prevRawPrivateBalanceRef = useRef<number | null>(null);
 
+  // All private balances for asset selector dropdown
+  const [allPrivateBalances, setAllPrivateBalances] = useState<
+    Record<PrivacyCashToken, number>
+  >({
+    SOL: 0,
+    USDC: 0,
+    USDT: 0,
+  });
+  const [isLoadingAllPrivateBalances, setIsLoadingAllPrivateBalances] =
+    useState(false);
+
   // Swap state
   const [swapFromToken, setSwapFromToken] = useState<PrivacyCashToken>("SOL");
   const [swapToToken, setSwapToToken] = useState<PrivacyCashToken>("USDC");
@@ -135,14 +147,11 @@ export function PrivacyDrawer({
     rawPrivateBalance + privateBalanceAdjustment,
   );
 
-  // Calculate private balances for swap
-  // For now, we only support SOL -> SPL swaps, so we pass the SOL private balance
-  // The privateBalance from usePrivacyCash is for the currently selected token
-  // For swap, we always need SOL balance (swapFromToken is always SOL)
+  // Calculate private balances for swap and asset selector
+  // Use allPrivateBalances state, with the currently selected token's balance updated
   const privateBalances: Record<PrivacyCashToken, number> = {
-    SOL: selectedToken === "SOL" ? privateBalanceAmount : 0, // TODO: fetch SOL balance separately if needed
-    USDC: selectedToken === "USDC" ? privateBalanceAmount : 0,
-    USDT: selectedToken === "USDT" ? privateBalanceAmount : 0,
+    ...allPrivateBalances,
+    [selectedToken]: privateBalanceAmount,
   };
 
   // Reset balance adjustments when real balances change
@@ -174,6 +183,53 @@ export function PrivacyDrawer({
       refreshBalance(selectedToken);
     }
   }, [open, isInitialized, refreshBalance, selectedToken]);
+
+  // Fetch all private balances when in withdraw mode (for asset selector dropdown)
+  useEffect(() => {
+    if (!open || !isInitialized || mode !== "withdraw") return;
+
+    const client = getClient();
+    if (!client) return;
+
+    let cancelled = false;
+
+    const fetchAllBalances = async () => {
+      setIsLoadingAllPrivateBalances(true);
+
+      // Fetch balances for all tokens in parallel
+      const results = await Promise.allSettled(
+        PRIVACY_CASH_TOKEN_LIST.map(async (token) => {
+          const balance = await client.getBalance(token);
+          return { token, amount: balance.amount };
+        }),
+      );
+
+      // Avoid state update if effect was cleaned up
+      if (cancelled) return;
+
+      const balances: Record<PrivacyCashToken, number> = {
+        SOL: 0,
+        USDC: 0,
+        USDT: 0,
+      };
+
+      for (const result of results) {
+        if (result.status === "fulfilled") {
+          balances[result.value.token] = result.value.amount;
+        }
+      }
+
+      setAllPrivateBalances(balances);
+      setIsLoadingAllPrivateBalances(false);
+    };
+
+    fetchAllBalances();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- getClient is stable via ref
+  }, [open, isInitialized, mode]);
 
   useEffect(() => {
     if (status === "success" && submittedValuesRef.current) {
@@ -422,6 +478,8 @@ export function PrivacyDrawer({
                     privateBalance={privateBalanceAmount}
                     mode={mode}
                     dashboardBalance={dashboardBalance}
+                    privateBalances={privateBalances}
+                    isLoadingPrivateBalances={isLoadingAllPrivateBalances}
                     onTokenSelect={handleTokenSelect}
                   />
 

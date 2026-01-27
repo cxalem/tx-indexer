@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TokenIcon } from "@/components/token-icon";
 import {
@@ -17,6 +17,8 @@ export function AssetSelector({
   privateBalance,
   mode,
   dashboardBalance,
+  privateBalances,
+  isLoadingPrivateBalances = false,
   onTokenSelect,
 }: AssetSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -92,6 +94,13 @@ export function AssetSelector({
                 : (dashboardBalance?.tokens.find(
                     (t) => t.mint === tokenConf.mint,
                   )?.amount.ui ?? 0);
+            const tokenPrivateBal = privateBalances[token] ?? 0;
+
+            // Show wallet balance for deposit, private balance for withdraw
+            const displayBalance =
+              mode === "deposit" ? tokenWalletBal : tokenPrivateBal;
+            const balanceLabel = mode === "deposit" ? "Balance" : "Private";
+            const showLoading = mode === "withdraw" && isLoadingPrivateBalances;
 
             return (
               <button
@@ -117,7 +126,13 @@ export function AssetSelector({
                     {token}
                   </p>
                   <p className="text-xs text-neutral-500">
-                    Balance: {tokenWalletBal.toFixed(4)}
+                    {showLoading ? (
+                      <Loader2 className="h-3 w-3 animate-spin inline" />
+                    ) : (
+                      <>
+                        {balanceLabel}: {displayBalance.toFixed(4)}
+                      </>
+                    )}
                   </p>
                 </div>
                 {selectedToken === token && (

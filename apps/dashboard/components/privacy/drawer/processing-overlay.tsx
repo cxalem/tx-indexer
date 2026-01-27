@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { DotLottiePlayer } from "@/components/ui/dot-lottie";
 import type { OperationMode } from "./types";
 
 function getStatusMessage(status: string, mode: OperationMode): string {
@@ -27,9 +27,13 @@ interface ProcessingOverlayProps {
 export function ProcessingOverlay({ status, mode }: ProcessingOverlayProps) {
   return (
     <div className="absolute inset-0 bg-white/90 dark:bg-neutral-900/90 z-10 flex flex-col items-center justify-center">
-      <Loader2
-        className="h-8 w-8 animate-spin text-purple-500 mb-4"
-        aria-hidden="true"
+      <DotLottiePlayer
+        src="/security-lock-privacy-purple.lottie"
+        loop
+        autoplay
+        width={72}
+        height={72}
+        className="mb-4"
       />
       <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
         {getStatusMessage(status, mode)}

@@ -1,11 +1,12 @@
 import localFont from "next/font/local";
 import {
-  Zap,
-  Eye,
+  Send,
+  ArrowRightLeft,
+  Shield,
   Filter,
-  Clock,
-  Tag,
+  Activity,
   Bell,
+  Tag,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,17 +25,17 @@ interface Feature {
 
 const FEATURES: Feature[] = [
   {
-    icon: Zap,
-    title: "automatic classification",
+    icon: Send,
+    title: "send and receive",
     description:
-      "Transactions labeled as swaps, transfers, NFT mints, staking, bridges, airdrops - no manual tagging required.",
+      "Transfer SOL and tokens instantly. Save contacts with labels for quick transfers to your favorite addresses.",
     size: "large",
   },
   {
-    icon: Eye,
-    title: "protocol detection",
+    icon: ArrowRightLeft,
+    title: "trade",
     description:
-      "Recognizes 10+ protocols: Jupiter, Raydium, Orca, Metaplex, Wormhole, Pump.fun, and more.",
+      "Swap tokens directly from your dashboard. Powered by Jupiter for the best rates across Solana DEXs.",
     size: "medium",
   },
   {
@@ -45,17 +46,17 @@ const FEATURES: Feature[] = [
     size: "small",
   },
   {
-    icon: Clock,
-    title: "daily summaries",
+    icon: Shield,
+    title: "privacy hub",
     description:
-      "Transactions grouped by day with net totals for easy tracking.",
+      "Shield your funds with zero-knowledge proofs. Send privately without revealing your wallet.",
     size: "small",
   },
   {
-    icon: Tag,
-    title: "wallet labels",
+    icon: Activity,
+    title: "activity feed",
     description:
-      "Name your frequently-used addresses for easier tracking and recognition.",
+      "See your full transaction history, classified and organized by day. Swaps, transfers, NFT mints - all labeled automatically.",
     size: "medium",
   },
   {
@@ -67,44 +68,29 @@ const FEATURES: Feature[] = [
   },
 ];
 
-function CodeSnippetPreview() {
+const MOCK_CONTACTS = [
+  { label: "alice.sol", address: "7xK9...mN2p" },
+  { label: "mom", address: "9pL5...wT6j" },
+  { label: "savings", address: "4hR3...vQ8k" },
+];
+
+function ContactListPreview() {
   return (
-    <div className="mt-6 p-3 bg-neutral-100 dark:bg-neutral-950 rounded-lg font-mono text-xs overflow-hidden">
-      <div className="text-neutral-400 dark:text-neutral-500">
-        {"// classified output"}
-      </div>
-      <div className="mt-1">
-        <span className="text-purple-600 dark:text-purple-400">signature</span>
-        <span className="text-neutral-500 dark:text-neutral-400">: </span>
-        <span className="text-green-600 dark:text-green-400">
-          "2xWv...jP5m"
-        </span>
-      </div>
-      <div>
-        <span className="text-purple-600 dark:text-purple-400">type</span>
-        <span className="text-neutral-500 dark:text-neutral-400">: </span>
-        <span className="text-green-600 dark:text-green-400">"transfer"</span>
-      </div>
-      <div>
-        <span className="text-purple-600 dark:text-purple-400">amount</span>
-        <span className="text-neutral-500 dark:text-neutral-400">: </span>
-        <span className="text-amber-600 dark:text-amber-400">500</span>
-        <span className="text-neutral-400 dark:text-neutral-500"> USDC</span>
-      </div>
-      <div>
-        <span className="text-purple-600 dark:text-purple-400">sender</span>
-        <span className="text-neutral-500 dark:text-neutral-400">: </span>
-        <span className="text-green-600 dark:text-green-400">
-          "9xH4...mK2p"
-        </span>
-      </div>
-      <div>
-        <span className="text-purple-600 dark:text-purple-400">receiver</span>
-        <span className="text-neutral-500 dark:text-neutral-400">: </span>
-        <span className="text-green-600 dark:text-green-400">
-          "4xK9...vN8q"
-        </span>
-      </div>
+    <div className="mt-6 space-y-2">
+      {MOCK_CONTACTS.map((contact) => (
+        <div
+          key={contact.label}
+          className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+        >
+          <Tag className="h-4 w-4 text-vibrant-red" />
+          <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+            {contact.label}
+          </span>
+          <span className="text-neutral-400 text-xs font-mono">
+            ({contact.address})
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -112,11 +98,11 @@ function CodeSnippetPreview() {
 function FeatureCard({
   feature,
   className,
-  showMiniTransaction = false,
+  showContactList = false,
 }: {
   feature: Feature;
   className?: string;
-  showMiniTransaction?: boolean;
+  showContactList?: boolean;
 }) {
   return (
     <div
@@ -155,7 +141,7 @@ function FeatureCard({
       >
         {feature.description}
       </p>
-      {showMiniTransaction && <CodeSnippetPreview />}
+      {showContactList && <ContactListPreview />}
     </div>
   );
 }
@@ -176,7 +162,7 @@ export function FeaturesSection() {
           <FeatureCard
             feature={FEATURES[0]!}
             className="h-full"
-            showMiniTransaction
+            showContactList
           />
         </div>
         <div className="md:col-span-2">

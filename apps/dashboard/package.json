@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@lightprotocol/hasher.rs": "^0.2.1",
+    "@lottiefiles/dotlottie-web": "^0.61.0",
     "@next/bundle-analyzer": "^16.1.1",
     "@radix-ui/react-dialog": "^1.1.15",
     "@react-three/drei": "^10.7.7",

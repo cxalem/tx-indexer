@@ -1,7 +1,7 @@
 import {
-  Wallet,
+  Activity,
   ArrowRightLeft,
-  TrendingUp,
+  Layers,
   Target,
   Settings,
   Coins,
@@ -20,9 +20,9 @@ export interface NavItem {
 
 export const mainNavItems: NavItem[] = [
   {
-    label: "wallet",
+    label: "activity",
     href: "/",
-    icon: Wallet,
+    icon: Activity,
   },
   {
     label: "trade",
@@ -38,9 +38,9 @@ export const mainNavItems: NavItem[] = [
     comingSoon: true,
   },
   {
-    label: "stocks",
-    href: "/stocks",
-    icon: TrendingUp,
+    label: "assets",
+    href: "/assets",
+    icon: Layers,
     disabled: true,
     comingSoon: true,
   },

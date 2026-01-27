@@ -1,5 +1,5 @@
 import localFont from "next/font/local";
-import { ShieldCheck, Github, Zap } from "lucide-react";
+import { ShieldCheck, Github, Shield } from "lucide-react";
 
 const bitcountFont = localFont({
   src: "../../app/fonts/Bitcount.ttf",
@@ -7,6 +7,12 @@ const bitcountFont = localFont({
 });
 
 const TRUST_ITEMS = [
+  {
+    icon: Shield,
+    title: "privacy hub",
+    description:
+      "shield your funds with zero-knowledge proofs. send privately without revealing your wallet address.",
+  },
   {
     icon: ShieldCheck,
     title: "non-custodial",
@@ -18,12 +24,6 @@ const TRUST_ITEMS = [
     title: "open source",
     description:
       "fully transparent SDK and dashboard. inspect the code, contribute, or self-host.",
-  },
-  {
-    icon: Zap,
-    title: "instant loads",
-    description:
-      "redis caching for sub-second subsequent page loads. server-side RPC.",
   },
 ];
 

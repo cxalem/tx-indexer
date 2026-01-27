@@ -38,3 +38,6 @@ yarn-error.log*
 .DS_Store
 *.pem
 .cursor/
+
+# AI Agents
+.agents/

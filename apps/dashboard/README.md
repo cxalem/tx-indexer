@@ -1,100 +1,90 @@
-# TX Indexer Dashboard
+# itx Dashboard
 
-A non-custodial Solana wallet dashboard built with Next.js and the tx-indexer SDK.
+A non-custodial Solana wallet dashboard with privacy features, built with Next.js.
+
+---
+
+## Privacy flow
+
+The **Privacy Hub** implementation can be found in:
+
+| Component           | Path                                    | Description                             |
+| ------------------- | --------------------------------------- | --------------------------------------- |
+| Privacy Drawer      | `components/privacy/privacy-drawer.tsx` | Main UI for deposit/withdraw operations |
+| Privacy Cash Client | `lib/privacy/privacy-cash-client.ts`    | SDK wrapper for ZK proof generation     |
+| Privacy Hook        | `hooks/use-privacy-cash.ts`             | React hook managing privacy operations  |
+| Private Swap        | `hooks/use-private-swap.ts`             | Private token swap flow                 |
+| Constants           | `lib/privacy/constants.ts`              | Supported tokens and config             |
+
+**Flow:** User deposits funds → ZK proof generated → Funds shielded → Private transfers/swaps → Withdraw to any address (unlinkable)
+
+---
 
 ## Features
 
-- Real-time wallet balance display (SOL and SPL tokens)
-- Transaction history with automatic classification
-- Spam transaction filtering
-- Support for rate-limited RPCs with optimization options
-- Server-side transaction fetching for security
-- Client-side wallet operations with domain-restricted keys
+- **Send and Receive** - Transfer SOL and tokens with labeled contacts
+- **Trade** - Swap tokens via Jupiter aggregator
+- **Privacy Hub** - Shield funds with zero-knowledge proofs, send privately
+- **Activity Feed** - Classified transaction history, organized by day
+- **Spam Filtering** - Automatic dust and spam token filtering
+- **Real-time Updates** - Live polling with sound notifications
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18+ or Bun
-- Solana RPC URL (Helius, QuickNode, or public endpoint)
-
-### Installation
-
 ```bash
-cd apps/dashboard
+# Install dependencies
 bun install
-```
 
-### Environment Setup
-
-Create a `.env.local` file based on `.env.example`:
-
-```bash
+# Set up environment
 cp .env.example .env.local
-```
 
-Configure your environment variables:
-
-```bash
-# Server-side RPC (unrestricted key, never exposed to browser)
-SERVER_RPC_URL=https://mainnet.helius-rpc.com/?api-key=YOUR_SERVER_KEY
-
-# Client-side RPC (domain-restricted key for wallet operations)
-NEXT_PUBLIC_RPC_URL=https://mainnet.helius-rpc.com/?api-key=YOUR_PUBLIC_KEY
-
-# Optional: Enable aggressive optimization for rate-limited RPCs
-OPTIMIZE_FOR_RATE_LIMITS=true
-```
-
-**Security Note:** Use separate API keys for server and client:
-
-- `SERVER_RPC_URL`: Unrestricted key for server actions and API routes
-- `NEXT_PUBLIC_RPC_URL`: Domain-restricted key for client-side wallet operations
-
-### Development
-
-```bash
+# Run development server
 bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
+Open [http://localhost:3000](http://localhost:3000)
 
-## RPC Optimization
-
-For rate-limited RPCs (like Helius free tier at 10 req/sec), set:
+## Environment Variables
 
 ```bash
+# Server-side RPC (unrestricted key)
+SERVER_RPC_URL=https://mainnet.helius-rpc.com/?api-key=YOUR_KEY
+
+# Client-side RPC (domain-restricted key)
+NEXT_PUBLIC_RPC_URL=https://mainnet.helius-rpc.com/?api-key=YOUR_PUBLIC_KEY
+
+# Optional: Optimize for rate-limited RPCs
 OPTIMIZE_FOR_RATE_LIMITS=true
+
+# Optional: Supabase (for wallet labels and sign-in)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
-This enables:
+## Database Setup (Optional)
 
-- `overfetchMultiplier: 1` - Reduces signature overfetch
-- `minPageSize` matching your limit - Reduces RPC calls
-- Smart token account fetching - Only queries ATAs when needed
+If using Supabase for wallet labels, create this table:
 
-These optimizations can reduce load time from ~105s to ~7s.
+```sql
+create table wallet_labels (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  address text not null,
+  label text not null,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(user_id, address)
+);
 
-## Architecture
+-- Enable RLS
+alter table wallet_labels enable row level security;
 
+-- Users can only access their own labels
+create policy "Users can manage own labels"
+  on wallet_labels for all
+  using (auth.uid() = user_id);
 ```
-apps/dashboard/
-├── app/
-│   ├── actions/           # Server actions for secure RPC calls
-│   │   ├── dashboard.ts   # Transaction fetching with optimization
-│   │   └── estimate-fee.ts
-│   └── page.tsx           # Main dashboard page
-├── components/
-│   ├── providers.tsx      # Wallet and RPC providers
-│   └── ...                # UI components
-└── lib/
-    └── indexer.ts         # SDK configuration
-```
-
-## Learn More
-
-- [tx-indexer SDK Documentation](../../packages/sdk/README.md)
-- [Next.js Documentation](https://nextjs.org/docs)
 
 ## License
 
