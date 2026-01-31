@@ -4,6 +4,7 @@
   "globalEnv": [
     "SERVER_RPC_URL",
     "NEXT_PUBLIC_RPC_URL",
+    "RPC_URL",
     "SIGNATURE",
     "WALLET_ADDRESS",
     "JUPITER_API_KEY",
@@ -20,7 +21,21 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "dashboard#build": {
+      "dependsOn": ["tx-indexer#build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "web#build": {
+      "dependsOn": ["tx-indexer#build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "tx-indexer#build": {
+      "inputs": ["$TURBO_DEFAULT$", "src/**"],
+      "outputs": ["dist/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
