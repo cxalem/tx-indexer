@@ -31,16 +31,16 @@ export const mainNavItems: NavItem[] = [
     actionId: "trade",
   },
   {
+    label: "assets",
+    href: "/assets",
+    icon: Layers,
+  },
+  {
     label: "earn",
     href: "/earn",
     icon: Coins,
     disabled: true,
     comingSoon: true,
-  },
-  {
-    label: "assets",
-    href: "/assets",
-    icon: Layers,
   },
   {
     label: "predictions",
