@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useUnifiedWallet } from "@/hooks/use-unified-wallet";
 import { useWalletLabels } from "@/hooks/use-wallet-labels";
 import {
@@ -19,7 +19,7 @@ import {
 } from "@/app/actions/wallet-labels";
 import { useAuth } from "@/lib/auth";
 import { useReauth } from "@/hooks/use-reauth";
-import { useUsdcTransfer } from "@/hooks/use-usdc-transfer";
+import { useTokenTransfer } from "@/hooks/use-token-transfer";
 import {
   isValidSolanaAddress,
   transferAmountSchema,
@@ -35,21 +35,36 @@ import { RecipientInput } from "./recipient-input";
 import { AmountInput } from "./amount-input";
 import { TransferSummary } from "./transfer-summary";
 import { LabelPrompt, SignInPrompt } from "./label-prompt";
+import { TokenSelector, type SendableToken } from "./token-selector";
+
+// Default to USDC
+const DEFAULT_TOKEN: SendableToken = {
+  mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  symbol: "USDC",
+  name: "USD Coin",
+  decimals: 6,
+  logoURI:
+    "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+  balance: 0,
+  price: 1.0,
+};
 
 interface SendTransferDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onTransferSuccess?: () => void;
-  usdcBalance?: number | null;
+  /** Available tokens to send (with balances) */
+  tokens?: SendableToken[];
+  /** Initial token to select (by mint address) */
+  initialTokenMint?: string | null;
 }
-
-const USDC_PRICE = 1.0;
 
 export function SendTransferDrawer({
   open,
   onOpenChange,
   onTransferSuccess,
-  usdcBalance: externalUsdcBalance,
+  tokens: externalTokens,
+  initialTokenMint,
 }: SendTransferDrawerProps) {
   const {
     status: walletStatus,
@@ -66,8 +81,41 @@ export function SendTransferDrawer({
     reauth,
     clearError: clearReauthError,
   } = useReauth();
+
+  // Filter tokens with balance > 0
+  const availableTokens = useMemo(() => {
+    if (!externalTokens || externalTokens.length === 0) {
+      return [DEFAULT_TOKEN];
+    }
+    const withBalance = externalTokens.filter((t) => t.balance > 0);
+    return withBalance.length > 0 ? withBalance : [DEFAULT_TOKEN];
+  }, [externalTokens]);
+
+  // Selected token state - default to USDC if available
+  const [selectedToken, setSelectedToken] = useState<SendableToken>(() => {
+    if (initialTokenMint) {
+      const found = availableTokens.find((t) => t.mint === initialTokenMint);
+      if (found) return found;
+    }
+    // Prefer USDC as default
+    const usdc = availableTokens.find((t) => t.mint === DEFAULT_TOKEN.mint);
+    if (usdc) return usdc;
+    return availableTokens[0] ?? DEFAULT_TOKEN;
+  });
+
+  // Update selected token when initialTokenMint changes (drawer opens with different token)
+  useEffect(() => {
+    if (open && initialTokenMint) {
+      const found = availableTokens.find((t) => t.mint === initialTokenMint);
+      if (found) {
+        setSelectedToken(found);
+      }
+    }
+  }, [open, initialTokenMint, availableTokens]);
+
+  // Use the generalized token transfer hook
   const {
-    balance: hookUsdcBalance,
+    balance: hookTokenBalance,
     isLoadingBalance,
     transfer,
     status: transferStatus,
@@ -75,9 +123,11 @@ export function SendTransferDrawer({
     signature,
     error: transferError,
     reset: resetTransfer,
-  } = useUsdcTransfer();
+  } = useTokenTransfer(selectedToken.mint, selectedToken.decimals);
 
-  const usdcBalance = externalUsdcBalance ?? hookUsdcBalance;
+  // Use hook balance if available, otherwise use token's balance from props
+  const tokenBalance = hookTokenBalance ?? selectedToken.balance;
+
   const [showSignInForLabels, setShowSignInForLabels] = useState(false);
 
   // Use centralized wallet labels hook - shares cache with other components
@@ -163,7 +213,7 @@ export function SendTransferDrawer({
   })();
 
   const amountNum = parseFloat(amount) || 0;
-  const currentBalance = usdcBalance ?? 0;
+  const currentBalance = tokenBalance ?? 0;
   const insufficientBalance = amountNum > currentBalance;
   const amountValidation = transferAmountSchema.safeParse(amountNum);
   const amountError = (() => {
@@ -188,7 +238,9 @@ export function SendTransferDrawer({
     !insufficientBalance &&
     memoValidation.success;
 
-  const amountUsd = amountNum * USDC_PRICE;
+  // Calculate USD value
+  const amountUsd =
+    selectedToken.price !== null ? amountNum * selectedToken.price : null;
 
   const resetForm = useCallback(() => {
     setRecipientAddress("");
@@ -282,6 +334,13 @@ export function SendTransferDrawer({
     onOpenChange(false);
   }, [onOpenChange, resetForm]);
 
+  const handleTokenChange = useCallback((token: SendableToken) => {
+    setSelectedToken(token);
+    // Reset amount when token changes
+    setAmount("");
+    setTouched((t) => ({ ...t, amount: false }));
+  }, []);
+
   const showResultState =
     transferStatus === "success" || transferStatus === "error";
 
@@ -295,7 +354,9 @@ export function SendTransferDrawer({
             </div>
             send
           </SheetTitle>
-          <SheetDescription>Transfer USDC to any address</SheetDescription>
+          <SheetDescription>
+            Transfer {selectedToken.symbol} to any address
+          </SheetDescription>
         </SheetHeader>
 
         {isTransferring && <TransferringOverlay status={transferStatus} />}
@@ -308,6 +369,7 @@ export function SendTransferDrawer({
             signature={signature}
             senderAddress={senderAddress}
             onClose={handleClose}
+            tokenSymbol={selectedToken.symbol}
           />
         )}
 
@@ -361,6 +423,16 @@ export function SendTransferDrawer({
                 balance={currentBalance}
                 isLoadingBalance={isLoadingBalance}
                 insufficientBalance={insufficientBalance}
+                tokenSymbol={selectedToken.symbol}
+                tokenDecimals={selectedToken.decimals}
+                tokenSelector={
+                  <TokenSelector
+                    tokens={availableTokens}
+                    selectedToken={selectedToken}
+                    onSelectToken={handleTokenChange}
+                    disabled={isTransferring}
+                  />
+                }
               />
 
               <div>
@@ -394,7 +466,7 @@ export function SendTransferDrawer({
                 )}
               </div>
 
-              {amountNum > 0 && (
+              {amountNum > 0 && amountUsd !== null && (
                 <TransferSummary
                   amountUsd={amountUsd}
                   feeEstimate={feeEstimate}

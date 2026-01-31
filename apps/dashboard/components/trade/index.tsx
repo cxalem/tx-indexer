@@ -35,6 +35,8 @@ interface TradeDrawerProps {
   onTradeSuccess?: () => void;
   solBalance?: number | null;
   tokenBalances?: TokenBalance[];
+  /** Pre-select input token by mint address */
+  initialInputMint?: string | null;
 }
 
 export function TradeDrawer({
@@ -43,6 +45,7 @@ export function TradeDrawer({
   onTradeSuccess,
   solBalance,
   tokenBalances = [],
+  initialInputMint,
 }: TradeDrawerProps) {
   const {
     status: walletStatus,
@@ -70,6 +73,16 @@ export function TradeDrawer({
   const [inputToken, setInputToken] = useState<SwapToken>(SWAP_TOKENS[0]!);
   const [outputToken, setOutputToken] = useState<SwapToken>(SWAP_TOKENS[1]!);
   const [inputAmount, setInputAmount] = useState("");
+
+  // Set initial input token when drawer opens with a specific token
+  useEffect(() => {
+    if (open && initialInputMint) {
+      const token = SWAP_TOKENS.find((t) => t.mint === initialInputMint);
+      if (token) {
+        setInputToken(token);
+      }
+    }
+  }, [open, initialInputMint]);
 
   const getTokenBalance = (mint: string): number | null => {
     if (mint === SOL_MINT) return solBalance ?? null;

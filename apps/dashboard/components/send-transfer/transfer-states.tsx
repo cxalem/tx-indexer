@@ -53,6 +53,8 @@ interface TransferSuccessProps {
   signature: string;
   senderAddress: string | null;
   onClose: () => void;
+  /** Token symbol to display (defaults to USDC) */
+  tokenSymbol?: string;
 }
 
 export function TransferSuccess({
@@ -62,6 +64,7 @@ export function TransferSuccess({
   signature,
   senderAddress,
   onClose,
+  tokenSymbol = "USDC",
 }: TransferSuccessProps) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6">
@@ -75,7 +78,7 @@ export function TransferSuccess({
         Transfer complete!
       </h3>
       <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center mb-4">
-        {formatUsd(amount)} USDC sent to{" "}
+        {formatUsd(amount)} {tokenSymbol} sent to{" "}
         {recipientLabel || truncate(recipientAddress)}
       </p>
       <a

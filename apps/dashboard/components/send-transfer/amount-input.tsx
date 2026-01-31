@@ -1,13 +1,11 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { AlertCircle, Loader2 } from "lucide-react";
 
-function formatUsd(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
+function formatBalance(value: number, decimals: number = 2): string {
+  if (value === 0) return "0";
+  if (value < 0.01) return value.toFixed(Math.min(decimals, 6));
+  return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 
 interface AmountInputProps {
@@ -18,6 +16,12 @@ interface AmountInputProps {
   balance: number;
   isLoadingBalance: boolean;
   insufficientBalance: boolean;
+  /** Token symbol to display (defaults to USDC) */
+  tokenSymbol?: string;
+  /** Token decimals for balance formatting */
+  tokenDecimals?: number;
+  /** Optional token selector to render inside the input */
+  tokenSelector?: ReactNode;
 }
 
 export function AmountInput({
@@ -28,8 +32,12 @@ export function AmountInput({
   balance,
   isLoadingBalance,
   insufficientBalance,
+  tokenSymbol = "USDC",
+  tokenDecimals = 6,
+  tokenSelector,
 }: AmountInputProps) {
   const amountNum = parseFloat(value) || 0;
+  const remainingBalance = amountNum > 0 ? balance - amountNum : balance;
 
   return (
     <div>
@@ -51,16 +59,13 @@ export function AmountInput({
             <>
               balance:{" "}
               <span className="font-mono">
-                {formatUsd(amountNum > 0 ? balance - amountNum : balance)}
+                {formatBalance(remainingBalance, tokenDecimals)} {tokenSymbol}
               </span>
             </>
           )}
         </span>
       </div>
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-neutral-400 dark:text-neutral-500 font-medium">
-          $
-        </span>
         <input
           type="text"
           inputMode="decimal"
@@ -74,15 +79,19 @@ export function AmountInput({
           onBlur={onBlur}
           placeholder="0.00"
           className={cn(
-            "w-full pl-10 pr-16 py-4 rounded-lg border bg-white dark:bg-neutral-800 font-mono text-2xl text-neutral-900 dark:text-neutral-100 transition-colors",
+            "w-full pl-4 pr-24 py-4 rounded-lg border bg-white dark:bg-neutral-800 font-mono text-2xl text-neutral-900 dark:text-neutral-100 transition-colors",
             "focus:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-red focus-visible:border-vibrant-red",
             error
               ? "border-red-400 dark:border-red-700"
               : "border-neutral-200 dark:border-neutral-700",
           )}
         />
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-          USDC
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          {tokenSelector || (
+            <span className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+              {tokenSymbol}
+            </span>
+          )}
         </div>
       </div>
       <div className="h-5 mt-1">

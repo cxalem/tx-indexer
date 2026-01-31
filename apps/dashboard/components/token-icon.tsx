@@ -7,11 +7,12 @@ import { cn } from "@/lib/utils";
 interface TokenIconProps {
   symbol: string;
   logoURI?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
 }
 
 const sizeMap = {
+  xs: 14,
   sm: 16,
   md: 24,
   lg: 32,

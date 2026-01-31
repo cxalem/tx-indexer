@@ -70,6 +70,12 @@ export const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 /** SOL mint address (wrapped SOL) */
 export const SOL_MINT = "So11111111111111111111111111111111111111112";
 
+/** Set of token mints that support sending */
+export const SENDABLE_MINTS = new Set([
+  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC
+  "So11111111111111111111111111111111111111112", // SOL
+]);
+
 /** Set of stablecoin mint addresses */
 export const STABLECOIN_MINTS = new Set([
   "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC

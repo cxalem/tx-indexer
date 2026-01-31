@@ -91,8 +91,9 @@ export const TOKEN_INFO: Record<string, TokenInfo> = {
   [KNOWN_TOKENS.USDG]: {
     mint: KNOWN_TOKENS.USDG,
     symbol: "USDG",
-    name: "USD Glitter",
+    name: "Global Dollar",
     decimals: 6,
+    logoURI: "https://arweave.net/dMKl9vRAYD5V1_9aLGXk5K4EuFKNdzRWgN_5FgnPmYY",
   },
   [KNOWN_TOKENS.USDC_BRIDGED]: {
     mint: KNOWN_TOKENS.USDC_BRIDGED,

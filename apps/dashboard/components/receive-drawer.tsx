@@ -1,21 +1,43 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Wallet } from "lucide-react";
+import { X } from "lucide-react";
 import QRCode from "react-qr-code";
 import { CopyButton } from "@/components/copy-button";
+import { TokenIcon } from "@/components/token-icon";
 import { truncate, cn } from "@/lib/utils";
+import { SOL_MINT, USDC_MINT } from "@/lib/constants";
+
+interface ReceiveToken {
+  mint: string;
+  symbol: string;
+  logoURI?: string;
+}
 
 interface ReceiveDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   walletAddress: string;
+  /** Optional token to receive - defaults to USDC */
+  token?: ReceiveToken | null;
 }
 
-const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+function buildSolanaPayUrl(
+  address: string,
+  tokenMint?: string,
+  amount?: number,
+): string {
+  // For SOL, don't include spl-token parameter
+  if (!tokenMint || tokenMint === SOL_MINT) {
+    let url = `solana:${address}`;
+    if (amount && amount > 0) {
+      url += `?amount=${amount}`;
+    }
+    return url;
+  }
 
-function buildSolanaPayUrl(address: string, amount?: number): string {
-  let url = `solana:${address}?spl-token=${USDC_MINT}`;
+  // For SPL tokens
+  let url = `solana:${address}?spl-token=${tokenMint}`;
   if (amount && amount > 0) {
     url += `&amount=${amount}`;
   }
@@ -26,14 +48,22 @@ export function ReceiveDrawer({
   isOpen,
   onClose,
   walletAddress,
+  token,
 }: ReceiveDrawerProps) {
   const [amount, setAmount] = useState<string>("");
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
 
+  // Default to USDC if no token specified
+  const selectedToken: ReceiveToken = token ?? {
+    mint: USDC_MINT,
+    symbol: "USDC",
+  };
+
   const parsedAmount = amount ? parseFloat(amount) : undefined;
   const solanaPayUrl = buildSolanaPayUrl(
     walletAddress,
+    selectedToken.mint,
     parsedAmount && !isNaN(parsedAmount) ? parsedAmount : undefined,
   );
 
@@ -82,9 +112,16 @@ export function ReceiveDrawer({
         )}
       >
         <div className="flex items-center justify-between p-4 border-b border-neutral-100 dark:border-neutral-800">
-          <h2 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            receive
-          </h2>
+          <div className="flex items-center gap-2">
+            <TokenIcon
+              symbol={selectedToken.symbol}
+              logoURI={selectedToken.logoURI}
+              size="sm"
+            />
+            <h2 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+              receive {selectedToken.symbol}
+            </h2>
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -128,22 +165,13 @@ export function ReceiveDrawer({
                 className="flex-1 p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 font-mono text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-vibrant-red focus-visible:border-vibrant-red"
               />
               <span className="text-sm text-neutral-500 dark:text-neutral-400">
-                USDC
+                {selectedToken.symbol}
               </span>
             </div>
           </div>
 
-          <a
-            href={solanaPayUrl}
-            className="flex items-center justify-center gap-2 w-full p-3 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors"
-          >
-            <Wallet className="h-4 w-4" />
-            open in wallet
-          </a>
-
           <p className="text-xs text-center text-neutral-400 dark:text-neutral-500">
-            scan the QR code with a Solana wallet app or click the button on
-            mobile
+            scan the QR code with a Solana wallet app
           </p>
         </div>
       </div>

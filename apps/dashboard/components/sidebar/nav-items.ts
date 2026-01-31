@@ -41,8 +41,6 @@ export const mainNavItems: NavItem[] = [
     label: "assets",
     href: "/assets",
     icon: Layers,
-    disabled: true,
-    comingSoon: true,
   },
   {
     label: "predictions",

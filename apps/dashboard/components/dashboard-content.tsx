@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
 import { useUnifiedWallet } from "@/hooks/use-unified-wallet";
@@ -16,7 +16,10 @@ import localFont from "next/font/local";
 import {
   FAST_POLLING_DURATION_MS,
   STATEMENT_WINDOW_DAYS,
+  SOL_MINT,
 } from "@/lib/constants";
+import { getTokenInfo, KNOWN_TOKENS } from "tx-indexer";
+import type { SendableToken } from "@/components/send-transfer/token-selector";
 
 // Lazy load heavy drawer components - only loaded when user opens them
 const SendTransferDrawer = dynamic(
@@ -49,8 +52,61 @@ export function DashboardContent() {
   if (sendDrawerOpen) sendDrawerMounted.current = true;
   if (tradeDrawerOpen) tradeDrawerMounted.current = true;
 
-  const { portfolio, balance, usdcBalance, isLoading, refetch } =
-    useDashboardData(address, { fastPolling });
+  const { portfolio, balance, isLoading, refetch } = useDashboardData(address, {
+    fastPolling,
+  });
+
+  // Stablecoin mints that we assume are ~$1
+  const STABLECOIN_MINTS: Set<string> = useMemo(
+    () =>
+      new Set([
+        KNOWN_TOKENS.USDC,
+        KNOWN_TOKENS.USDT,
+        KNOWN_TOKENS.PYUSD,
+        KNOWN_TOKENS.USDG,
+      ]),
+    [],
+  );
+
+  // Map balance tokens to SendableToken format for the send drawer
+  // Include SOL as a synthetic token since balance.tokens only has SPL tokens
+  const sendableTokens = useMemo((): SendableToken[] => {
+    if (!balance) return [];
+
+    const tokens: SendableToken[] = [];
+
+    // Add SOL first
+    if (balance.sol.ui > 0) {
+      const solInfo = getTokenInfo(SOL_MINT);
+      tokens.push({
+        mint: SOL_MINT,
+        symbol: "SOL",
+        name: solInfo?.name ?? "Solana",
+        decimals: 9,
+        logoURI: solInfo?.logoURI,
+        balance: balance.sol.ui,
+        price: null,
+      });
+    }
+
+    // Add SPL tokens
+    for (const t of balance.tokens) {
+      const tokenInfo = getTokenInfo(t.mint);
+      const price = STABLECOIN_MINTS.has(t.mint) ? 1.0 : null;
+
+      tokens.push({
+        mint: t.mint,
+        symbol: t.symbol,
+        name: tokenInfo?.name ?? t.symbol,
+        decimals: t.decimals,
+        logoURI: tokenInfo?.logoURI,
+        balance: t.amount.ui,
+        price,
+      });
+    }
+
+    return tokens;
+  }, [balance, STABLECOIN_MINTS]);
 
   const tokenBalances =
     balance?.tokens.map((t) => ({
@@ -168,7 +224,7 @@ export function DashboardContent() {
           open={sendDrawerOpen}
           onOpenChange={setSendDrawerOpen}
           onTransferSuccess={handleTransactionSuccess}
-          usdcBalance={usdcBalance}
+          tokens={sendableTokens}
         />
       )}
 
