@@ -9,6 +9,7 @@ import {
 import type { ClassifiedTransaction } from "tx-indexer";
 import {
   STATEMENT_WINDOW_MS,
+  STATEMENT_WINDOW_DAYS,
   DEFAULT_PAGE_SIZE,
   FAST_STALE_TIME_MS,
   TRANSACTION_FEED_STALE_TIME_MS,
@@ -29,6 +30,8 @@ interface UseTransactionsFeedOptions {
   pageSize?: number;
   fastPolling?: boolean;
   onNewTransactions?: OnNewTransactionsCallback;
+  /** Custom statement window in days (defaults to STATEMENT_WINDOW_DAYS) */
+  statementWindowDays?: number;
 }
 
 interface TransactionsFeedPage {
@@ -48,6 +51,7 @@ export function useTransactionsFeed(
     pageSize = DEFAULT_PAGE_SIZE,
     fastPolling = false,
     onNewTransactions,
+    statementWindowDays = STATEMENT_WINDOW_DAYS,
   } = options;
   const queryClient = useQueryClient();
 
@@ -64,8 +68,9 @@ export function useTransactionsFeed(
 
   const statementCutoffTimestamp = useMemo(() => {
     const now = Date.now();
-    return Math.floor((now - STATEMENT_WINDOW_MS) / 1000);
-  }, []);
+    const windowMs = statementWindowDays * 24 * 60 * 60 * 1000;
+    return Math.floor((now - windowMs) / 1000);
+  }, [statementWindowDays]);
 
   const query = useInfiniteQuery<TransactionsFeedPage>({
     queryKey: address

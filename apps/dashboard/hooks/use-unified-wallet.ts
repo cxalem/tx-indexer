@@ -14,11 +14,19 @@ export interface UnifiedWalletState {
   address: string | null;
   connectionType: "desktop" | "mobile" | null;
   disconnectMobile: () => void;
+  /** True until hydration is complete and wallet status is known */
+  isLoading: boolean;
 }
 
 export function useUnifiedWallet(): UnifiedWalletState {
   const desktopWallet = useWallet();
   const [mobileAddress, setMobileAddress] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Mark as hydrated after first render
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   useEffect(() => {
     const storedSession = getStoredSession();
@@ -62,12 +70,16 @@ export function useUnifiedWallet(): UnifiedWalletState {
   const isDesktopConnected = desktopWallet.status === "connected";
   const isMobileConnected = mobileAddress !== null;
 
+  // Still loading until hydrated
+  const isLoading = !isHydrated;
+
   if (isDesktopConnected) {
     return {
       status: "connected",
       address: desktopWallet.session.account.address.toString(),
       connectionType: "desktop",
       disconnectMobile,
+      isLoading,
     };
   }
 
@@ -77,6 +89,7 @@ export function useUnifiedWallet(): UnifiedWalletState {
       address: mobileAddress,
       connectionType: "mobile",
       disconnectMobile,
+      isLoading,
     };
   }
 
@@ -85,5 +98,6 @@ export function useUnifiedWallet(): UnifiedWalletState {
     address: null,
     connectionType: null,
     disconnectMobile,
+    isLoading,
   };
 }
