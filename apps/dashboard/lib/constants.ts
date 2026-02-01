@@ -37,6 +37,13 @@ export const STATEMENT_WINDOW_DAYS = 31;
 /** Statement window in milliseconds */
 export const STATEMENT_WINDOW_MS = STATEMENT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
 
+/** Number of days to show in watch mode (shorter for lighter load) */
+export const WATCH_STATEMENT_WINDOW_DAYS = 15;
+
+/** Watch mode statement window in milliseconds */
+export const WATCH_STATEMENT_WINDOW_MS =
+  WATCH_STATEMENT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+
 /** Default number of transactions to fetch per page */
 export const DEFAULT_PAGE_SIZE = 10;
 

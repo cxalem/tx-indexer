@@ -1,22 +1,26 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { EnrichedWalletBalance } from "@/app/actions/token-metadata";
 import { getTokenPriceData, type TokenPriceData } from "@/app/actions/assets";
-import { AssetListWithHover } from "./asset-list-hover";
+import { WatchAssetRow } from "./watch-asset-row";
 import { SOL_MINT } from "@/lib/constants";
 import { Coins } from "lucide-react";
 
-interface TokensListProps {
+interface WatchTokensListProps {
   balance: EnrichedWalletBalance;
-  walletAddress: string;
 }
 
-export function TokensList({ balance, walletAddress }: TokensListProps) {
+/**
+ * Watch mode tokens list - read-only without action buttons
+ */
+export function WatchTokensList({ balance }: WatchTokensListProps) {
   const [priceData, setPriceData] = useState<Map<string, TokenPriceData>>(
     new Map(),
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Create a synthetic SOL token entry with full metadata
   const solToken = useMemo(
@@ -108,6 +112,7 @@ export function TokensList({ balance, walletAddress }: TokensListProps) {
         </div>
       </div>
 
+      {/* Token Rows */}
       {/* Token Rows - max 10 */}
       {isLoading ? (
         <div>
@@ -116,11 +121,42 @@ export function TokensList({ balance, walletAddress }: TokensListProps) {
           ))}
         </div>
       ) : (
-        <AssetListWithHover
-          tokens={sortedTokens.slice(0, 10)}
-          priceData={priceData}
-          walletAddress={walletAddress}
-        />
+        <div onMouseLeave={() => setHoveredIndex(null)}>
+          {sortedTokens.slice(0, 10).map((token, index) => (
+            <div
+              key={token.mint}
+              className="relative"
+              onMouseEnter={() => setHoveredIndex(index)}
+            >
+              {/* Shared hover background with smooth transition */}
+              <AnimatePresence>
+                {hoveredIndex === index && (
+                  <motion.div
+                    layoutId="watch-asset-hover"
+                    className="absolute inset-0 bg-neutral-50 dark:bg-neutral-800 z-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 35,
+                    }}
+                  />
+                )}
+              </AnimatePresence>
+
+              {/* Asset content - always on top */}
+              <div className="relative z-10">
+                <WatchAssetRow
+                  token={token}
+                  priceData={priceData.get(token.mint) ?? null}
+                  disableHover
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {/* Show count if more than 10 */}

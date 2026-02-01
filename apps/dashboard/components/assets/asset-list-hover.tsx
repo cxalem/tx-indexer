@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { TokenAccountBalance } from "tx-indexer/advanced";
+import type { EnrichedTokenBalance } from "@/app/actions/token-metadata";
 import type { TokenPriceData } from "@/app/actions/assets";
 import { AssetRow } from "./asset-row";
 
 interface AssetListWithHoverProps {
-  tokens: TokenAccountBalance[];
+  tokens: EnrichedTokenBalance[];
   priceData: Map<string, TokenPriceData>;
   walletAddress: string;
 }

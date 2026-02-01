@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, memo, useCallback } from "react";
+import { useState, useEffect, memo } from "react";
 import type { EnrichedTokenBalance } from "@/app/actions/token-metadata";
 import type {
   TokenPriceData,
@@ -9,32 +9,25 @@ import type {
 } from "@/app/actions/assets";
 import { getTokenPriceHistory } from "@/app/actions/assets";
 import { TokenIcon } from "@/components/token-icon";
-import { Sparkline } from "./sparkline";
-import { PriceChart } from "./price-chart";
-import { useDrawer, type DrawerToken } from "@/contexts/drawer-context";
-import {
-  ChevronDown,
-  Send,
-  ArrowLeftRight,
-  QrCode,
-  Activity,
-} from "lucide-react";
+import { Sparkline } from "@/components/assets/sparkline";
+import { PriceChart } from "@/components/assets/price-chart";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SENDABLE_MINTS } from "@/lib/constants";
 
-interface AssetRowProps {
+interface WatchAssetRowProps {
   token: EnrichedTokenBalance;
   priceData: TokenPriceData | null;
-  walletAddress: string;
   disableHover?: boolean;
 }
 
-export const AssetRow = memo(function AssetRow({
+/**
+ * Watch mode asset row - read-only version without action buttons
+ */
+export const WatchAssetRow = memo(function WatchAssetRow({
   token,
   priceData,
-  walletAddress,
   disableHover = false,
-}: AssetRowProps) {
+}: WatchAssetRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState<Timeframe>("24h");
   const [chartData, setChartData] = useState<PricePoint[]>(
@@ -42,21 +35,9 @@ export const AssetRow = memo(function AssetRow({
   );
   const [isLoadingChart, setIsLoadingChart] = useState(false);
 
-  const { openSendDrawer, openTradeDrawer, openReceiveDrawer } = useDrawer();
-
   // Use enriched metadata from server (already resolved via Jupiter/Helius)
   const logoURI = token.logoURI;
   const tokenName = token.name;
-
-  // Create drawer token object
-  const drawerToken: DrawerToken = {
-    mint: token.mint,
-    symbol: token.symbol,
-    name: tokenName,
-    logoURI,
-    decimals: token.decimals,
-    balance: token.amount.ui,
-  };
 
   const usdValue = priceData?.price ? token.amount.ui * priceData.price : null;
 
@@ -252,27 +233,7 @@ export const AssetRow = memo(function AssetRow({
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-2 border-t border-neutral-200 dark:border-neutral-700">
-                {SENDABLE_MINTS.has(token.mint) && (
-                  <ActionButton
-                    icon={Send}
-                    label="Send"
-                    onClick={() => openSendDrawer(drawerToken)}
-                  />
-                )}
-                <ActionButton
-                  icon={ArrowLeftRight}
-                  label="Trade"
-                  onClick={() => openTradeDrawer(drawerToken)}
-                />
-                <ActionButton
-                  icon={QrCode}
-                  label="Receive"
-                  onClick={() => openReceiveDrawer(drawerToken)}
-                />
-                <ActionButton icon={Activity} label="Activity" disabled />
-              </div>
+              {/* No action buttons in watch mode */}
             </div>
           </div>
         </div>
@@ -280,35 +241,3 @@ export const AssetRow = memo(function AssetRow({
     </div>
   );
 });
-
-interface ActionButtonProps {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  disabled?: boolean;
-  onClick?: () => void;
-}
-
-function ActionButton({
-  icon: Icon,
-  label,
-  disabled,
-  onClick,
-}: ActionButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors",
-        disabled
-          ? "bg-neutral-100 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 cursor-not-allowed"
-          : "bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500",
-      )}
-    >
-      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-      <span>{label}</span>
-      {disabled && <span className="text-[10px] opacity-60">soon</span>}
-    </button>
-  );
-}

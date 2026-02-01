@@ -6,7 +6,7 @@ import {
   getBalanceAndPortfolio,
   type PortfolioSummary,
 } from "@/app/actions/dashboard";
-import type { WalletBalance } from "tx-indexer/advanced";
+import type { EnrichedWalletBalance } from "@/app/actions/token-metadata";
 import {
   USDC_MINT,
   EMPTY_DASHBOARD_QUERY_KEY,
@@ -24,7 +24,7 @@ export const dashboardKeys = {
 };
 
 interface BalanceAndPortfolioData {
-  balance: WalletBalance;
+  balance: EnrichedWalletBalance;
   portfolio: PortfolioSummary;
 }
 

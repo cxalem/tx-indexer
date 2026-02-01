@@ -10,6 +10,10 @@ import type {
 import type { WalletBalance } from "tx-indexer/advanced";
 import { address, signature } from "@solana/kit";
 import {
+  enrichWalletBalance,
+  type EnrichedWalletBalance,
+} from "./token-metadata";
+import {
   STABLECOIN_MINTS,
   SOL_MINT,
   DEFAULT_TRANSACTION_LIMIT,
@@ -227,15 +231,24 @@ export async function getNewTransactions(
 /**
  * Fetch only balance and portfolio (no transactions)
  * Used for polling when we already have cached transactions
+ *
+ * Returns enriched balance with full token metadata from:
+ * 1. Static registry
+ * 2. Jupiter "all" token list
+ * 3. Helius DAS (Metaplex on-chain)
+ * 4. Fallback (mint prefix)
  */
 export async function getBalanceAndPortfolio(
   walletAddress: string,
-): Promise<{ balance: WalletBalance; portfolio: PortfolioSummary }> {
+): Promise<{ balance: EnrichedWalletBalance; portfolio: PortfolioSummary }> {
   const indexer = getIndexer();
   const addr = address(walletAddress);
 
-  const balance = await indexer.getBalance(addr);
-  const portfolio = await calculatePortfolio(balance);
+  const rawBalance = await indexer.getBalance(addr);
+  const [balance, portfolio] = await Promise.all([
+    enrichWalletBalance(rawBalance),
+    calculatePortfolio(rawBalance),
+  ]);
 
   return { balance, portfolio };
 }
