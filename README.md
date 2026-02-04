@@ -87,8 +87,33 @@ tx-indexer/
 
 ```bash
 bun install
-bun run build
-bun run typecheck
+```
+
+### Running the Dashboard
+
+```bash
+cp apps/dashboard/.env.example apps/dashboard/.env
+# Add your Helius API key to apps/dashboard/.env
+
+bun run dev --filter=dashboard
+```
+
+### Running the web app
+
+```bash
+cp apps/web/.env.example apps/web/.env
+# Add your Helius API key to apps/web/.env
+
+bun run dev --filter=web
+```
+
+### Other useful commands
+
+```bash
+bun run build        # Build all packages
+bun run check-types  # Type checking
+bun run lint         # Linting
+bun run format       # Format code
 ```
 
 ## License
