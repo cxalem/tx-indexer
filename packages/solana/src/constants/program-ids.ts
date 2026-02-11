@@ -135,6 +135,17 @@ export const FORMFUNCTION_PROGRAM_ID =
   "formn3hJtt8gvVKxpCfzCJGuoz6CNUFcULFZW18iTpC";
 
 // ============================================
+// Lending Programs
+// ============================================
+
+export const MARGINFI_PROGRAM_ID =
+  "MFv2hWf31Z9kbCa1snEPYctwafyhdvnV7FZnsebVacA";
+export const SOLEND_PROGRAM_ID =
+  "So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo";
+export const KAMINO_LENDING_PROGRAM_ID =
+  "KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD";
+
+// ============================================
 // Privacy Programs
 // ============================================
 
@@ -231,6 +242,12 @@ export const BRIDGE_PROGRAM_IDS = [
   DEGODS_BRIDGE_PROGRAM_ID,
   DEBRIDGE_PROGRAM_ID,
   ALLBRIDGE_PROGRAM_ID,
+] as const;
+
+export const LENDING_PROGRAM_IDS = [
+  MARGINFI_PROGRAM_ID,
+  SOLEND_PROGRAM_ID,
+  KAMINO_LENDING_PROGRAM_ID,
 ] as const;
 
 export const PRIVACY_PROGRAM_IDS = [PRIVACY_CASH_PROGRAM_ID] as const;

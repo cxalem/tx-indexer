@@ -53,6 +53,10 @@ import {
   ALLBRIDGE_PROGRAM_ID,
   // Privacy programs
   PRIVACY_CASH_PROGRAM_ID,
+  // Lending programs
+  MARGINFI_PROGRAM_ID,
+  SOLEND_PROGRAM_ID,
+  KAMINO_LENDING_PROGRAM_ID,
 } from "@tx-indexer/solana/constants/program-ids";
 
 const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
@@ -269,6 +273,20 @@ const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
     id: "privacy-cash",
     name: "Privacy Cash",
   },
+
+  // Lending protocols
+  [MARGINFI_PROGRAM_ID]: {
+    id: "marginfi",
+    name: "Marginfi",
+  },
+  [SOLEND_PROGRAM_ID]: {
+    id: "solend",
+    name: "Solend",
+  },
+  [KAMINO_LENDING_PROGRAM_ID]: {
+    id: "kamino-lending",
+    name: "Kamino Lending",
+  },
 };
 
 const PRIORITY_ORDER = [
@@ -320,6 +338,10 @@ const PRIORITY_ORDER = [
   // Staking
   "stake",
   "stake-pool",
+  // Lending
+  "marginfi",
+  "solend",
+  "kamino-lending",
   // Infrastructure (lowest priority)
   "memo",
   "memo-v1",
@@ -395,6 +417,12 @@ const BRIDGE_PROTOCOL_IDS = new Set([
 
 const PRIVACY_PROTOCOL_IDS = new Set(["privacy-cash"]);
 
+const LENDING_PROTOCOL_IDS = new Set([
+  "marginfi",
+  "solend",
+  "kamino-lending",
+]);
+
 /**
  * Checks if a protocol is a DEX (decentralized exchange) that performs swaps.
  * DEX protocols should have their legs tagged as "protocol:" with deposit/withdraw roles.
@@ -458,6 +486,20 @@ export function isPrivacyCashProtocolById(
   protocolId: string | undefined,
 ): boolean {
   return protocolId !== undefined && PRIVACY_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a lending protocol.
+ * Lending protocols allow users to deposit/withdraw tokens for yield.
+ *
+ * @example
+ * isLendingProtocolById("marginfi") // true
+ * isLendingProtocolById("jupiter") // false
+ */
+export function isLendingProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && LENDING_PROTOCOL_IDS.has(protocolId);
 }
 
 /**
