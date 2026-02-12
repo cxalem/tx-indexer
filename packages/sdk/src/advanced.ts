@@ -104,3 +104,11 @@ export {
   fetchNftMetadataBatch,
   type NftMetadata,
 } from "./nft";
+
+// Helius Wallet API helpers
+export {
+  fetchWalletFundingSource,
+  DEFAULT_HELIUS_WALLET_API_BASE_URL,
+  type WalletFundingSource,
+  type FetchWalletFundingSourceOptions,
+} from "./wallet-api";

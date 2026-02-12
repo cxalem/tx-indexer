@@ -34,10 +34,12 @@ export {
   type IndexerClient,
   type GetTransactionsOptions,
   type GetTransactionOptions,
+  type GetWalletFundingSourceOptions,
   type ClassifiedTransaction,
   type FetchTransactionsConfig,
   type AddressInput,
   type SignatureInput,
+  type WalletFundingSource,
   // EXPERIMENTAL: Signatures-First API
   type SignatureInfo,
   type GetSignaturesOptions,

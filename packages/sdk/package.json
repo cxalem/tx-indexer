@@ -33,7 +33,7 @@
     "prepublishOnly": "bun run build",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "bun test src/client.test.ts src/nft.test.ts",
+    "test": "bun test src/client.test.ts src/nft.test.ts src/wallet-api.test.ts",
     "test:integration": "bun test src/__tests__/integration.test.ts",
     "test:all": "bun test",
     "size": "size-limit",

@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Add stable Helius Wallet API funding-source support:
+  - New `getWalletFundingSource(walletAddress, options?)` method on `TxIndexer`
+  - New stable `WalletFundingSource` and `GetWalletFundingSourceOptions` types
+  - New advanced low-level helper: `fetchWalletFundingSource(...)`
+  - In-memory caching + in-flight request deduping for repeated lookups
+
+### Changed
+
+- Improved SDK docs around null-vs-throw behavior and wallet funding semantics
+
 ## 1.5.0
 
 ### Minor Changes

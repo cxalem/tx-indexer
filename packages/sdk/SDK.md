@@ -5,7 +5,7 @@
 | Property        | Value                                                                                                                                            |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Name**        | `tx-indexer`                                                                                                                                     |
-| **Version**     | `1.2.0`                                                                                                                                          |
+| **Version**     | `1.5.0`                                                                                                                                          |
 | **Description** | A TypeScript SDK that transforms raw Solana transactions into human-readable financial data with automatic classification and protocol detection |
 | **License**     | MIT                                                                                                                                              |
 | **Author**      | cxalem                                                                                                                                           |
@@ -62,16 +62,17 @@ type TxIndexerOptions =
 
 **Returns:** `TxIndexer` interface with the following methods:
 
-| Method                        | Signature                                                                                                   | Description                                                        |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `getBalance`                  | `(walletAddress: AddressInput, tokenMints?: readonly string[]) => Promise<WalletBalance>`                   | Get SOL and token balances for a wallet                            |
-| `getTransactions`             | `(walletAddress: AddressInput, options?: GetTransactionsOptions) => Promise<ClassifiedTransaction[]>`       | Get classified transactions for a wallet                           |
-| `getTransaction`              | `(signature: SignatureInput, options?: GetTransactionOptions) => Promise<ClassifiedTransaction \| null>`    | Get a single classified transaction                                |
-| `getRawTransaction`           | `(signature: SignatureInput) => Promise<RawTransaction \| null>`                                            | Get raw transaction without classification                         |
-| `getNftMetadata`              | `(mintAddress: string) => Promise<NftMetadata \| null>`                                                     | Get NFT metadata (requires DAS RPC)                                |
-| `getNftMetadataBatch`         | `(mintAddresses: string[]) => Promise<Map<string, NftMetadata>>`                                            | Batch fetch NFT metadata                                           |
-| `getSignatures`               | `(walletAddress: AddressInput, options?: GetSignaturesOptions) => Promise<GetSignaturesResult>`             | **[EXPERIMENTAL]** Get transaction signatures without full details |
-| `getTransactionsBySignatures` | `(signatures: SignatureInput[], walletAddress: AddressInput, options?) => Promise<ClassifiedTransaction[]>` | **[EXPERIMENTAL]** Fetch transactions for specific signatures      |
+| Method                        | Signature                                                                                                        | Description                                                        |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `getBalance`                  | `(walletAddress: AddressInput, tokenMints?: readonly string[]) => Promise<WalletBalance>`                        | Get SOL and token balances for a wallet                            |
+| `getTransactions`             | `(walletAddress: AddressInput, options?: GetTransactionsOptions) => Promise<ClassifiedTransaction[]>`            | Get classified transactions for a wallet                           |
+| `getTransaction`              | `(signature: SignatureInput, options?: GetTransactionOptions) => Promise<ClassifiedTransaction \| null>`         | Get a single classified transaction                                |
+| `getRawTransaction`           | `(signature: SignatureInput) => Promise<RawTransaction \| null>`                                                 | Get raw transaction without classification                         |
+| `getNftMetadata`              | `(mintAddress: string) => Promise<NftMetadata \| null>`                                                          | Get NFT metadata (requires DAS RPC)                                |
+| `getNftMetadataBatch`         | `(mintAddresses: string[]) => Promise<Map<string, NftMetadata>>`                                                 | Batch fetch NFT metadata                                           |
+| `getWalletFundingSource`      | `(walletAddress: AddressInput, options?: GetWalletFundingSourceOptions) => Promise<WalletFundingSource \| null>` | Get first SOL funding source (requires Helius API key)             |
+| `getSignatures`               | `(walletAddress: AddressInput, options?: GetSignaturesOptions) => Promise<GetSignaturesResult>`                  | **[EXPERIMENTAL]** Get transaction signatures without full details |
+| `getTransactionsBySignatures` | `(signatures: SignatureInput[], walletAddress: AddressInput, options?) => Promise<ClassifiedTransaction[]>`      | **[EXPERIMENTAL]** Fetch transactions for specific signatures      |
 
 #### GetTransactionsOptions
 

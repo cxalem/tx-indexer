@@ -41,6 +41,13 @@ import {
   type NftMetadata,
 } from "./nft";
 import { ConfigurationError } from "./errors";
+import {
+  DEFAULT_HELIUS_WALLET_API_BASE_URL,
+  fetchWalletFundingSource,
+  type WalletFundingSource,
+} from "./wallet-api";
+
+export type { WalletFundingSource } from "./wallet-api";
 
 const NFT_TRANSACTION_TYPES = ["nft_mint", "nft_purchase", "nft_sale"] as const;
 
@@ -271,6 +278,40 @@ interface TxIndexerBaseOptions {
    * ```
    */
   customTokens?: Record<string, TokenInfo>;
+
+  /**
+   * Helius API key used for Wallet API endpoints such as getWalletFundingSource().
+   *
+   * @example
+   * ```typescript
+   * const indexer = createIndexer({
+   *   rpcUrl: "https://api.mainnet-beta.solana.com",
+   *   heliusApiKey: process.env.HELIUS_API_KEY,
+   * });
+   * ```
+   */
+  heliusApiKey?: string;
+
+  /**
+   * Base URL for the Helius Wallet API.
+   *
+   * @default "https://api.helius.xyz/v1"
+   */
+  heliusWalletApiBaseUrl?: string;
+
+  /**
+   * Cache TTL for successful wallet funding lookups, in milliseconds.
+   *
+   * @default 86400000 (24 hours)
+   */
+  walletFundingCacheTtlMs?: number;
+
+  /**
+   * Cache TTL for "not found" wallet funding lookups, in milliseconds.
+   *
+   * @default 3600000 (1 hour)
+   */
+  walletFundingNotFoundCacheTtlMs?: number;
 }
 
 /**
@@ -329,6 +370,22 @@ export interface GetTransactionsOptions {
 export interface GetTransactionOptions {
   enrichNftMetadata?: boolean;
   enrichTokenMetadata?: boolean;
+}
+
+export interface GetWalletFundingSourceOptions {
+  /**
+   * Override Helius API key for this call.
+   * If omitted, falls back to createIndexer({ heliusApiKey }).
+   */
+  heliusApiKey?: string;
+  /** Override Wallet API base URL for this call. */
+  heliusWalletApiBaseUrl?: string;
+  /** Timeout in milliseconds for this call. */
+  timeoutMs?: number;
+  /** Retry configuration for network/rate-limit/transient failures. */
+  retry?: RetryConfig;
+  /** Bypass in-memory cache and force a fresh request. */
+  forceRefresh?: boolean;
 }
 
 // =============================================================================
@@ -530,6 +587,23 @@ export interface TxIndexer {
     mintAddresses: string[],
   ): Promise<Map<string, NftMetadata>>;
 
+  /**
+   * Get the first SOL funding source for a wallet via Helius Wallet API.
+   *
+   * @param walletAddress - Wallet address (string or Address type)
+   * @param options - Optional API key/base URL overrides, timeout, retry, cache controls
+   * @returns Funding source data, or null if no funding transaction exists
+   *
+   * @remarks
+   * - This endpoint returns the first incoming SOL transfer only.
+   * - The funder is the immediate source, not the ultimate source of funds.
+   * - Wallet API is currently beta and may evolve.
+   */
+  getWalletFundingSource(
+    walletAddress: AddressInput,
+    options?: GetWalletFundingSourceOptions,
+  ): Promise<WalletFundingSource | null>;
+
   // ===========================================================================
   // EXPERIMENTAL: Signatures-First API
   // ===========================================================================
@@ -622,6 +696,22 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
   // Extract cluster and customTokens from options
   const cluster = options.cluster ?? "mainnet-beta";
   const customTokens = options.customTokens;
+  const heliusApiKey = options.heliusApiKey;
+  const heliusWalletApiBaseUrl =
+    options.heliusWalletApiBaseUrl ?? DEFAULT_HELIUS_WALLET_API_BASE_URL;
+  const walletFundingCacheTtlMs =
+    options.walletFundingCacheTtlMs ?? 24 * 60 * 60 * 1000;
+  const walletFundingNotFoundCacheTtlMs =
+    options.walletFundingNotFoundCacheTtlMs ?? 60 * 60 * 1000;
+
+  const walletFundingCache = new Map<
+    string,
+    { value: WalletFundingSource | null; expiresAt: number }
+  >();
+  const walletFundingInflight = new Map<
+    string,
+    Promise<WalletFundingSource | null>
+  >();
 
   const tokenFetcher = createTokenFetcher({
     cluster,
@@ -980,6 +1070,68 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         );
       }
       return fetchNftMetadataBatch(rpcUrl, mintAddresses);
+    },
+
+    async getWalletFundingSource(
+      walletAddress: AddressInput,
+      options: GetWalletFundingSourceOptions = {},
+    ): Promise<WalletFundingSource | null> {
+      const {
+        heliusApiKey: overrideApiKey,
+        heliusWalletApiBaseUrl: overrideBaseUrl,
+        timeoutMs,
+        retry,
+        forceRefresh = false,
+      } = options;
+
+      const address = normalizeAddress(walletAddress).toString();
+      const apiKey = overrideApiKey ?? heliusApiKey;
+
+      if (!apiKey) {
+        throw new ConfigurationError(
+          "getWalletFundingSource requires a Helius API key. Set createIndexer({ heliusApiKey }) or pass options.heliusApiKey.",
+        );
+      }
+
+      const baseUrl = overrideBaseUrl ?? heliusWalletApiBaseUrl;
+      const cacheKey = `${baseUrl}:${address}`;
+      const now = Date.now();
+
+      if (!forceRefresh) {
+        const cached = walletFundingCache.get(cacheKey);
+        if (cached && cached.expiresAt > now) {
+          return cached.value;
+        }
+
+        const inflight = walletFundingInflight.get(cacheKey);
+        if (inflight) {
+          return inflight;
+        }
+      }
+
+      const request = fetchWalletFundingSource({
+        walletAddress: address,
+        apiKey,
+        baseUrl,
+        timeoutMs,
+        retry,
+      })
+        .then((result) => {
+          const ttl = result
+            ? walletFundingCacheTtlMs
+            : walletFundingNotFoundCacheTtlMs;
+          walletFundingCache.set(cacheKey, {
+            value: result,
+            expiresAt: Date.now() + ttl,
+          });
+          return result;
+        })
+        .finally(() => {
+          walletFundingInflight.delete(cacheKey);
+        });
+
+      walletFundingInflight.set(cacheKey, request);
+      return request;
     },
 
     // =========================================================================

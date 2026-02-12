@@ -19,6 +19,7 @@ APIs in this tier are production-ready and follow semantic versioning strictly:
 - `createIndexer()` and `TxIndexer` interface
 - `getBalance()`, `getTransactions()`, `getTransaction()`, `getRawTransaction()`
 - `getNftMetadata()`, `getNftMetadataBatch()`
+- `getWalletFundingSource()`
 - `parseAddress()`, `parseSignature()`
 - All core types (`ClassifiedTransaction`, `RawTransaction`, `TxLeg`, etc.)
 - JSON serialization helpers (`toJsonClassifiedTransaction`, etc.)
@@ -47,6 +48,7 @@ APIs in this tier are for power users who need fine-grained control. They're sta
 - Memo parsing (`extractMemo`, `parseSolanaPayMemo`)
 - Token fetcher (`createTokenFetcher`)
 - Program ID constants
+- Helius Wallet API low-level fetcher (`fetchWalletFundingSource`)
 
 ### Internal (not exported)
 

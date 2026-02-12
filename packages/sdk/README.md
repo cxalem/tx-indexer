@@ -80,7 +80,7 @@ Get classified transactions for a wallet.
 | `enrichNftMetadata`   | `boolean` | `true`  | Fetch NFT metadata (requires DAS RPC)                        |
 | `enrichTokenMetadata` | `boolean` | `true`  | Fetch token metadata                                         |
 
-**Returns:** `null` if transaction not found, otherwise `ClassifiedTransaction`.
+**Returns:** Array of `ClassifiedTransaction`.
 
 ### `indexer.getTransaction(signature, options?)`
 
@@ -109,6 +109,35 @@ Get NFT metadata using DAS RPC.
 **Returns:** `null` if NFT not found, otherwise `NftMetadata`.
 
 **Throws:** `Error` if `rpcUrl` was not provided (using `client` option).
+
+### `indexer.getWalletFundingSource(walletAddress, options?)`
+
+Get the first SOL funding source for a wallet using Helius Wallet API.
+
+```typescript
+const indexer = createIndexer({
+  rpcUrl: "https://api.mainnet-beta.solana.com",
+  heliusApiKey: process.env.HELIUS_API_KEY,
+});
+
+const funding = await indexer.getWalletFundingSource(
+  "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY",
+);
+
+if (funding) {
+  console.log(funding.funderName || funding.funder);
+  console.log(funding.amount, funding.symbol);
+}
+```
+
+**Returns:** `null` if no funding transaction exists, otherwise `WalletFundingSource`.
+
+**Notes:**
+
+- Requires Helius API key via `createIndexer({ heliusApiKey })` or per-call override
+- Represents the **first incoming SOL transfer** only
+- `funder` is the immediate source, not the ultimate source of funds
+- Endpoint is beta and attribution fields are best-effort
 
 ## Pagination
 
@@ -316,13 +345,14 @@ try {
 
 Methods return `null` for "not found" cases and throw for actual errors:
 
-| Method                   | Returns `null`        | Throws                       |
-| ------------------------ | --------------------- | ---------------------------- |
-| `getTransaction(sig)`    | Transaction not found | Invalid signature, RPC error |
-| `getRawTransaction(sig)` | Transaction not found | Invalid signature, RPC error |
-| `getNftMetadata(mint)`   | NFT not found         | RPC error, missing config    |
-| `getBalance(addr)`       | Never                 | Invalid address, RPC error   |
-| `getTransactions(addr)`  | Never (empty array)   | Invalid address, RPC error   |
+| Method                         | Returns `null`          | Throws                                          |
+| ------------------------------ | ----------------------- | ----------------------------------------------- |
+| `getTransaction(sig)`          | Transaction not found   | Invalid signature, RPC error                    |
+| `getRawTransaction(sig)`       | Transaction not found   | Invalid signature, RPC error                    |
+| `getNftMetadata(mint)`         | NFT not found           | RPC error, missing config                       |
+| `getWalletFundingSource(addr)` | No funding source found | Missing API key, rate limit, network/API errors |
+| `getBalance(addr)`             | Never                   | Invalid address, RPC error                      |
+| `getTransactions(addr)`        | Never (empty array)     | Invalid address, RPC error                      |
 
 ## JSON-Safe Serialization
 
