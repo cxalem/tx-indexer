@@ -370,6 +370,13 @@ export interface GetTransactionsOptions {
 export interface GetTransactionOptions {
   enrichNftMetadata?: boolean;
   enrichTokenMetadata?: boolean;
+  /**
+   * Optional wallet perspective for direction-sensitive classification.
+   *
+   * When provided, classifiers and leg mapping can determine sender/receiver
+   * and in/out direction from this wallet's viewpoint.
+   */
+  walletAddress?: AddressInput;
 }
 
 export interface GetWalletFundingSourceOptions {
@@ -1018,6 +1025,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       const {
         enrichNftMetadata = true,
         enrichTokenMetadata: enrichTokens = true,
+        walletAddress,
       } = options;
 
       const normalizedSig = normalizeSignature(signature);
@@ -1029,8 +1037,12 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
 
       tx.protocol = detectProtocol(tx.programIds);
 
-      const legs = transactionToLegs(tx);
-      const classification = classifyTransaction(legs, tx);
+      const walletAddressStr = walletAddress
+        ? normalizeAddress(walletAddress).toString()
+        : undefined;
+
+      const legs = transactionToLegs(tx, walletAddressStr);
+      const classification = classifyTransaction(legs, tx, walletAddressStr);
 
       let classified: ClassifiedTransaction = { tx, classification, legs };
 

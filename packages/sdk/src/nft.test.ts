@@ -25,7 +25,9 @@ interface MockDasResponse {
   error?: { code: number; message: string };
 }
 
-function createMockDasResponse(resultOverrides?: Partial<MockDasResult>): MockDasResponse {
+function createMockDasResponse(
+  resultOverrides?: Partial<MockDasResult>,
+): MockDasResponse {
   const defaultResult: MockDasResult = {
     id: MOCK_MINT_ADDRESS,
     content: {
@@ -59,14 +61,27 @@ function createMockDasResponse(resultOverrides?: Partial<MockDasResult>): MockDa
 
   return {
     jsonrpc: "2.0",
-    result: resultOverrides ? { ...defaultResult, ...resultOverrides } : defaultResult,
+    result: resultOverrides
+      ? { ...defaultResult, ...resultOverrides }
+      : defaultResult,
   };
 }
 
-function createMockFetch(responseOrFn: MockDasResponse | ((url: string, options: RequestInit) => MockDasResponse)) {
+function createMockFetch(
+  responseOrFn:
+    | MockDasResponse
+    | ((url: string, options: RequestInit) => MockDasResponse),
+) {
   return mock((url: string, options: RequestInit) => {
-    const response = typeof responseOrFn === "function" ? responseOrFn(url, options) : responseOrFn;
-    return Promise.resolve({ json: () => Promise.resolve(response) } as Response);
+    const response =
+      typeof responseOrFn === "function"
+        ? responseOrFn(url, options)
+        : responseOrFn;
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(response),
+    } as Response);
   }) as unknown as typeof fetch;
 }
 
@@ -86,12 +101,21 @@ describe("fetchNftMetadata", () => {
     expect(result?.mint).toBe(MOCK_MINT_ADDRESS);
     expect(result?.name).toBe("Mad Lad #9971");
     expect(result?.symbol).toBe("MAD");
-    expect(result?.image).toBe("https://madlads.s3.us-west-2.amazonaws.com/images/9971.png");
-    expect(result?.cdnImage).toBe("https://cdn.helius-rpc.com/cdn-cgi/image/9971.png");
+    expect(result?.image).toBe(
+      "https://madlads.s3.us-west-2.amazonaws.com/images/9971.png",
+    );
+    expect(result?.cdnImage).toBe(
+      "https://cdn.helius-rpc.com/cdn-cgi/image/9971.png",
+    );
     expect(result?.description).toBe("Fock it.");
-    expect(result?.collection).toBe("J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w");
+    expect(result?.collection).toBe(
+      "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
+    );
     expect(result?.attributes).toHaveLength(2);
-    expect(result?.attributes?.[0]).toEqual({ trait_type: "Background", value: "Blue" });
+    expect(result?.attributes?.[0]).toEqual({
+      trait_type: "Background",
+      value: "Blue",
+    });
   });
 
   test("should return null when API returns an error", async () => {
@@ -121,7 +145,8 @@ describe("fetchNftMetadata", () => {
       result: {
         id: MOCK_MINT_ADDRESS,
         content: {
-          metadata: undefined as unknown as MockDasResult["content"]["metadata"],
+          metadata:
+            undefined as unknown as MockDasResult["content"]["metadata"],
           links: {},
         },
       },
@@ -138,7 +163,9 @@ describe("fetchNftMetadata", () => {
 
     const result = await fetchNftMetadata(MOCK_RPC_URL, MOCK_MINT_ADDRESS);
 
-    expect(result?.image).toBe("https://madlads.s3.us-west-2.amazonaws.com/images/9971.png");
+    expect(result?.image).toBe(
+      "https://madlads.s3.us-west-2.amazonaws.com/images/9971.png",
+    );
   });
 
   test("should fallback to files uri when links.image is missing", async () => {
@@ -155,16 +182,20 @@ describe("fetchNftMetadata", () => {
             },
           ],
         },
-      })
+      }),
     );
 
     const result = await fetchNftMetadata(MOCK_RPC_URL, MOCK_MINT_ADDRESS);
 
-    expect(result?.image).toBe("https://madlads.s3.us-west-2.amazonaws.com/images/9971.png");
+    expect(result?.image).toBe(
+      "https://madlads.s3.us-west-2.amazonaws.com/images/9971.png",
+    );
   });
 
   test("should handle missing grouping (no collection)", async () => {
-    global.fetch = createMockFetch(createMockDasResponse({ grouping: undefined }));
+    global.fetch = createMockFetch(
+      createMockDasResponse({ grouping: undefined }),
+    );
 
     const result = await fetchNftMetadata(MOCK_RPC_URL, MOCK_MINT_ADDRESS);
 
@@ -173,11 +204,16 @@ describe("fetchNftMetadata", () => {
   });
 
   test("should send correct RPC request", async () => {
-    const capturedRequest: { url: string; body: Record<string, unknown> }[] = [];
+    const capturedRequest: { url: string; body: Record<string, unknown> }[] =
+      [];
 
     global.fetch = mock((url: string, options: RequestInit) => {
       capturedRequest.push({ url, body: JSON.parse(options.body as string) });
-      return Promise.resolve({ json: () => Promise.resolve(createMockDasResponse()) } as Response);
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(createMockDasResponse()),
+      } as Response);
     }) as unknown as typeof fetch;
 
     await fetchNftMetadata(MOCK_RPC_URL, MOCK_MINT_ADDRESS);
@@ -215,7 +251,11 @@ describe("fetchNftMetadataBatch", () => {
       });
     });
 
-    const result = await fetchNftMetadataBatch(MOCK_RPC_URL, [mint1, mint2, mint3]);
+    const result = await fetchNftMetadataBatch(MOCK_RPC_URL, [
+      mint1,
+      mint2,
+      mint3,
+    ]);
 
     expect(callCount).toBe(3);
     expect(result.size).toBe(3);
@@ -237,10 +277,16 @@ describe("fetchNftMetadataBatch", () => {
           jsonrpc: "2.0",
           error: { code: -1, message: "Not found" },
         };
-        return Promise.resolve({ json: () => Promise.resolve(errorResponse) } as Response);
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve(errorResponse),
+        } as Response);
       }
 
       return Promise.resolve({
+        ok: true,
+        status: 200,
         json: () =>
           Promise.resolve(
             createMockDasResponse({
@@ -249,7 +295,46 @@ describe("fetchNftMetadataBatch", () => {
                 metadata: { name: "Success NFT", symbol: "NFT" },
                 links: { image: "https://example.com/image.png" },
               },
-            })
+            }),
+          ),
+      } as Response);
+    }) as unknown as typeof fetch;
+
+    const result = await fetchNftMetadataBatch(MOCK_RPC_URL, [mint1, mint2]);
+
+    expect(result.size).toBe(1);
+    expect(result.has(mint1)).toBe(true);
+    expect(result.has(mint2)).toBe(false);
+  });
+
+  test("should continue batch when one fetch throws", async () => {
+    const mint1 = "MINT_SUCCESS";
+    const mint2 = "MINT_THROW";
+
+    global.fetch = mock((url: string, options: RequestInit) => {
+      const body = JSON.parse(options.body as string);
+      const mintAddress = body.params.id as string;
+
+      if (mintAddress === mint2) {
+        return Promise.resolve({
+          ok: false,
+          status: 503,
+          json: () => Promise.resolve({}),
+        } as Response);
+      }
+
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () =>
+          Promise.resolve(
+            createMockDasResponse({
+              id: mintAddress,
+              content: {
+                metadata: { name: "Success NFT", symbol: "NFT" },
+                links: { image: "https://example.com/image.png" },
+              },
+            }),
           ),
       } as Response);
     }) as unknown as typeof fetch;

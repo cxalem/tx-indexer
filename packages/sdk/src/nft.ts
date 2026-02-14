@@ -40,6 +40,8 @@ interface DasAssetResponse {
   };
 }
 
+const NFT_FETCH_TIMEOUT_MS = 10_000;
+
 /**
  * Fetches NFT metadata from Helius DAS API.
  *
@@ -49,18 +51,31 @@ interface DasAssetResponse {
  */
 export async function fetchNftMetadata(
   rpcUrl: string,
-  mintAddress: string
+  mintAddress: string,
 ): Promise<NftMetadata | null> {
-  const response = await fetch(rpcUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: "get-asset",
-      method: "getAsset",
-      params: { id: mintAddress },
-    }),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), NFT_FETCH_TIMEOUT_MS);
+
+  let response: Response;
+  try {
+    response = await fetch(rpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "get-asset",
+        method: "getAsset",
+        params: { id: mintAddress },
+      }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  if (!response.ok) {
+    throw new Error(`DAS request failed with status ${response.status}`);
+  }
 
   const data = (await response.json()) as DasAssetResponse;
 
@@ -78,7 +93,8 @@ export async function fetchNftMetadata(
     image: content.links.image ?? content.files?.[0]?.uri ?? "",
     cdnImage: content.files?.[0]?.cdn_uri,
     description: content.metadata.description,
-    collection: grouping?.find((g) => g.group_key === "collection")?.group_value,
+    collection: grouping?.find((g) => g.group_key === "collection")
+      ?.group_value,
     attributes: content.metadata.attributes,
   };
 }
@@ -92,16 +108,20 @@ export async function fetchNftMetadata(
  */
 export async function fetchNftMetadataBatch(
   rpcUrl: string,
-  mintAddresses: string[]
+  mintAddresses: string[],
 ): Promise<Map<string, NftMetadata>> {
-  const results = await Promise.all(
-    mintAddresses.map((mint) => fetchNftMetadata(rpcUrl, mint))
+  if (mintAddresses.length === 0) {
+    return new Map();
+  }
+
+  const results = await Promise.allSettled(
+    mintAddresses.map((mint) => fetchNftMetadata(rpcUrl, mint)),
   );
 
   const map = new Map<string, NftMetadata>();
-  results.forEach((metadata, index) => {
-    if (metadata) {
-      map.set(mintAddresses[index]!, metadata);
+  results.forEach((result, index) => {
+    if (result.status === "fulfilled" && result.value) {
+      map.set(mintAddresses[index]!, result.value);
     }
   });
 

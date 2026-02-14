@@ -6,6 +6,7 @@ import type {
   ClassifiedTransaction,
   SignatureInfo,
   GetSignaturesResult,
+  WalletFundingSource,
 } from "tx-indexer";
 import type { WalletBalance } from "tx-indexer/advanced";
 import { address, signature } from "@solana/kit";
@@ -143,11 +144,91 @@ const getOptimizedOptions = (limit: number) => ({
   },
 });
 
+export interface WalletIdentity {
+  address: string;
+  type?: string;
+  name?: string;
+  category?: string;
+  tags?: string[];
+}
+
+function getHeliusApiKeyFromServerRpcUrl(): string | null {
+  const rpcUrl = process.env.SERVER_RPC_URL;
+  if (!rpcUrl) return process.env.HELIUS_API_KEY ?? null;
+
+  try {
+    const parsed = new URL(rpcUrl);
+    return (
+      parsed.searchParams.get("api-key") ??
+      parsed.searchParams.get("api_key") ??
+      process.env.HELIUS_API_KEY ??
+      null
+    );
+  } catch {
+    return process.env.HELIUS_API_KEY ?? null;
+  }
+}
+
+async function fetchWalletIdentity(
+  address: string,
+): Promise<WalletIdentity | null> {
+  const apiKey = getHeliusApiKeyFromServerRpcUrl();
+  if (!apiKey) {
+    return null;
+  }
+
+  const url = `https://api.helius.xyz/v1/wallet/${address}/identity?api-key=${encodeURIComponent(apiKey)}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+    next: { revalidate: 300 },
+  });
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = (await response.json()) as WalletIdentity;
+  return data;
+}
+
 export interface PortfolioSummary {
   totalUsd: number;
   stablecoinsUsd: number;
   variableAssetsUsd: number;
   unpricedCount: number;
+}
+
+export interface WalletFundingSourceResult {
+  funding: WalletFundingSource | null;
+  identity: WalletIdentity | null;
+}
+
+/**
+ * Fetch wallet origin data using Helius funded-by endpoint and identity enrichment.
+ *
+ * - funding: first incoming SOL transfer source (or null)
+ * - identity: optional tag for the funder address (or null)
+ */
+export async function getWalletFundingSource(
+  walletAddress: string,
+): Promise<WalletFundingSourceResult> {
+  const indexer = getIndexer();
+  const funding = await indexer.getWalletFundingSource(walletAddress);
+
+  if (!funding) {
+    return { funding: null, identity: null };
+  }
+
+  // Prefer identity lookup for the address itself over funderName/funderType fields.
+  const identity = await fetchWalletIdentity(funding.funder);
+  return { funding, identity };
 }
 
 async function calculatePortfolio(

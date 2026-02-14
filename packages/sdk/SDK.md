@@ -96,6 +96,16 @@ interface GetTransactionsOptions {
 }
 ```
 
+#### GetTransactionOptions
+
+```typescript
+interface GetTransactionOptions {
+  enrichNftMetadata?: boolean; // Default: true
+  enrichTokenMetadata?: boolean; // Default: true
+  walletAddress?: AddressInput; // Optional wallet perspective for direction-sensitive classification
+}
+```
+
 ### 2. Address/Signature Parsing
 
 | Function         | Signature                          | Description                            |

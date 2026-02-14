@@ -96,6 +96,14 @@ if (tx) {
 
 **Returns:** `null` if transaction not found, otherwise `ClassifiedTransaction`.
 
+**Options:**
+
+| Option                | Type      | Default | Description                                                             |
+| --------------------- | --------- | ------- | ----------------------------------------------------------------------- |
+| `enrichNftMetadata`   | `boolean` | `true`  | Fetch NFT metadata (requires DAS RPC)                                   |
+| `enrichTokenMetadata` | `boolean` | `true`  | Fetch token metadata                                                    |
+| `walletAddress`       | `string`  | -       | Wallet perspective for direction-sensitive classification and leg roles |
+
 ### `indexer.getRawTransaction(signature)`
 
 Get raw transaction data without classification.

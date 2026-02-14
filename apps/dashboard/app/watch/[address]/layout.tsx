@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Eye, Activity, Layers, ArrowLeft } from "lucide-react";
 import { CopyButton } from "@/components/copy-button";
 import { WatchPortfolioCard } from "@/components/watch/watch-portfolio-card";
+import { WatchFundingSourceCard } from "@/components/watch/watch-funding-source-card";
 import { truncate, cn } from "@/lib/utils";
 import { bitcountFont } from "@/lib/fonts";
 import { useRecentWatches } from "@/hooks/use-recent-watches";
@@ -110,7 +111,10 @@ export default function WatchLayout({ children }: WatchLayoutProps) {
         <main className="flex-1">
           <div className="max-w-4xl mx-auto px-4 pt-8">
             {/* Portfolio card at layout level - persists across tab navigation */}
-            <WatchPortfolioCard walletAddress={address} />
+            <div className="space-y-3">
+              <WatchPortfolioCard walletAddress={address} />
+              <WatchFundingSourceCard walletAddress={address} />
+            </div>
           </div>
           {children}
         </main>
