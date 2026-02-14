@@ -224,6 +224,41 @@ describe("SwapClassifier", () => {
       expect(result).toBeNull();
     });
 
+    test("should return null for internal token rebalance plus tiny SOL fee", () => {
+      const userAddress = "USER123";
+      const legs = [
+        // Network fee-like SOL debit
+        createMockLeg({
+          accountId: `external:${userAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createSolAmount(0.000061),
+        }),
+        // Same token leaves and enters the same owner (net zero)
+        createMockLeg({
+          accountId: `external:${userAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(158.85),
+        }),
+        createMockLeg({
+          accountId: `external:${userAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(158.85),
+        }),
+      ];
+      const tx = createMockTransaction({
+        // Not a known DEX protocol
+        protocol: { id: "spl-token", name: "Token Program" },
+        accountKeys: [userAddress],
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).toBeNull();
+    });
+
     test("should return null when only tokens out", () => {
       const userAddress = "USER123";
       const legs = [

@@ -55,6 +55,26 @@ function findSwapPair(
   return bestPair;
 }
 
+function getNetTokenChangeByMint(legs: TxLeg[]): Map<string, bigint> {
+  const netByMint = new Map<string, bigint>();
+
+  for (const leg of legs) {
+    const mint = leg.amount.token.mint;
+    const amountRaw = BigInt(leg.amount.amountRaw);
+    const delta = leg.side === "credit" ? amountRaw : -amountRaw;
+    netByMint.set(mint, (netByMint.get(mint) ?? 0n) + delta);
+  }
+
+  return netByMint;
+}
+
+function isTinySolMovement(leg: TxLeg): boolean {
+  return (
+    (leg.amount.token.symbol === "SOL" || leg.amount.token.symbol === "WSOL") &&
+    leg.amount.amountUi < 0.01
+  );
+}
+
 export class SwapClassifier implements Classifier {
   name = "swap";
   priority = 80;
@@ -84,11 +104,31 @@ export class SwapClassifier implements Classifier {
         (leg.role === "received" || leg.role === "protocol_withdraw"),
     );
 
-    if (initiatorTokensOut.length === 0 || initiatorTokensIn.length === 0) {
+    const initiatorNetByMint = getNetTokenChangeByMint([
+      ...initiatorTokensOut,
+      ...initiatorTokensIn,
+    ]);
+
+    const netTokensOut = initiatorTokensOut.filter(
+      (leg) => (initiatorNetByMint.get(leg.amount.token.mint) ?? 0n) < 0n,
+    );
+    const netTokensIn = initiatorTokensIn.filter(
+      (leg) => (initiatorNetByMint.get(leg.amount.token.mint) ?? 0n) > 0n,
+    );
+
+    if (netTokensOut.length === 0 || netTokensIn.length === 0) {
       return null;
     }
 
-    const swapPair = findSwapPair(initiatorTokensOut, initiatorTokensIn);
+    const hasDexProtocol = isDexProtocolById(tx.protocol?.id);
+
+    // Avoid false swap detection when the only outgoing leg is tiny SOL fee-like movement
+    // and the protocol is not a known DEX.
+    if (!hasDexProtocol && netTokensOut.every(isTinySolMovement)) {
+      return null;
+    }
+
+    const swapPair = findSwapPair(netTokensOut, netTokensIn);
     if (!swapPair) {
       return null;
     }
@@ -118,15 +158,27 @@ export class SwapClassifier implements Classifier {
       );
 
       // Use the same best-pair logic to find the main swap tokens
-      const walletSwapPair = findSwapPair(walletTokensOut, walletTokensIn);
+      const walletNetByMint = getNetTokenChangeByMint([
+        ...walletTokensOut,
+        ...walletTokensIn,
+      ]);
+      const walletNetTokensOut = walletTokensOut.filter(
+        (leg) => (walletNetByMint.get(leg.amount.token.mint) ?? 0n) < 0n,
+      );
+      const walletNetTokensIn = walletTokensIn.filter(
+        (leg) => (walletNetByMint.get(leg.amount.token.mint) ?? 0n) > 0n,
+      );
+
+      const walletSwapPair = findSwapPair(
+        walletNetTokensOut,
+        walletNetTokensIn,
+      );
       if (walletSwapPair) {
         tokenOut = walletSwapPair.initiatorOut;
         tokenIn = walletSwapPair.initiatorIn;
         perspectiveWallet = walletAddress;
       }
     }
-
-    const hasDexProtocol = isDexProtocolById(tx.protocol?.id);
     const confidence = hasDexProtocol ? 0.95 : 0.75;
 
     return {
