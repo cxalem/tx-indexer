@@ -22,6 +22,8 @@ export const TxPrimaryTypeSchema = z.enum([
   "stake_withdraw",
   "token_deposit",
   "token_withdraw",
+  "liquidity_add",
+  "liquidity_remove",
   "airdrop",
   "bridge_in",
   "bridge_out",
