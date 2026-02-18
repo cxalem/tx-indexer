@@ -53,6 +53,26 @@ import {
   ALLBRIDGE_PROGRAM_ID,
   // Privacy programs
   PRIVACY_CASH_PROGRAM_ID,
+  // Perps programs
+  DRIFT_PROGRAM_ID,
+  ZETA_PROGRAM_ID,
+  JUPITER_PERPS_PROGRAM_ID,
+  // DCA programs
+  JUPITER_DCA_PROGRAM_ID,
+  // Governance programs
+  SPL_GOVERNANCE_PROGRAM_ID,
+  // Domain programs
+  SNS_PROGRAM_ID,
+  ALLDOMAINS_PROGRAM_ID,
+  // Compression programs
+  LIGHT_PROTOCOL_PROGRAM_ID,
+  ACCOUNT_COMPRESSION_PROGRAM_ID,
+  // Multisig programs
+  SQUADS_V3_PROGRAM_ID,
+  SQUADS_V4_PROGRAM_ID,
+  // Tip programs
+  JITO_TIP_PROGRAM_ID,
+  JITO_TIP_PAYMENT_PROGRAM_ID,
 } from "@tx-indexer/solana/constants/program-ids";
 
 const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
@@ -269,10 +289,78 @@ const KNOWN_PROGRAMS: Record<string, ProtocolInfo> = {
     id: "privacy-cash",
     name: "Privacy Cash",
   },
+
+  // Perpetual / Derivatives protocols
+  [DRIFT_PROGRAM_ID]: {
+    id: "drift",
+    name: "Drift",
+  },
+  [ZETA_PROGRAM_ID]: {
+    id: "zeta",
+    name: "Zeta Markets",
+  },
+  [JUPITER_PERPS_PROGRAM_ID]: {
+    id: "jupiter-perps",
+    name: "Jupiter Perps",
+  },
+
+  // DCA protocols
+  [JUPITER_DCA_PROGRAM_ID]: {
+    id: "jupiter-dca",
+    name: "Jupiter DCA",
+  },
+  // Governance protocols
+  [SPL_GOVERNANCE_PROGRAM_ID]: {
+    id: "spl-governance",
+    name: "SPL Governance (Realms)",
+  },
+
+  // Domain / Naming protocols
+  [SNS_PROGRAM_ID]: {
+    id: "sns",
+    name: "Solana Name Service",
+  },
+  [ALLDOMAINS_PROGRAM_ID]: {
+    id: "alldomains",
+    name: "AllDomains",
+  },
+
+  // Compression protocols
+  [LIGHT_PROTOCOL_PROGRAM_ID]: {
+    id: "light-protocol",
+    name: "Light Protocol",
+  },
+  [ACCOUNT_COMPRESSION_PROGRAM_ID]: {
+    id: "account-compression",
+    name: "Account Compression",
+  },
+
+  // Multisig protocols
+  [SQUADS_V3_PROGRAM_ID]: {
+    id: "squads-v3",
+    name: "Squads V3",
+  },
+  [SQUADS_V4_PROGRAM_ID]: {
+    id: "squads-v4",
+    name: "Squads V4",
+  },
+
+  // Tip protocols
+  [JITO_TIP_PROGRAM_ID]: {
+    id: "jito-tip",
+    name: "Jito Tip",
+  },
+  [JITO_TIP_PAYMENT_PROGRAM_ID]: {
+    id: "jito-tip-payment",
+    name: "Jito Tip Payment",
+  },
 };
 
 const PRIORITY_ORDER = [
-  // Privacy protocols (highest priority - privacy-preserving operations)
+  // Multisig (highest priority - wraps other operations)
+  "squads-v3",
+  "squads-v4",
+  // Privacy protocols (privacy-preserving operations)
   "privacy-cash",
   // Bridge protocols (cross-chain operations)
   "wormhole",
@@ -280,6 +368,35 @@ const PRIORITY_ORDER = [
   "degods-bridge",
   "debridge",
   "allbridge",
+  // Compression protocols
+  "light-protocol",
+  "account-compression",
+  // NFT Minting
+  "metaplex",
+  "candy-guard",
+  "candy-machine-v3",
+  "bubblegum",
+  "magic-eden-candy-machine",
+  // NFT Marketplaces
+  "magic-eden",
+  "magic-eden-mmm",
+  "tensor",
+  "tensor-marketplace",
+  "tensor-amm",
+  "hadeswap",
+  "auction-house",
+  "formfunction",
+  // Governance
+  "spl-governance",
+  // Domains
+  "sns",
+  "alldomains",
+  // Perpetuals
+  "drift",
+  "zeta",
+  "jupiter-perps",
+  // DCA
+  "jupiter-dca",
   // DEX aggregators (route through multiple DEXes)
   "jupiter",
   "jupiter-v4",
@@ -302,24 +419,12 @@ const PRIORITY_ORDER = [
   // Stableswap
   "saber",
   "mercurial",
-  // NFT Minting
-  "metaplex",
-  "candy-guard",
-  "candy-machine-v3",
-  "bubblegum",
-  "magic-eden-candy-machine",
-  // NFT Marketplaces
-  "magic-eden",
-  "magic-eden-mmm",
-  "tensor",
-  "tensor-marketplace",
-  "tensor-amm",
-  "hadeswap",
-  "auction-house",
-  "formfunction",
   // Staking
   "stake",
   "stake-pool",
+  // Tips
+  "jito-tip",
+  "jito-tip-payment",
   // Infrastructure (lowest priority)
   "memo",
   "memo-v1",
@@ -395,6 +500,23 @@ const BRIDGE_PROTOCOL_IDS = new Set([
 
 const PRIVACY_PROTOCOL_IDS = new Set(["privacy-cash"]);
 
+const PERPS_PROTOCOL_IDS = new Set(["drift", "zeta", "jupiter-perps"]);
+
+const DCA_PROTOCOL_IDS = new Set(["jupiter-dca"]);
+
+const GOVERNANCE_PROTOCOL_IDS = new Set(["spl-governance"]);
+
+const DOMAIN_PROTOCOL_IDS = new Set(["sns", "alldomains"]);
+
+const COMPRESSION_PROTOCOL_IDS = new Set([
+  "light-protocol",
+  "account-compression",
+]);
+
+const MULTISIG_PROTOCOL_IDS = new Set(["squads-v3", "squads-v4"]);
+
+const TIP_PROTOCOL_IDS = new Set(["jito-tip", "jito-tip-payment"]);
+
 /**
  * Checks if a protocol is a DEX (decentralized exchange) that performs swaps.
  * DEX protocols should have their legs tagged as "protocol:" with deposit/withdraw roles.
@@ -458,6 +580,69 @@ export function isPrivacyCashProtocolById(
   protocolId: string | undefined,
 ): boolean {
   return protocolId !== undefined && PRIVACY_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a perpetuals / derivatives protocol.
+ */
+export function isPerpsProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && PERPS_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a DCA (Dollar Cost Average) protocol.
+ */
+export function isDcaProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && DCA_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a governance protocol.
+ */
+export function isGovernanceProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && GOVERNANCE_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a domain / naming service protocol.
+ */
+export function isDomainProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && DOMAIN_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a compression protocol.
+ */
+export function isCompressionProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && COMPRESSION_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a multisig protocol.
+ */
+export function isMultisigProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && MULTISIG_PROTOCOL_IDS.has(protocolId);
+}
+
+/**
+ * Checks if a protocol ID string corresponds to a tip protocol.
+ */
+export function isTipProtocolById(
+  protocolId: string | undefined,
+): boolean {
+  return protocolId !== undefined && TIP_PROTOCOL_IDS.has(protocolId);
 }
 
 /**
