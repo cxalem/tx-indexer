@@ -2,8 +2,12 @@ import type { Address } from "@solana/kit";
 import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 
 export function getUserLegs(legs: TxLeg[], walletAddress: Address): TxLeg[] {
-  const walletPrefix = `wallet:${walletAddress}`;
-  return legs.filter((leg) => leg.accountId.includes(walletPrefix));
+  const walletAccountId = `wallet:${walletAddress}`;
+  const externalAccountId = `external:${walletAddress}`;
+  return legs.filter(
+    (leg) =>
+      leg.accountId === walletAccountId || leg.accountId === externalAccountId,
+  );
 }
 
 export function getUserDebits(legs: TxLeg[], walletAddress: Address): TxLeg[] {

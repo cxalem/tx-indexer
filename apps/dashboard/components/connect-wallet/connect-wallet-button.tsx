@@ -33,6 +33,7 @@ import { storeKeypair } from "@/lib/mobile-wallet/session-storage";
 import { ConnectedDropdown } from "./connected-dropdown";
 import { WalletOptions } from "./wallet-options";
 import { type ConnectionMode, createSignInMessage } from "./constants";
+import { useWalletStandardConnectors } from "./use-wallet-standard-connectors";
 
 export function ConnectWalletButton() {
   return (
@@ -57,6 +58,7 @@ function ConnectWalletButtonInner() {
   const wallet = useWallet();
   const connectWallet = useConnectWallet();
   const disconnectWallet = useDisconnectWallet();
+  const detectedWallets = useWalletStandardConnectors();
   const { isAuthenticated, signIn, signOut } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -580,6 +582,7 @@ function ConnectWalletButtonInner() {
                 showDesktopOptions={showDesktopOptions}
                 showMobileOptions={showMobileOptions}
                 showPWAOptions={showPWAOptions}
+                detectedWallets={detectedWallets}
                 onDesktopConnect={(id) => void handleDesktopConnect(id)}
                 onMobileConnect={handleMobileConnect}
                 onOpenInWallet={handleOpenInWallet}

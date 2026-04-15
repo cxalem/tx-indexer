@@ -233,6 +233,40 @@ describe("TransferClassifier", () => {
       expect(result?.primaryAmount?.token.symbol).toBe("USDC");
       expect(result?.primaryAmount?.amountUi).toBe(50);
     });
+
+    test("should pair with exact receiver amount when multiple receivers exist", () => {
+      const senderAddress = "SENDER123";
+      const receiverA = "RECEIVER_A";
+      const receiverB = "RECEIVER_B";
+      const legs = [
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(100),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverA}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(50),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverB}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(100),
+        }),
+      ];
+      const tx = createMockTransaction();
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.sender).toBe(senderAddress);
+      expect(result?.receiver).toBe(receiverB);
+      expect(result?.primaryAmount?.amountUi).toBe(100);
+    });
   });
 
   describe("should NOT classify", () => {

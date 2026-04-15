@@ -1,10 +1,3 @@
-export const DESKTOP_CONNECTORS: ReadonlyArray<{ id: string; label: string }> =
-  [
-    { id: "wallet-standard:phantom", label: "phantom" },
-    { id: "wallet-standard:solflare", label: "solflare" },
-    { id: "wallet-standard:backpack", label: "backpack" },
-  ];
-
 export const MOBILE_WALLETS: ReadonlyArray<{ id: string; label: string }> = [
   { id: "phantom", label: "phantom" },
 ];

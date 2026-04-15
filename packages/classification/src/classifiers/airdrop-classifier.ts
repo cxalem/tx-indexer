@@ -5,6 +5,23 @@ import type {
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import { detectFacilitator } from "@tx-indexer/solana/constants/program-ids";
 
+function getRawAmount(amountRaw: string): bigint {
+  try {
+    return BigInt(amountRaw);
+  } catch {
+    return 0n;
+  }
+}
+
+function getLargestLeg<T extends { amount: { amountRaw: string } }>(legs: T[]): T | null {
+  if (legs.length === 0) return null;
+  return legs.reduce((largest, current) =>
+    getRawAmount(current.amount.amountRaw) > getRawAmount(largest.amount.amountRaw)
+      ? current
+      : largest,
+  );
+}
+
 export class AirdropClassifier implements Classifier {
   name = "airdrop";
   priority = 70;
@@ -48,14 +65,31 @@ export class AirdropClassifier implements Classifier {
       return null;
     }
 
-    const mainToken = tokenReceived[0]!;
+    const mainToken = getLargestLeg(tokenReceived);
+    if (!mainToken) {
+      return null;
+    }
     const receiver = mainToken.accountId.replace("external:", "");
 
-    const senderLeg = legs.find(
-      (leg) =>
-        leg.side === "debit" &&
-        leg.amount.token.mint === mainToken.amount.token.mint
+    const protocolSenderLeg = getLargestLeg(
+      legs.filter(
+        (leg) =>
+          leg.side === "debit" &&
+          leg.accountId.startsWith("protocol:") &&
+          leg.amount.token.mint === mainToken.amount.token.mint,
+      ),
     );
+
+    const fallbackSenderLeg = getLargestLeg(
+      legs.filter(
+        (leg) =>
+          leg.side === "debit" &&
+          !leg.accountId.startsWith("external:") &&
+          leg.amount.token.mint === mainToken.amount.token.mint,
+      ),
+    );
+
+    const senderLeg = protocolSenderLeg ?? fallbackSenderLeg;
 
     const sender = senderLeg
       ? senderLeg.accountId.replace(/^(external:|protocol:)/, "")
@@ -67,12 +101,15 @@ export class AirdropClassifier implements Classifier {
       secondaryAmount: null,
       sender,
       receiver,
-      counterparty: sender
-        ? {
-            type: "protocol",
-            address: sender,
-          }
-        : null,
+      counterparty:
+        sender && senderLeg
+          ? {
+              type: senderLeg.accountId.startsWith("protocol:")
+                ? "protocol"
+                : "unknown",
+              address: sender,
+            }
+          : null,
       confidence: 0.85,
       isRelevant: true,
       metadata: {

@@ -5,6 +5,7 @@ import type {
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isDexProtocolById } from "../protocols/detector";
+import { isTinySolMovement } from "../engine/transfer-pairing";
 
 /**
  * Finds the best swap pair from the lists of tokens going out and coming in.
@@ -68,13 +69,6 @@ function getNetTokenChangeByMint(legs: TxLeg[]): Map<string, bigint> {
   return netByMint;
 }
 
-function isTinySolMovement(leg: TxLeg): boolean {
-  return (
-    (leg.amount.token.symbol === "SOL" || leg.amount.token.symbol === "WSOL") &&
-    leg.amount.amountUi < 0.01
-  );
-}
-
 export class SwapClassifier implements Classifier {
   name = "swap";
   priority = 80;
@@ -82,7 +76,7 @@ export class SwapClassifier implements Classifier {
   classify(context: ClassifierContext): TransactionClassification | null {
     const { legs, tx, walletAddress } = context;
 
-    const initiator = tx.accountKeys?.[0] ?? null;
+    const initiator = walletAddress ?? tx.accountKeys?.[0] ?? null;
 
     if (!initiator) {
       return null;

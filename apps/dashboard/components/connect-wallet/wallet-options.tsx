@@ -1,17 +1,15 @@
 "use client";
 
-import { Smartphone, QrCode } from "lucide-react";
-import {
-  DESKTOP_CONNECTORS,
-  MOBILE_WALLETS,
-  type ConnectionMode,
-} from "./constants";
+import { Smartphone, QrCode, Wallet as WalletIcon } from "lucide-react";
+import { MOBILE_WALLETS, type ConnectionMode } from "./constants";
+import type { DetectedWallet } from "./use-wallet-standard-connectors";
 
 interface WalletOptionsProps {
   connectionMode: ConnectionMode;
   showDesktopOptions: boolean;
   showMobileOptions: boolean;
   showPWAOptions: boolean;
+  detectedWallets: ReadonlyArray<DetectedWallet>;
   onDesktopConnect: (connectorId: string) => void;
   onMobileConnect: (walletId: string) => void;
   onOpenInWallet: () => void;
@@ -22,6 +20,7 @@ export function WalletOptions({
   showDesktopOptions,
   showMobileOptions,
   showPWAOptions,
+  detectedWallets,
   onDesktopConnect,
   onMobileConnect,
   onOpenInWallet,
@@ -34,23 +33,46 @@ export function WalletOptions({
             browser wallets
           </p>
           <div className="space-y-1">
-            {DESKTOP_CONNECTORS.map((connector) => (
-              <button
-                key={connector.id}
-                type="button"
-                role="menuitem"
-                onClick={() => onDesktopConnect(connector.id)}
-                className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex justify-between items-center cursor-pointer text-neutral-900 dark:text-neutral-100"
-              >
-                <span>{connector.label}</span>
-                <span
-                  className="text-neutral-400 dark:text-neutral-500"
-                  aria-hidden="true"
+            {detectedWallets.length === 0 ? (
+              <p className="px-3 py-2 text-sm text-neutral-500 dark:text-neutral-400">
+                no wallets detected. install a solana wallet extension.
+              </p>
+            ) : (
+              detectedWallets.map((connector) => (
+                <button
+                  key={connector.id}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => onDesktopConnect(connector.id)}
+                  className="w-full px-3 py-2 text-sm text-left hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors flex justify-between items-center cursor-pointer text-neutral-900 dark:text-neutral-100"
                 >
-                  →
-                </span>
-              </button>
-            ))}
+                  <div className="flex items-center gap-2">
+                    {connector.icon ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={connector.icon}
+                        alt=""
+                        width={16}
+                        height={16}
+                        className="h-4 w-4 rounded-sm"
+                      />
+                    ) : (
+                      <WalletIcon
+                        className="h-4 w-4 text-neutral-400 dark:text-neutral-500"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className="lowercase">{connector.name}</span>
+                  </div>
+                  <span
+                    className="text-neutral-400 dark:text-neutral-500"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
+                </button>
+              ))
+            )}
           </div>
         </>
       )}

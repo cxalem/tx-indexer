@@ -3,6 +3,22 @@ import { TxPrimaryTypeSchema } from "./tx.types";
 import { CounterpartySchema } from "@tx-indexer/core/actors/counterparty.types";
 import type { MoneyAmount } from "@tx-indexer/core/money/money.types";
 
+export const ClassifierDecisionTraceSchema = z.object({
+  classifier: z.string(),
+  priority: z.number().int(),
+  matched: z.boolean(),
+  relevant: z.boolean(),
+  reason: z.string(),
+  elapsedMs: z.number().nonnegative().optional(),
+});
+
+export const ClassificationDebugTraceSchema = z.object({
+  selectedClassifier: z.string().nullable(),
+  selectedType: TxPrimaryTypeSchema.nullable(),
+  walletAddress: z.string().nullable().optional(),
+  decisions: z.array(ClassifierDecisionTraceSchema),
+});
+
 export const TransactionClassificationSchema = z.object({
   primaryType: TxPrimaryTypeSchema,
   primaryAmount: z.custom<MoneyAmount>().nullable(),
@@ -18,8 +34,15 @@ export const TransactionClassificationSchema = z.object({
   confidence: z.number().min(0).max(1),
   isRelevant: z.boolean().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
+  debugTrace: ClassificationDebugTraceSchema.optional(),
 });
 
 export type TransactionClassification = z.infer<
   typeof TransactionClassificationSchema
+>;
+export type ClassifierDecisionTrace = z.infer<
+  typeof ClassifierDecisionTraceSchema
+>;
+export type ClassificationDebugTrace = z.infer<
+  typeof ClassificationDebugTraceSchema
 >;

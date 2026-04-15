@@ -204,5 +204,30 @@ describe("BridgeClassifier", () => {
 
       expect(result).toBeNull();
     });
+
+    test("should return null when mixed bridge legs have equal in/out amount", () => {
+      const userAddress = "USER123";
+      const legs = [
+        createMockLeg({
+          accountId: `external:${userAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createTokenAmount("USDC", 6, 100),
+        }),
+        createMockLeg({
+          accountId: `external:${userAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createTokenAmount("USDC", 6, 100),
+        }),
+      ];
+      const tx = createMockTransaction({
+        protocol: { id: "wormhole", name: "Wormhole" },
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).toBeNull();
+    });
   });
 });

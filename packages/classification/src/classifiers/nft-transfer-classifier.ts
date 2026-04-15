@@ -241,34 +241,6 @@ export class NftTransferClassifier implements Classifier {
         };
       }
 
-      // Wallet paid SOL/tokens → this is a PURCHASE
-      if (walletPaidLeg && nftCredits.length > 0) {
-        const primaryNft = nftCredits[0]!;
-        return {
-          primaryType: "nft_purchase",
-          primaryAmount: primaryNft.amount,
-          secondaryAmount: walletPaidLeg.amount,
-          sender: null,
-          receiver:
-            walletAddress ?? primaryNft.accountId.replace("external:", ""),
-          counterparty: {
-            type: "protocol",
-            address: tx.protocol?.id ?? "marketplace",
-            name: tx.protocol?.name ?? "NFT Marketplace",
-          },
-          confidence: 0.85, // Good confidence based on SOL flow
-          isRelevant: true,
-          metadata: {
-            nft_mint: primaryNft.amount.token.mint,
-            nft_name: primaryNft.amount.token.name,
-            quantity: nftCredits.length,
-            purchase_price: walletPaidLeg.amount.amountUi,
-            purchase_token: walletPaidLeg.amount.token.symbol,
-            marketplace: tx.protocol?.id,
-          },
-        };
-      }
-
       // Fallback: No clear wallet involvement, just classify based on NFT movement
       if (nftCredits.length > 0) {
         const primaryNft = nftCredits[0]!;

@@ -209,6 +209,44 @@ describe("SolanaPayClassifier", () => {
       expect(result?.sender).toBe(senderAddress);
       expect(result?.receiver).toBe(receiverAddress);
     });
+
+    test("should choose receiver with exact amount match", () => {
+      const senderAddress = "SENDER123";
+      const receiverA = "RECEIVER_A";
+      const receiverB = "RECEIVER_B";
+      const memo = JSON.stringify({ merchant: "Store" });
+      const legs = [
+        createMockLeg({
+          accountId: `external:${senderAddress}`,
+          side: "debit",
+          role: "sent",
+          amount: createUsdcAmount(25),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverA}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(5),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverB}`,
+          side: "credit",
+          role: "received",
+          amount: createUsdcAmount(25),
+        }),
+      ];
+      const tx = createMockTransaction({
+        programIds: [SPL_MEMO_PROGRAM_ID],
+        memo,
+      });
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.sender).toBe(senderAddress);
+      expect(result?.receiver).toBe(receiverB);
+      expect(result?.primaryAmount?.amountUi).toBe(25);
+    });
   });
 
   describe("should NOT classify as Solana Pay", () => {

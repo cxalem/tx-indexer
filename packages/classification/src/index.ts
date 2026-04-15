@@ -2,6 +2,7 @@ export * from "./protocols/detector";
 export * from "./engine/classification-service";
 export * from "./engine/classifier.interface";
 export * from "./engine/leg-helpers";
+export * from "./engine/transfer-pairing";
 export * from "./classifiers/transfer-classifier";
 export * from "./classifiers/swap-classifier";
 export * from "./classifiers/airdrop-classifier";

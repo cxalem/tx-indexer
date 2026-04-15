@@ -3,7 +3,29 @@ import type {
   ClassifierContext,
 } from "../engine/classifier.interface";
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
+import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isBridgeProtocolById } from "../protocols/detector";
+
+function getRawAmount(amountRaw: string): bigint {
+  try {
+    return BigInt(amountRaw);
+  } catch {
+    return 0n;
+  }
+}
+
+function sumRawAmounts(legs: TxLeg[]): bigint {
+  return legs.reduce((sum, leg) => sum + getRawAmount(leg.amount.amountRaw), 0n);
+}
+
+function getLargestLeg(legs: TxLeg[]): TxLeg | null {
+  if (legs.length === 0) return null;
+  return legs.reduce((largest, current) =>
+    getRawAmount(current.amount.amountRaw) > getRawAmount(largest.amount.amountRaw)
+      ? current
+      : largest,
+  );
+}
 
 export class BridgeClassifier implements Classifier {
   name = "bridge";
@@ -38,19 +60,37 @@ export class BridgeClassifier implements Classifier {
 
     if (tokensIn.length > 0 && tokensOut.length === 0) {
       primaryType = "bridge_in";
-      const creditLeg = tokensIn[0]!;
+      const creditLeg = getLargestLeg(tokensIn);
+      if (!creditLeg) return null;
       primaryAmount = creditLeg.amount;
       participant = creditLeg.accountId.replace("external:", "");
     } else if (tokensOut.length > 0 && tokensIn.length === 0) {
       primaryType = "bridge_out";
-      const debitLeg = tokensOut[0]!;
+      const debitLeg = getLargestLeg(tokensOut);
+      if (!debitLeg) return null;
       primaryAmount = debitLeg.amount;
       participant = debitLeg.accountId.replace("external:", "");
     } else if (tokensIn.length > 0 && tokensOut.length > 0) {
-      primaryType = "bridge_in";
-      const creditLeg = tokensIn[0]!;
-      primaryAmount = creditLeg.amount;
-      participant = creditLeg.accountId.replace("external:", "");
+      const inRaw = sumRawAmounts(tokensIn);
+      const outRaw = sumRawAmounts(tokensOut);
+
+      if (inRaw === outRaw) {
+        return null;
+      }
+
+      if (inRaw > outRaw) {
+        primaryType = "bridge_in";
+        const creditLeg = getLargestLeg(tokensIn);
+        if (!creditLeg) return null;
+        primaryAmount = creditLeg.amount;
+        participant = creditLeg.accountId.replace("external:", "");
+      } else {
+        primaryType = "bridge_out";
+        const debitLeg = getLargestLeg(tokensOut);
+        if (!debitLeg) return null;
+        primaryAmount = debitLeg.amount;
+        participant = debitLeg.accountId.replace("external:", "");
+      }
     } else {
       return null;
     }

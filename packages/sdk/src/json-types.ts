@@ -138,6 +138,19 @@ export interface JsonTransactionClassification {
   confidence: number;
   isRelevant?: boolean;
   metadata?: Record<string, unknown>;
+  debugTrace?: {
+    selectedClassifier: string | null;
+    selectedType: TxPrimaryType | null;
+    walletAddress?: string | null;
+    decisions: Array<{
+      classifier: string;
+      priority: number;
+      matched: boolean;
+      relevant: boolean;
+      reason: string;
+      elapsedMs?: number;
+    }>;
+  };
 }
 
 // =============================================================================
@@ -259,6 +272,7 @@ function toJsonTransactionClassification(
     confidence: classification.confidence,
     isRelevant: classification.isRelevant,
     metadata: classification.metadata,
+    debugTrace: classification.debugTrace,
   };
 }
 

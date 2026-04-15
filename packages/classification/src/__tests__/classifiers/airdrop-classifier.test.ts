@@ -89,6 +89,42 @@ describe("AirdropClassifier", () => {
 
       expect(result?.metadata?.facilitator).toBe("payai");
     });
+
+    test("should pick largest received token as primary amount", () => {
+      const receiverAddress = "RECEIVER123";
+      const legs = [
+        createMockLeg({
+          accountId: "protocol:AIRDROP_PROTOCOL",
+          side: "debit",
+          role: "sent",
+          amount: createTokenAmount("BONK", 5, 1_000_000),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createTokenAmount("BONK", 5, 1_000_000),
+        }),
+        createMockLeg({
+          accountId: "protocol:AIRDROP_PROTOCOL",
+          side: "debit",
+          role: "sent",
+          amount: createTokenAmount("JUP", 6, 2),
+        }),
+        createMockLeg({
+          accountId: `external:${receiverAddress}`,
+          side: "credit",
+          role: "received",
+          amount: createTokenAmount("JUP", 6, 2),
+        }),
+      ];
+      const tx = createMockTransaction();
+
+      const result = classifier.classify({ legs, tx });
+
+      expect(result).not.toBeNull();
+      expect(result?.primaryAmount?.token.symbol).toBe("BONK");
+    });
   });
 
   describe("should NOT classify as airdrop", () => {
