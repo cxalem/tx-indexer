@@ -14,7 +14,7 @@
   "dependencies": {
     "@lightprotocol/hasher.rs": "^0.2.1",
     "@lottiefiles/dotlottie-web": "^0.61.0",
-    "@next/bundle-analyzer": "^16.1.1",
+    "@next/bundle-analyzer": "^16.3.4",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
@@ -34,7 +34,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.26.2",
     "lucide-react": "^0.560.0",
-    "next": "16.1.1",
+    "next": "16.3.4",
     "next-themes": "^0.4.6",
     "privacycash": "^1.1.11",
     "react": "19.2.3",
