@@ -171,6 +171,69 @@ export const ALLBRIDGE_PROGRAM_ID =
 export const PAYAI_FACILITATOR = "2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4";
 
 // ============================================
+// Perpetual / Derivatives Programs
+// ============================================
+
+export const DRIFT_PROGRAM_ID =
+  "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH";
+export const ZETA_PROGRAM_ID =
+  "ZETAxsqBRek56DhiGXrn75yj2NHU3aYUnxvHXpkf3aD";
+export const JUPITER_PERPS_PROGRAM_ID =
+  "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu";
+
+// ============================================
+// DCA Programs
+// ============================================
+
+export const JUPITER_DCA_PROGRAM_ID =
+  "DCA265Vj8a9CEuX1eb1LWRnDT7uK6q1xMipnNyatn23M";
+
+// ============================================
+// Governance Programs
+// ============================================
+
+export const SPL_GOVERNANCE_PROGRAM_ID =
+  "GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw";
+export const REALMS_PROGRAM_ID =
+  "GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw";
+
+// ============================================
+// Domain / Naming Programs
+// ============================================
+
+export const SNS_PROGRAM_ID =
+  "namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX";
+export const ALLDOMAINS_PROGRAM_ID =
+  "ALTNSZ46uaAUU7XUV6awvdorLGqAsPwa9shm7h4uP2FK";
+
+// ============================================
+// Compression Programs
+// ============================================
+
+export const LIGHT_PROTOCOL_PROGRAM_ID =
+  "SySTEM1eSU2p4BGQfQpimFEWWSC1XDFeun3Nqzz3rT7";
+export const ACCOUNT_COMPRESSION_PROGRAM_ID =
+  "cmtDvXumGCrqC1Age74AVPhSRVXJMd8PJS91L8KbNCK";
+
+// ============================================
+// Multisig Programs
+// ============================================
+
+export const SQUADS_V3_PROGRAM_ID =
+  "SMPLecH534NA9acpos4G6x7uf3LWbCAwZQE9e8ZekMu";
+export const SQUADS_V4_PROGRAM_ID =
+  "SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf";
+
+// ============================================
+// Tip Programs
+// ============================================
+
+export const JITO_TIP_PROGRAM_ID =
+  "T1pyyaTNZsKv2WcRAB8oVnk93mLJw2XzjtVYqCsaHqt";
+export const JITO_TIP_PAYMENT_PROGRAM_ID =
+  "4R3gSG8BpU4t19KYj8CfnbtRpnT8gtk4dvTHxVRwc2r7";
+
+// ============================================
 // Helper Collections
 // ============================================
 
@@ -234,6 +297,36 @@ export const BRIDGE_PROGRAM_IDS = [
 ] as const;
 
 export const PRIVACY_PROGRAM_IDS = [PRIVACY_CASH_PROGRAM_ID] as const;
+
+export const PERPS_PROGRAM_IDS = [
+  DRIFT_PROGRAM_ID,
+  ZETA_PROGRAM_ID,
+  JUPITER_PERPS_PROGRAM_ID,
+] as const;
+
+export const DCA_PROGRAM_IDS = [JUPITER_DCA_PROGRAM_ID] as const;
+
+export const GOVERNANCE_PROGRAM_IDS = [SPL_GOVERNANCE_PROGRAM_ID] as const;
+
+export const DOMAIN_PROGRAM_IDS = [
+  SNS_PROGRAM_ID,
+  ALLDOMAINS_PROGRAM_ID,
+] as const;
+
+export const COMPRESSION_PROGRAM_IDS = [
+  LIGHT_PROTOCOL_PROGRAM_ID,
+  ACCOUNT_COMPRESSION_PROGRAM_ID,
+] as const;
+
+export const MULTISIG_PROGRAM_IDS = [
+  SQUADS_V3_PROGRAM_ID,
+  SQUADS_V4_PROGRAM_ID,
+] as const;
+
+export const TIP_PROGRAM_IDS = [
+  JITO_TIP_PROGRAM_ID,
+  JITO_TIP_PAYMENT_PROGRAM_ID,
+] as const;
 
 /** Privacy Cash pool and fee accounts - used to identify private transfers */
 export const PRIVACY_CASH_ACCOUNTS = [
