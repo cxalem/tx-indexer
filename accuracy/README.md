@@ -12,9 +12,9 @@ Nothing in this directory ships in the npm package (`packages/sdk` publishes onl
 ## Commands (from the repository root)
 
 ```sh
-bun run accuracy               # validate cases, replay, score, print the report, run the regression gate
+bun run accuracy               # tsc on the scorer, then validate, replay, score, report, and run the regression gate
 bun run accuracy:baseline      # accept the current scores: rewrites baseline.json and BASELINE.md
-bun run accuracy:check-types   # tsc --noEmit on the scorer
+bun run accuracy:check-types   # tsc --noEmit on the scorer only
 ```
 
 The replay is fully offline and deterministic. The RPC transport answers only
@@ -25,13 +25,29 @@ are off.
 ## Rules for changes
 
 - **No merge that adds a false positive or lowers a score without a reviewed exception.**
-  The gate (`bun run accuracy`) fails when, compared with `baseline.json`:
+  `baseline.json` stores, per case, a content hash of `case.json` + `rpc.json` +
+  `expected.json`, fee and execution agreement, and per perspective the outcome
+  (`correct`, `secondary_hit`, `disputed_alternative`, `abstained`, `wrong_label`, `error`),
+  the predicted kind, and whether amounts and participants were exact. The gate
+  (`bun run accuracy`) fails when, compared with `baseline.json`:
   - a case that passed now fails;
+  - a perspective that was `correct` is no longer correct;
+  - a new `wrong_label` appears (including a wrong label that changed kind, and an
+    abstention that became a wrong label);
+  - amounts, participants, fee or execution that were exact become wrong, also inside cases
+    that already fail;
   - a forbidden-label violation appears that was not there before;
-  - any per-kind precision or recall drops.
-- Improvements are accepted by running `bun run accuracy:baseline` **in the same commit**
-  as the change, so the diff of `BASELINE.md` shows what moved. Adding cases changes the
-  baseline too; regenerate it in the same commit and say why in the PR.
+  - a per-kind precision or recall drops, compared on raw counts, or moves between a
+    number and n/a in a way that hides new false positives or lost true positives;
+  - a case or perspective disappears or is added, or any case file changed, without the
+    baseline being regenerated.
+- Improvements and corpus changes are accepted by running `bun run accuracy:baseline` **in
+  the same commit** as the change, together with a dated entry in `accuracy/CHANGES.md`
+  saying what changed and why. The test fails if `baseline.json` has uncommitted changes
+  without `CHANGES.md` also changing, and if the last commit that touched `baseline.json`
+  did not touch `CHANGES.md`. Outside a git checkout this check is skipped.
+- The vocabulary check (the literal kind list in `src/schema.ts` must equal `TxPrimaryType`)
+  is a compile-time check. `bun run accuracy` runs `tsc` first, so it cannot drift silently.
 - Known failures do not fail the gate: they are the baseline.
 - `other` is better than a wrong label. An abstention (`other`, or `fee_only` where a real
   action was expected) counts as a miss. A wrong label counts as a false positive, which
@@ -62,7 +78,16 @@ Each action has:
   means the movement cannot be established from the transaction (an `amountsNote` is required).
 - `instructionRefs`: the instructions that justify the action.
 - Optional `forbidden` (kinds that would be wrong here, for example `transfer` for a lending
-  borrow), `acceptableKinds` (a second kind accepted for a disputed label) and `note`.
+  borrow) and `note`.
+- Optional `alternatives`: each is a **complete** expectation (`kind`, `sender`, `receiver`,
+  `amounts`, `note`) with `scoring`:
+  - `accepted`: an explicit synonym that counts as correct in the mandatory score (for example
+    `reward` for collected tips). It must not repeat the action's kind or be forbidden.
+  - `reported`: a disputed interpretation. It is listed in its own report section and never
+    counts towards the score or the gate. Only allowed in a `disputed` case.
+
+`expected.json` may also carry `revisions`: label changes made after the first scoring run,
+with the date, who asked for them and what changed.
 
 `src/schema.ts` (zod) validates every file. Cross-file checks also run:
 - signature, slot, version, fee and execution must match `rpc.json`;
@@ -89,7 +114,10 @@ Conventions used throughout the set:
 1. **Primary action.**
    - A failed transaction is `fee_only` for the fee payer.
    - A wallet that only signs and pays the fee for someone else's action (keeper, crank,
-     relayer) is `fee_only`.
+     relayer) is `fee_only`. If it also receives something (for example a fee
+     reimbursement), that incoming action is primary: receiving lamports and paying
+     `meta.fee` are separate facts even when the numbers are equal.
+   - A nonzero action with an external party takes precedence over a self-transfer.
    - A wallet that is not involved at all is `other`.
    - Otherwise the protocol action is primary over incidental ones (tips, account
      creation, rent refunds).
@@ -108,37 +136,81 @@ Conventions used throughout the set:
    Surviving accounts and rent paid to someone else are listed as `account_create` or
    `account_close`.
 5. **Tips.** A transfer to one of the published Jito tip accounts is `tip`, not `transfer`.
+   `tip` covers both paying tips and collecting them (the tip receiver sweeping the tip
+   accounts); `reward` is accepted as a complete synonym for the collector.
 6. **Fee.** Taken from `meta.fee`. It is never part of an action amount.
-7. **Swap, lending, liquidity and stake participants.** `sender` and `receiver` are `null`
+7. **Two top-level swaps are two actions** (different pools, different mint pairs), even when
+   the second spends the first's output; the first is primary. A balance of the intermediate
+   token consumed from the wallet's existing inventory is not a fee.
+8. **Movements the transaction cannot attribute** (for example output of a DCA position
+   whose owner is not visible) are not mandatory: only the verified movement is expected,
+   and the attributed reading is a `reported` alternative with an open question.
+9. **Swap, lending, liquidity and stake participants.** `sender` and `receiver` are `null`
    (counterparty is a pool or program) unless a clear account exists, for example the
    new stake account.
+
+## Disputes policy
+
+A case is `disputed` when its open questions cannot be settled from the transaction.
+Scoring of a disputed case:
+- The objectively verified part (the mandatory primary action, its amounts and participants)
+  counts in the mandatory score like any other case.
+- The disputed interpretation is a `reported` alternative. It is shown in the report's
+  "Disputed interpretations" section, and it can never fail the gate. A prediction of a
+  reported kind is recorded as `disputed_alternative`: a miss for the mandatory kind, but not
+  a false positive. It still fails the gate if that perspective used to be correct.
+- Headline numbers that include perspectives from disputed cases are marked provisional.
+
+Settled so far:
+- Jito tip sweep: the collector is `tip`, with `reward` an accepted complete synonym. Resolved.
+- A transfer to a tip account on its own: `tip`. Resolved.
+- Pump create plus first buy: the creator's primary is `swap`; the mint is its own action. Resolved.
+- NFT buyback: seller `nft_sale`, payer `transfer`, NFT receiver `nft_receive`. Whether the payer
+  and the NFT receiver are under common control stays disputed (`nft_purchase` is reported only).
+- Transfer with an "airdrop" memo: `transfer` is the fact. The airdrop purpose stays a disputed
+  reading, reported separately, never part of the mandatory score.
+- DCA fill: the JTO arriving at the owner is the fact. Attributing the escrow's JitoSOL to the
+  owner stays disputed (the escrow's owner in the token balances is the DCA account).
 
 ## Scoring
 
 The SDK returns one `classification` per transaction. The scorer maps it to one
 predicted action:
 - `kind` = `primaryType`;
-- amounts = `primaryAmount` and `secondaryAmount`, compared as a set of (mint, raw) pairs,
-  ignoring direction;
-- participants = `sender` and `receiver`.
+- amounts = `primaryAmount` and `secondaryAmount`, compared as a multiset of
+  (mint, raw, decimals). Direction is compared where the classification exposes it: for
+  `swap` the primary amount is what was sent and the secondary what was received; for a
+  single amount it is `out` when the perspective is the sender and `in` when it is the
+  receiver. Elsewhere direction is not compared. The SDK uses the SOL mint for native SOL and
+  wSOL alike, so the `native` flag is not compared;
+- participants = `sender` and `receiver`. `authority` is not compared.
 
-For each perspective:
-- Per kind, computed on the primary action:
-  - **TP** when the predicted kind is the expected primary kind or one of its
-    `acceptableKinds`.
-  - Otherwise **FN** for the expected kind, and the prediction is one of:
-    - an **abstention** (`other`; or `fee_only` where a real action was expected);
-    - a **secondary hit** (it matches a non-primary expected action);
-    - a **false positive** for the predicted kind.
+For each perspective the prediction is matched in this order:
+1. it equals the primary action (or an `accepted` alternative) completely: kind, amounts and
+   non-null participants. Outcome **correct**, amounts and participants exact;
+2. it equals a non-primary expected action completely. Outcome **secondary hit**: not the
+   primary, and not a false positive;
+3. its kind is the primary kind (or an accepted alternative's). Outcome **correct**, with
+   amounts and participants checked and reported separately;
+4. its kind is a `reported` alternative. Outcome **disputed alternative**;
+5. `other`, or `fee_only` where a real action was expected. Outcome **abstention**, a miss;
+6. anything else. Outcome **wrong label**, a false positive for the predicted kind.
+
+Per kind, computed on the primary action: TP for outcome correct, FN otherwise, FP for a wrong
+label. Secondary recall is reported per kind and overall: expected non-primary actions that
+the prediction equals completely. The SDK reports one action per transaction, so it is close
+to zero today.
 - **Forbidden violation**: the predicted kind is in any `forbidden` list of that perspective.
 - **Amounts** and **participants** are checked only when the kind is right, and only
   where the expected value is non-null.
 - **Fee**: the `fee` leg compared with `meta.fee`. **Execution**: from `tx.err`.
 - **Reconciliation**: the distribution of `tx.reconciliation.status` is reported, not scored.
 
-A perspective passes when the kind is right, there is no forbidden violation, and the
-amounts and participants are exact. A case passes when every perspective passes and the
-fee and execution agree. `[d]` in the report marks disputed labels.
+A perspective passes when the outcome is correct, there is no forbidden violation, and the
+amounts and participants are exact. A case passes ("primary action correct for every selected
+perspective") when every perspective passes and the fee and execution agree. Secondary actions,
+`authority`, the native-vs-wSOL flag, and direction where the classification does not expose
+it are **not** part of the case-pass rule today. `[d]` in the report marks disputed cases.
 
 SDK console output during replay (for example memo decoding errors) is captured and listed
 in the report; it is not scored.
@@ -149,9 +221,11 @@ in the report; it is not scored.
    response body byte for byte as `rpc.json`.
 2. Read the instructions, inner instructions and balances, and write the `rationale`.
 3. Write `expected.json` **before** running the scorer, and set `labelledBeforeScoring: true`.
-   If a label is ever changed after seeing the SDK's output, say so in the PR with the reason.
+   If a label is ever changed after seeing the SDK's output, add a `revisions` entry and say
+   so in the PR with the reason.
 4. Run `bun run accuracy`. Schema errors list every problem. Then run
-   `bun run accuracy:baseline` and commit the case together with the new baseline.
+   `bun run accuracy:baseline`, add an entry to `CHANGES.md`, and commit the case, the new
+   baseline and the entry together.
 
 Only public on-chain data and your own notes go in a case. Do not use third-party labelled
 datasets or explorer labels as the source of truth.
@@ -182,3 +256,10 @@ Not covered yet:
 The two transactions behind the `test.failing` tests in `packages/sdk/src/alt-replay.test.ts`
 are included as `swap-v1-router-sol-to-token-with-memo` and
 `swap-v1-jupiter-circular-route-usdc-gain`.
+
+Recorded findings outside the classifier, not fixed here:
+- `packages/domain` has an import cycle (`tx/tx.types.ts` ↔ `actors/counterparty.types.ts`).
+  A runtime import of `TxPrimaryTypeSchema` from source throws a ReferenceError, which is why
+  `src/schema.ts` keeps a literal list checked by `tsc`.
+- The memo parser logs `Failed to decode memo: InvalidCharacterError` on the Memo v1
+  instruction in `transfer-sol-with-memo-v1-program`. It appears in the report and is not scored.
