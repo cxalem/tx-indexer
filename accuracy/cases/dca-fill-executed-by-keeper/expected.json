@@ -7,7 +7,7 @@
   "execution": "succeeded",
   "disputed": true,
   "openQuestions": [
-    "The JitoSOL that pays for the fill sits in an escrow owned by the DCA account, not in 5wQU...'s wallet. It is listed as the user's outflow because the DCA position is the user's; a wallet-only view would show only the JTO arriving."
+    "Beneficiary attribution: the JitoSOL that pays for the fill (#1.0) leaves escrow AcgFoECr..., whose owner in the token balances is the DCA account DjCjE9sE..., not 5wQU.... That 5wQU... owns that DCA position is not provable from this transaction, so the JitoSOL outflow is not part of the mandatory expectation; the two-leg reading is a reported alternative."
   ],
   "perspectives": [
     {
@@ -43,15 +43,8 @@
           "primary": true,
           "sender": null,
           "receiver": null,
-          "authority": "5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna",
-          "participantsNote": "DCA fill; counterparty is a pool.",
+          "participantsNote": "DCA fill output; counterparty is the DCA program and a pool.",
           "amounts": [
-            {
-              "direction": "out",
-              "amountRaw": "1310000000",
-              "mint": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
-              "decimals": 9
-            },
             {
               "direction": "in",
               "amountRaw": "428513360884",
@@ -59,10 +52,8 @@
               "decimals": 9
             }
           ],
+          "amountsNote": "Only the verified movement: JTO delivered to FMJjZgo1... (owner 5wQU...) by the DCA program's 'transfer' (#4.0).",
           "instructionRefs": [
-            "#1",
-            "#1.0",
-            "#2",
             "#4",
             "#4.0"
           ],
@@ -70,10 +61,40 @@
             "airdrop",
             "reward"
           ],
+          "alternatives": [
+            {
+              "kind": "swap",
+              "scoring": "reported",
+              "sender": null,
+              "receiver": null,
+              "amounts": [
+                {
+                  "direction": "out",
+                  "amountRaw": "1310000000",
+                  "mint": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
+                  "decimals": 9
+                },
+                {
+                  "direction": "in",
+                  "amountRaw": "428513360884",
+                  "mint": "jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL",
+                  "decimals": 9
+                }
+              ],
+              "note": "Two-leg reading, valid only if the DCA position (escrow owner DjCjE9sE...) belongs to 5wQU...."
+            }
+          ],
           "note": "Output is net of the 428,942,303 JTO DCA fee."
         }
       ]
     }
   ],
-  "notes": ""
+  "notes": "",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "DCA owner: mandatory amounts reduced to the verified JTO arrival (#4.0); the JitoSOL outflow from the DCA escrow moved to a reported alternative."
+    }
+  ]
 }

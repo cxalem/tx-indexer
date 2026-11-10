@@ -7,7 +7,7 @@
   "execution": "succeeded",
   "disputed": true,
   "openQuestions": [
-    "Gacha... pays the USDC while miDt... receives the NFT; whether they are one operator is not provable from this transaction. Gacha... is labelled `transfer` (USDC out); `nft_purchase` is accepted."
+    "Gacha... pays the USDC while miDt... receives the NFT; whether they are under common control is not provable from this transaction. Mandatory labels: seller `nft_sale`, payer `transfer`, NFT receiver `nft_receive`. `nft_purchase` for the payer and for the receiver are reported alternatives only."
   ],
   "perspectives": [
     {
@@ -82,8 +82,22 @@
             "swap",
             "nft_sale"
           ],
-          "acceptableKinds": [
-            "nft_purchase"
+          "alternatives": [
+            {
+              "kind": "nft_purchase",
+              "scoring": "reported",
+              "sender": "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3",
+              "receiver": "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th",
+              "amounts": [
+                {
+                  "direction": "out",
+                  "amountRaw": "42500000",
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "decimals": 6
+                }
+              ],
+              "note": "Only if Gacha... and miDt... are one buyer."
+            }
           ]
         },
         {
@@ -103,6 +117,46 @@
           "instructionRefs": [
             "#5"
           ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3",
+          "receiver": "8BL7Fu8cUVWzvQxQQjsDunFLXhb7tAS4wCJb4Ee21ebv",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1056640",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1.3",
+            "#1.4",
+            "#1.5"
+          ],
+          "note": "Funds a new program-owned record account (token-record pattern for Dy6D...)."
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "3JpEPkGhdMW8svxWXbxPYrEHtSZWLr9F81DvKAmipguh",
+          "receiver": "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1056640",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "note": "The record account of 5hW8... is emptied by the program inside #1."
         }
       ]
     },
@@ -130,12 +184,33 @@
             "swap",
             "nft_sale"
           ],
-          "acceptableKinds": [
-            "nft_purchase"
+          "alternatives": [
+            {
+              "kind": "nft_purchase",
+              "scoring": "reported",
+              "sender": "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th",
+              "receiver": "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt",
+              "amounts": [
+                {
+                  "direction": "in",
+                  "amountRaw": "1",
+                  "mint": "GMghqvQrtSxdSnnD2cWcM44DGu55zuWHw95cUJv3oP1u",
+                  "decimals": 0
+                }
+              ],
+              "note": "Only if miDt... and Gacha... are one buyer."
+            }
           ]
         }
       ]
     }
   ],
-  "notes": "NFT evidence: mint GMghqvQr... has 0 decimals, exactly 1 unit moves, the move is made by the Token Metadata program (log 'IX: Transfer') with Thaw/Freeze around it (programmable-NFT pattern). Supply = 1 is not visible in this transaction."
+  "notes": "NFT evidence: mint GMghqvQr... has 0 decimals, exactly 1 unit moves, the move is made by the Token Metadata program (log 'IX: Transfer') with Thaw/Freeze around it (programmable-NFT pattern). Supply = 1 is not visible in this transaction.",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "Gacha and miDt: `nft_purchase` moved from an accepted kind to a reported alternative; Gacha: added the token-record account_create (#1.3-#1.5) and account_close (#1) actions."
+    }
+  ]
 }

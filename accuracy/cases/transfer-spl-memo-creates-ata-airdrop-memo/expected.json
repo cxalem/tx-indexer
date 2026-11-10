@@ -7,7 +7,7 @@
   "execution": "succeeded",
   "disputed": true,
   "openQuestions": [
-    "The memo calls this an airdrop. The transaction itself is a token transfer to a new account; `airdrop` is accepted as an alternative label for the receiver, not required."
+    "The memo calls this an airdrop. The verified fact is a token transfer to a new account, which is the mandatory label. Whether its purpose is an airdrop is a disputed interpretation: it is recorded as a `reported` alternative for the receiver, shown separately and never part of the mandatory score."
   ],
   "perspectives": [
     {
@@ -79,8 +79,22 @@
           "forbidden": [
             "swap"
           ],
-          "acceptableKinds": [
-            "airdrop"
+          "alternatives": [
+            {
+              "kind": "airdrop",
+              "scoring": "reported",
+              "sender": "7gcXnEbLpDUXbxmxwr1Q39RgCBu7rNLebti8ZdBQ3fhX",
+              "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+              "amounts": [
+                {
+                  "direction": "in",
+                  "amountRaw": "581000000",
+                  "mint": "5oSoANcLqQjEZ31ngvMmsd71LPUndwhKTe8bMmCysBMe",
+                  "decimals": 6
+                }
+              ],
+              "note": "Purpose stated by the memo 'genny-airdrop:...'; not provable from the transfer itself."
+            }
           ]
         },
         {
@@ -98,5 +112,12 @@
       ]
     }
   ],
-  "notes": ""
+  "notes": "",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "receiver: `airdrop` moved from an accepted kind to a reported alternative (disputes policy)."
+    }
+  ]
 }

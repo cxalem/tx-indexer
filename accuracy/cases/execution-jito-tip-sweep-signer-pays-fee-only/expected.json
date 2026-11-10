@@ -5,10 +5,8 @@
   "labelledBeforeScoring": true,
   "fee": "5000",
   "execution": "succeeded",
-  "disputed": true,
-  "openQuestions": [
-    "What kind is the receiver's side: `tip` (tips collected) or `reward`? Labelled `tip`; `reward` accepted."
-  ],
+  "disputed": false,
+  "openQuestions": [],
   "perspectives": [
     {
       "address": "EvnRmnMrd69kFdbLMxWkTn1icZ7DCceRhvmb2SJXqDo4",
@@ -58,12 +56,34 @@
           "forbidden": [
             "swap"
           ],
-          "acceptableKinds": [
-            "reward"
+          "alternatives": [
+            {
+              "kind": "reward",
+              "scoring": "accepted",
+              "sender": null,
+              "receiver": "DjyDQ7nwUMyLWSihdQYU6Hud6sYMxFKnbaTMXng99K8e",
+              "amounts": [
+                {
+                  "direction": "in",
+                  "amountRaw": "1765575",
+                  "mint": "So11111111111111111111111111111111111111112",
+                  "decimals": 9,
+                  "native": true
+                }
+              ],
+              "note": "Explicit synonym: tips collected by the tip receiver."
+            }
           ]
         }
       ]
     }
   ],
-  "notes": ""
+  "notes": "Resolved by the disputes policy: `tip` covers both paying and collecting tips; `reward` is an accepted synonym for the collector, expressed as a complete alternative (same participants and amount).",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "collector: `reward` turned from an acceptable kind into a complete accepted alternative; case no longer disputed."
+    }
+  ]
 }

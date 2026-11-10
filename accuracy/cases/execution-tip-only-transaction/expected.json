@@ -5,10 +5,8 @@
   "labelledBeforeScoring": true,
   "fee": "5000",
   "execution": "succeeded",
-  "disputed": true,
-  "openQuestions": [
-    "A System transfer to a tip account is technically a transfer. This set labels it `tip` and does not accept `transfer`, so the SDK's current behaviour is measured as a miss here. Revisit if the project decides tips are transfers."
-  ],
+  "disputed": false,
+  "openQuestions": [],
   "perspectives": [
     {
       "address": "CrRj1mgjj7MSh3EVpqLjzYtAVNmiTV5zPxiv2qehNG1G",
@@ -37,5 +35,12 @@
       ]
     }
   ],
-  "notes": ""
+  "notes": "Resolved by the disputes policy: a System transfer to a published Jito tip account is `tip`, not `transfer`.",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "open question removed; case no longer disputed (label unchanged: tip)."
+    }
+  ]
 }

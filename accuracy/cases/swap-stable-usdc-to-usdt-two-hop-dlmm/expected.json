@@ -17,7 +17,7 @@
           "sender": null,
           "receiver": null,
           "authority": "gainzzMWAYL1gGSvREJN83asUQyMfyz3yG6k2od1vbP",
-          "participantsNote": "Swap: counterparty is two pools; sender/receiver not applicable.",
+          "participantsNote": "Swap against a Meteora DLMM pool (reserve owner nnDJe81C...); sender/receiver not applicable.",
           "amounts": [
             {
               "direction": "out",
@@ -27,13 +27,7 @@
             },
             {
               "direction": "in",
-              "amountRaw": "1107247",
-              "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-              "decimals": 6
-            },
-            {
-              "direction": "out",
-              "amountRaw": "280",
+              "amountRaw": "1106950",
               "mint": "gainzzpkFoxn7fJ1Gr4h5yfxYpnDMfWb7vCW9TDu3tF",
               "decimals": 6
             }
@@ -41,20 +35,50 @@
           "instructionRefs": [
             "#1",
             "#1.1",
-            "#1.2",
-            "#2",
-            "#2.1",
-            "#2.2"
+            "#1.2"
           ],
           "forbidden": [
             "transfer",
             "airdrop",
             "fee_only"
+          ]
+        },
+        {
+          "kind": "swap",
+          "primary": false,
+          "sender": null,
+          "receiver": null,
+          "authority": "gainzzMWAYL1gGSvREJN83asUQyMfyz3yG6k2od1vbP",
+          "participantsNote": "Swap against a second Meteora DLMM pool (reserve owner ESudyyiy...); sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1107230",
+              "mint": "gainzzpkFoxn7fJ1Gr4h5yfxYpnDMfWb7vCW9TDu3tF",
+              "decimals": 6
+            },
+            {
+              "direction": "in",
+              "amountRaw": "1107247",
+              "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+              "decimals": 6
+            }
           ],
-          "note": "Stable to stable through an intermediate token; 280 raw of the intermediate is lost on the way."
+          "instructionRefs": [
+            "#2",
+            "#2.1",
+            "#2.2"
+          ]
         }
       ]
     }
   ],
-  "notes": ""
+  "notes": "The extra 280 raw of gainzzpk... spent by swap #2 is pre-existing inventory of the wallet consumed by the second swap, not a fee.",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "one three-asset swap split into the two top-level swaps #1 and #2, per the README aggregation rule."
+    }
+  ]
 }

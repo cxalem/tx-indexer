@@ -39,7 +39,6 @@
             "#2.6"
           ],
           "forbidden": [
-            "transfer",
             "airdrop",
             "fee_only"
           ],
@@ -98,25 +97,8 @@
       "address": "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF",
       "actions": [
         {
-          "kind": "fee_only",
-          "primary": true,
-          "sender": "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF",
-          "receiver": null,
-          "participantsNote": "Keeper only.",
-          "amounts": [],
-          "amountsNote": "Pays the 19,442 fee and is reimbursed the same amount (#2.12/#2.13).",
-          "instructionRefs": [
-            "#2"
-          ],
-          "forbidden": [
-            "liquidity_add",
-            "swap",
-            "airdrop"
-          ]
-        },
-        {
           "kind": "transfer",
-          "primary": false,
+          "primary": true,
           "sender": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
           "receiver": "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF",
           "amounts": [
@@ -131,10 +113,23 @@
           "instructionRefs": [
             "#2.12",
             "#2.13"
-          ]
+          ],
+          "forbidden": [
+            "liquidity_add",
+            "swap",
+            "airdrop"
+          ],
+          "note": "Fee reimbursement: wSOL from 2r3X... unwrapped to the keeper. The keeper also pays meta.fee = 19,442 (see `fee`)."
         }
       ]
     }
   ],
-  "notes": ""
+  "notes": "",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "owner: removed `transfer` from forbidden (its own reimbursement is a transfer); keeper: the incoming reimbursement transfer is now primary and the empty fee_only action was removed."
+    }
+  ]
 }

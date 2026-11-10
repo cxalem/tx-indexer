@@ -99,9 +99,56 @@
             "nft_receive"
           ],
           "note": "Sponsor: pays the fee and the receiver's token-account rent."
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3",
+          "receiver": "3JpEPkGhdMW8svxWXbxPYrEHtSZWLr9F81DvKAmipguh",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1056640",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1.8",
+            "#1.9",
+            "#1.10"
+          ],
+          "note": "Funds a new program-owned record account (token-record pattern for the new token account)."
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "8BL7Fu8cUVWzvQxQQjsDunFLXhb7tAS4wCJb4Ee21ebv",
+          "receiver": "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1056640",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "note": "The old record account (token-record pattern for Dy6D...) is emptied by the program inside #1; its lamports go to Gacha...."
         }
       ]
     }
   ],
-  "notes": "NFT evidence: mint GMghqvQr... has 0 decimals, exactly 1 unit moves, the move is made by the Token Metadata program (log 'IX: Transfer') with Thaw/Freeze around it (programmable-NFT pattern). Supply = 1 is not visible in this transaction."
+  "notes": "NFT evidence: mint GMghqvQr... has 0 decimals, exactly 1 unit moves, the move is made by the Token Metadata program (log 'IX: Transfer') with Thaw/Freeze around it (programmable-NFT pattern). Supply = 1 is not visible in this transaction.",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "sponsor: added the token-record account_create (#1.8-#1.10) and account_close (#1) actions."
+    }
+  ]
 }

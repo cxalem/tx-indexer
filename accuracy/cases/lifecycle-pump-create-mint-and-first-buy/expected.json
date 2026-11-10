@@ -5,10 +5,8 @@
   "labelledBeforeScoring": true,
   "fee": "33569",
   "execution": "succeeded",
-  "disputed": true,
-  "openQuestions": [
-    "For the creator, is the primary action the token creation (token_mint) or the first buy (swap)? Labelled `swap` because that is the creator's own balance change; `token_mint` is accepted."
-  ],
+  "disputed": false,
+  "openQuestions": [],
   "perspectives": [
     {
       "address": "4mZuBXA2FQ6vM5My2TJycSpx9KuVupxgNpUHj9CPojng",
@@ -47,9 +45,6 @@
             "transfer",
             "airdrop",
             "fee_only"
-          ],
-          "acceptableKinds": [
-            "token_mint"
           ]
         },
         {
@@ -114,6 +109,7 @@
             "#2.0",
             "#2.3",
             "#2.6",
+            "#2.9",
             "#3.1"
           ]
         }
@@ -177,5 +173,12 @@
       ]
     }
   ],
-  "notes": ""
+  "notes": "Resolved by the disputes policy: the creator's primary action is the first buy (`swap`), its own balance change. The mint (#2.12) is a separate action: 1,000,000,000,000,000 raw to the bonding curve's account.",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "creator: removed acceptableKinds token_mint from the primary swap (a mint label would carry the buy amounts); added #2.9 to the account-creation refs; case no longer disputed."
+    }
+  ]
 }
