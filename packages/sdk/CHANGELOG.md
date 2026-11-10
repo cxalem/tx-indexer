@@ -14,6 +14,17 @@
 
 - Improved SDK docs around null-vs-throw behavior and wallet funding semantics
 
+### Fixed: v0 lookup-table accounts and lamport accounting (migration notes)
+
+- **Lookup-table accounts are resolved.** `tx.accountKeys` is now the full list (static keys, then lookup-table writable, then readonly); lamport movements on lookup-table accounts are no longer dropped. New optional `tx.loadedAddresses`.
+- **Fee leg comes from `meta.fee`.** The `fee:network` leg is the fee the runtime charged, no longer the debit/credit residual. On a hand-built `RawTransaction` with `fee` undefined there is now **no fee leg** (previously the residual was used).
+- **New `tx.reconciliation`** (`balanced | unbalanced | unavailable`, lamports as strings) reports whether `sum(pre) - sum(post)` equals the fee. Transactions with nonzero transaction-level rewards (historical rent collection) report `unavailable`.
+- **Lamport balances are `bigint`** in `preBalances`/`postBalances` from the fetch path (previously `number`, which lost precision above 2^53). `fee` is `undefined` when the RPC returned no metadata.
+- **Typed unsupported-version errors.** Version 1 transactions (RPC error -32015) throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, not retried, carries `signature`) from `getTransaction`, `getRawTransaction` and the `tx-indexer/advanced` fetchers.
+- **New `onTransactionSkipped` option** on `getTransactions` and `getTransactionsBySignatures` reports each signature that produced no transaction (`not_found | unsupported_version | fetch_failed`); `fetchTransactionsBatch` gains `onSkipped` (exactly one notification per signature).
+- **wSOL backing lamports are no longer separate legs.** A wSOL token account's lamport change is represented once, by its wSOL token leg (attributed to the token owner). Any remainder not explained by the token change (e.g. the rent-exempt reserve of a newly created wSOL account) appears as a `rent:<address>` leg with role `unknown`. Accounts closed in the transaction (pre-only token entry) are unchanged.
+- **Direction follows the wallet.** Stake deposit/withdraw use the target wallet's own SOL movements (falling back to the fee payer); transfer, Solana Pay, bridge and Privacy Cash prefer the wallet's legs when `walletAddress` is given; NFT mint/marketplace prices prefer the wallet's (or fee payer's) payment leg.
+
 ## 1.5.0
 
 ### Minor Changes

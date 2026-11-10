@@ -460,13 +460,17 @@ interface TokenInfo {
 
 - The SDK requests transactions with `maxSupportedTransactionVersion: 0`, so it reads **legacy and v0** transactions only.
 - **Version 1 transactions** (live on mainnet since 2026-09-15) are refused by the RPC (JSON-RPC error `-32015`). They are not retried and never silently disappear:
-  - `getTransaction` / `getRawTransaction` throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, `retryable: false`, carries `signature`).
+  - `getTransaction` / `getRawTransaction` and the `tx-indexer/advanced` `fetchTransaction` throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, `retryable: false`, carries `signature`).
   - `getTransactions` and `getTransactionsBySignatures` omit them from the result but report each one through `onTransactionSkipped({ signature, reason: "unsupported_version", error })`. Signatures the RPC does not return are reported as `"not_found"`, other failures as `"fetch_failed"`.
 - v0 address-lookup-table accounts are resolved: `tx.accountKeys` is the full list (static keys, then lookup-table writable, then lookup-table readonly), which is what `preBalances`/`postBalances` and token `accountIndex` refer to.
 
 ### 11. Lamport Reconciliation
 
-- The `fee:network` leg is the fee the runtime charged (`meta.fee`), not a computed residual.
+- The `fee:network` leg is the fee the runtime charged (`meta.fee`), not a computed residual. A hand-built `RawTransaction` without `fee` gets no fee leg.
+- Lamport balances from the fetch path are `bigint`.
+- A wSOL token account's lamport change is represented once, by its wSOL token leg (owner). Any unexplained remainder (e.g. rent-exempt reserve on creation) is a `rent:<address>` leg with role `unknown`, never a counterparty.
+- Nonzero transaction-level rewards (historical rent collection) make the reconciliation `unavailable` with an explicit reason.
+- Stake direction follows the target wallet (fallback: fee payer); other classifiers prefer the wallet's own legs when `walletAddress` is given. See CHANGELOG "Unreleased" for migration notes.
 - `tx.reconciliation` reports whether `sum(preBalances) - sum(postBalances)` equals the fee over the full account list: `balanced`, `unbalanced` (with `residualLamports`) or `unavailable` (metadata missing, arrays not matching the account list, or imprecise numbers). Legs only balance when the reconciliation is `balanced`.
 
 ### 12. Experimental APIs

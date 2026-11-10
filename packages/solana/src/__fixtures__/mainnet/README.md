@@ -15,6 +15,11 @@ Each file is `{ "_meta": {...}, "response": <verbatim JSON-RPC body> }`. The bod
 byte-for-byte so integers are exact. Tests replay it through a real `@solana/kit` RPC with a
 mocked transport (`../fixture-rpc.ts`); nothing touches the network.
 
+Note (review round 1): every lookup-table account whose lamports change in these
+three swaps is a wSOL token account. Its lamport change equals its wSOL token change,
+so the mapper represents it ONCE, as the wSOL token leg of the token owner (no separate
+lamport leg, no rent remainder). The "expected SOL legs" below list that owner leg.
+
 Index layout: `[static keys][loadedAddresses.writable][loadedAddresses.readonly]`.
 "ALT-w" = loaded from a lookup table as writable.
 
@@ -26,8 +31,8 @@ Index layout: `[static keys][loadedAddresses.writable][loadedAddresses.readonly]
   - [0] static `EMgSdxvQ...` (fee payer): 3686635285 -> 3682487402, **-4147883**
   - [10] ALT-w `C47dRtoz...` (wSOL pool vault): 135692492640 -> 135696635484, **+4142844**
 - Check: 4147883 - 4142844 = 5039 = `meta.fee`. Balanced.
-- Expected SOL legs: fee payer debit 4147883 (sent), `C47dRtoz...` credit 4142844 (received),
-  `fee:network` credit 5039. Token legs (unchanged by this fix): fee payer +1994890919495 FUSE,
+- Expected SOL legs: fee payer debit 4147883 (sent), `fee:network` credit 5039; the vault's
+  +4142844 appears once, as the wSOL token leg of its owner `HLnpSz9h...`. Token legs (unchanged by this fix): fee payer +1994890919495 FUSE,
   pool authority `HLnpSz9h...` +4142844 wSOL and -1994890919495 FUSE.
 - Old mapping (static keys only): vault credit dropped, fee leg 4147883 (inflated 823x).
 
@@ -40,8 +45,8 @@ Index layout: `[static keys][loadedAddresses.writable][loadedAddresses.readonly]
   - [9] ALT-w `3QjuKNVi...` (wSOL pool vault): 714106159968 -> 714083917606, **-22242362**
 - Check: 22242362 - 22237362 = 5000 = `meta.fee`. Balanced. This is the transfer-like case:
   lamports leave a lookup-table writable account and arrive at the signer.
-- Expected SOL legs: fee payer credit 22237362 (received), `3QjuKNVi...` debit 22242362 (sent),
-  `fee:network` credit 5000, plus the wSOL token leg of pool authority `5Q544fKr...` debit 22242362.
+- Expected SOL legs: fee payer credit 22237362 (received), `fee:network` credit 5000; the vault's
+  -22242362 appears once, as the wSOL token leg of pool authority `5Q544fKr...`.
 - Old mapping: vault debit dropped, residual negative, so **no fee leg at all**.
 
 ## jupiter-swap-with-alt-fee-account.json
@@ -53,8 +58,8 @@ Index layout: `[static keys][loadedAddresses.writable][loadedAddresses.readonly]
   - [11] ALT-w `8Tyqob7o...` (wSOL pool vault): +182354941
   - [12] ALT-w `CASRL2zk...` (wSOL fee account): +45059
 - Check: 182605000 - 182354941 - 45059 = 205000 = `meta.fee`. Balanced.
-- Expected SOL legs: fee payer debit 182605000, two ALT-w credits as above, `fee:network` credit
-  205000, plus wSOL token legs of owners `3mxDjdZ1...` (+182354941) and `5eHhjP8J...` (+45059).
+- Expected SOL legs: fee payer debit 182605000, `fee:network` credit 205000; the two ALT-w credits
+  appear once each, as wSOL token legs of owners `3mxDjdZ1...` (+182354941) and `5eHhjP8J...` (+45059).
 - Old mapping: both credits dropped, fee leg 182605000 (inflated ~890x).
 
 ## unsupported-version-v1-error.json

@@ -363,6 +363,8 @@ const txs = await indexer.getTransactions(wallet, {
 });
 ```
 
+Migration notes (see CHANGELOG "Unreleased"): the fee leg now comes from `meta.fee` (no fee leg if a hand-built `RawTransaction` has no `fee`), fetched lamport balances are `bigint`, unsupported-version errors are typed (also from `tx-indexer/advanced`), `onTransactionSkipped` is new, wSOL backing lamports no longer appear as separate legs, and stake direction follows the wallet.
+
 Each fetched transaction carries `tx.reconciliation` (`balanced | unbalanced | unavailable`), the independent check that lamports leaving all accounts equal the network fee. See SDK.md "Known Limitations".
 
 ### Null vs Throw
