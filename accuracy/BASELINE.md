@@ -20,13 +20,19 @@ tx-indexer accuracy report (sdk 2.0.0; 43 cases, 72 perspectives)
 Overall
   cases where the primary action is correct for every selected perspective,
     and fee and execution status agree                          6/43 (14.0%) *
-  perspectives with the primary kind right                      42/72 (58.3%) *
-  wrong labels (false positives)                                24
-  abstentions (other, or fee_only where an action was expected) 4
-  predicted a secondary action exactly instead of the primary   2
-  predicted a disputed reading (not scored as right or wrong)   0
+  perspectives with the primary action correct (kind, amounts
+    and non-null participants all match): outcome correct       13/72 (18.1%) *
+  perspectives with the primary kind right (correct + kind_only;
+    = per-kind TP)                                              42/72 (58.3%) *
+  Outcomes (one per perspective; they sum to 72)
+    correct                                                     13
+    kind_only (kind right, amounts or participants wrong)       29
+    secondary_hit (a secondary action exactly, not the primary) 2
+    disputed_alternative (a reported reading exactly; a miss)   0
+    abstained (other, or fee_only where an action was expected) 4
+    wrong_label (false positives)                               24
+    error (replay errors)                                       0
   forbidden-label violations                                    11
-  replay errors                                                 0
   amounts exact, over perspectives with the kind right and the
     amounts known (mint, raw, decimals; direction where exposed) 13/42 (31.0%)
   participants exact, over perspectives with the kind right and
@@ -39,7 +45,8 @@ Overall
 Not part of the case-pass rule today: secondary actions (reported above), `authority`,
 the native-vs-wSOL flag, and direction where the classification does not expose it.
 
-Per kind (primary action, one per perspective)
+Per kind (primary action, one per perspective; TP = correct or kind_only, FN = any other
+outcome, FP = wrong_label for the predicted kind)
   kind               TP  FP  FN  precision  recall
   account_close       0   0   2       n/a    0.0%
   account_create      0   0   3       n/a    0.0%
@@ -90,7 +97,7 @@ Forbidden-label violations
   nft-sale-buyback-for-usdc @BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th: transfer
   swap-pump-amm-sell-all-and-close @32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt: transfer
 
-Disputed interpretations (reported only; never scored or gated)
+Disputed interpretations (reported only: not part of the mandatory score; matching one is a miss for the primary)
   dca-fill-executed-by-keeper @5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna: disputed reading swap; SDK says airdrop
   nft-sale-buyback-for-usdc @GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3: disputed reading nft_purchase; SDK says transfer
   nft-sale-buyback-for-usdc @miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt: disputed reading nft_purchase; SDK says transfer
@@ -105,36 +112,36 @@ Failing cases (37); [d] = disputed case
   execution-failed-sol-transfer :: 36WA..8DyC: predicted other, expected fee_only
   execution-jito-tip-sweep-signer-pays-fee-only :: EvnR..qDo4: FORBIDDEN transfer; predicted transfer, expected fee_only | DjyD..9K8e: predicted transfer, expected tip|reward
   execution-tip-only-transaction :: CrRj..NG1G: predicted transfer, expected tip
-  keeper-bot-executes-sell-for-user :: H9Ef..gHX1: amounts got [out 198452020869 9VZe, in 76936031 EPjF] want [out 198452020869 9VZe, in 77886031 EPjF] | AgmL..zN51: FORBIDDEN transfer; predicted transfer, expected fee_only
+  keeper-bot-executes-sell-for-user :: H9Ef..gHX1: kind only (swap); amounts got [out 198452020869 9VZe, in 76936031 EPjF] want [out 198452020869 9VZe, in 77886031 EPjF] | AgmL..zN51: FORBIDDEN transfer; predicted transfer, expected fee_only
   lending-kamino-borrow-usds :: 3x1R..KrNb: FORBIDDEN transfer; predicted transfer, expected lending_borrow
   lending-kamino-withdraw-usdc :: E354..86Gr: FORBIDDEN transfer; predicted transfer, expected lending_withdraw
   lifecycle-burn-and-close-four-accounts-rent-to-sponsor :: J2A8..96aD: FORBIDDEN transfer; predicted transfer, expected token_burn | 8dBo..SMfG: predicted transfer, expected account_close
   lifecycle-create-ata-only-token2022 :: 3YyU..Ug6a: FORBIDDEN transfer; predicted transfer, expected account_create | EBHd..ZrXz: FORBIDDEN transfer; predicted transfer, expected account_create
-  lifecycle-pump-create-mint-and-first-buy :: 4mZu..ojng: amounts got [out 58029245 So11, in 1788384000000 BnyQ] want [out 50710956 So11, in 1788384000000 BnyQ] | HwRJ..o4iU: FORBIDDEN transfer; predicted transfer, expected token_mint
-  liquidity-add-damm-v2-by-keeper :: 2r3X..9oZx: predicted transfer, expected liquidity_add | ATdp..fgzF: amounts got [1817570053 FT6b] want [in 19442 So11]; participants got 2r3X..9oZx->HLnp..TLcC want 2r3X..9oZx->ATdp..fgzF
+  lifecycle-pump-create-mint-and-first-buy :: 4mZu..ojng: kind only (swap); amounts got [out 58029245 So11, in 1788384000000 BnyQ] want [out 50710956 So11, in 1788384000000 BnyQ] | HwRJ..o4iU: FORBIDDEN transfer; predicted transfer, expected token_mint
+  liquidity-add-damm-v2-by-keeper :: 2r3X..9oZx: predicted transfer, expected liquidity_add | ATdp..fgzF: kind only (transfer); amounts got [1817570053 FT6b] want [in 19442 So11]; participants got 2r3X..9oZx->HLnp..TLcC want 2r3X..9oZx->ATdp..fgzF
   [d] nft-sale-buyback-for-usdc :: BTq5..s1th: FORBIDDEN transfer; predicted transfer, expected nft_sale | miDt..7WPt: predicted transfer, expected nft_receive
   nft-transfer-sponsored-programmable :: miDt..7WPt: predicted transfer, expected nft_send | BTq5..s1th: predicted transfer, expected nft_receive | Gach..xJq3: predicted transfer, expected account_create
-  stake-create-and-delegate :: HuZa..1JDL: amounts got [out 7427745701 So11] want [out 7427731966 So11]; participants got HuZa..1JDL->null want HuZa..1JDL->B9XM..H3rX
+  stake-create-and-delegate :: HuZa..1JDL: kind only (stake_deposit); amounts got [out 7427745701 So11] want [out 7427731966 So11]; participants got HuZa..1JDL->null want HuZa..1JDL->B9XM..H3rX
   stake-withdraw-from-three-accounts :: CuEW..gn9g: predicted other, expected stake_withdraw
   swap-pump-amm-sell-all-and-close :: 32kt..yCyt: FORBIDDEN transfer; predicted transfer, expected swap
-  swap-pump-amm-tiny-sol-buy :: FXBg..WxzS: amounts got [out 198714 So11, in 102337683 wGoX] want [out 193714 So11, in 102337683 wGoX]
-  swap-stable-usdc-to-usdt-two-hop-dlmm :: gain..1vbP: amounts got [out 1106941 EPjF, in 1107247 Es9v] want [out 1106941 EPjF, in 1106950 gain]
-  swap-v0-jupiter-sol-to-token :: EMgS..PaEb: amounts got [out 4147883 So11, in 1994890919495 FUSE] want [out 4142844 So11, in 1994890919495 FUSE]
-  swap-v0-jupiter-sol-to-token-with-platform-fee :: Hyot..Nkqg: amounts got [out 182605000 So11, in 157291256833 9QT8] want [out 182400000 So11, in 157291256833 9QT8]
-  swap-v0-jupiter-token-to-sol :: 6bAW..3Uuh: amounts got [out 2231314298 EaxA, in 22237362 So11] want [out 2231314298 EaxA, in 22242362 So11]
-  swap-v1-jupiter-circular-route-usdc-gain :: CGgM..EpFz: amounts got [out 7559 So11, in 1857 EPjF] want [in 1857 EPjF]
-  swap-v1-jupiter-circular-route-with-jito-tip :: FUBV..SLRG: amounts got [out 7029 So11, in 723 EPjF] want [in 723 EPjF]
+  swap-pump-amm-tiny-sol-buy :: FXBg..WxzS: kind only (swap); amounts got [out 198714 So11, in 102337683 wGoX] want [out 193714 So11, in 102337683 wGoX]
+  swap-stable-usdc-to-usdt-two-hop-dlmm :: gain..1vbP: kind only (swap); amounts got [out 1106941 EPjF, in 1107247 Es9v] want [out 1106941 EPjF, in 1106950 gain]
+  swap-v0-jupiter-sol-to-token :: EMgS..PaEb: kind only (swap); amounts got [out 4147883 So11, in 1994890919495 FUSE] want [out 4142844 So11, in 1994890919495 FUSE]
+  swap-v0-jupiter-sol-to-token-with-platform-fee :: Hyot..Nkqg: kind only (swap); amounts got [out 182605000 So11, in 157291256833 9QT8] want [out 182400000 So11, in 157291256833 9QT8]
+  swap-v0-jupiter-token-to-sol :: 6bAW..3Uuh: kind only (swap); amounts got [out 2231314298 EaxA, in 22237362 So11] want [out 2231314298 EaxA, in 22242362 So11]
+  swap-v1-jupiter-circular-route-usdc-gain :: CGgM..EpFz: kind only (swap); amounts got [out 7559 So11, in 1857 EPjF] want [in 1857 EPjF]
+  swap-v1-jupiter-circular-route-with-jito-tip :: FUBV..SLRG: kind only (swap); amounts got [out 7029 So11, in 723 EPjF] want [in 723 EPjF]
   swap-v1-jupiter-then-send-output :: H4ar..XZDb: predicted transfer, expected swap | BNnN..9jGq: predicted airdrop, expected transfer
   swap-v1-router-sol-to-token-with-memo :: Dha7..miye: predicted transfer, expected swap
   transfer-four-tokens-one-recipient-sweep :: 5Z1Z..YMcA: predicted a secondary action (transfer #7), expected primary transfer | AEp8..ssFL: predicted a secondary action (transfer #7), expected primary transfer
-  transfer-sol-durable-nonce-two-signers :: 95ip..nDW5: amounts got [out 56524094 So11] want [out 56483000 So11] | 5tzF..uAi9: amounts got [in 56524094 So11] want [in 56483000 So11]
-  transfer-sol-dust-twenty-one-recipients :: 54SR..bunW: amounts got [out 5021 So11] want [out 1 So11] | 5VCw..NmcD: amounts got [5021 So11] want [in 1 So11]; participants got 54SR..bunW->AAAh..RBwb want 54SR..bunW->5VCw..NmcD
-  transfer-sol-fee-paid-by-receiver-with-tip :: HLDi..6DWh: amounts got [out 50061798 So11] want [out 50000000 So11] | G5GF..Gyph: amounts got [in 50061798 So11] want [in 50000000 So11]
-  transfer-sol-legacy-exchange-withdrawal :: H8sM..3WjS: amounts got [out 83921000 So11] want [out 83913000 So11] | 7jAD..8XMd: amounts got [in 83921000 So11] want [in 83913000 So11]
+  transfer-sol-durable-nonce-two-signers :: 95ip..nDW5: kind only (transfer); amounts got [out 56524094 So11] want [out 56483000 So11] | 5tzF..uAi9: kind only (transfer); amounts got [in 56524094 So11] want [in 56483000 So11]
+  transfer-sol-dust-twenty-one-recipients :: 54SR..bunW: kind only (transfer); amounts got [out 5021 So11] want [out 1 So11] | 5VCw..NmcD: kind only (transfer); amounts got [5021 So11] want [in 1 So11]; participants got 54SR..bunW->AAAh..RBwb want 54SR..bunW->5VCw..NmcD
+  transfer-sol-fee-paid-by-receiver-with-tip :: HLDi..6DWh: kind only (transfer); amounts got [out 50061798 So11] want [out 50000000 So11] | G5GF..Gyph: kind only (transfer); amounts got [in 50061798 So11] want [in 50000000 So11]
+  transfer-sol-legacy-exchange-withdrawal :: H8sM..3WjS: kind only (transfer); amounts got [out 83921000 So11] want [out 83913000 So11] | 7jAD..8XMd: kind only (transfer); amounts got [in 83921000 So11] want [in 83913000 So11]
   transfer-sol-to-self-plus-jito-tip :: 2dbo..C2MW: predicted transfer, expected tip
-  transfer-sol-v0-small :: mveQ..Qg1u: amounts got [out 113656 So11] want [out 108600 So11] | 5tzF..uAi9: amounts got [in 113656 So11] want [in 108600 So11]
-  transfer-sol-with-jito-tip :: 5tK7..Uoi9: amounts got [out 1610400 So11] want [out 1400000 So11] | 5tzF..uAi9: amounts got [in 1610400 So11] want [in 1400000 So11]
-  transfer-sol-with-memo-v1-program :: 2UPz..Mt4s: amounts got [out 1470049163 So11] want [out 1470041000 So11] | GgLn..S9Nq: amounts got [in 1470049163 So11] want [in 1470041000 So11]
-  transfer-token2022-multi-recipient-distribution :: 5UdR..2Gqn: amounts got [out 867299215780000 7q5E] want [out 163580645280000 7q5E]; participants got 5UdR..2Gqn->Ekey..MuXd want 5UdR..2Gqn->53un..GLyr | 5VCw..NmcD: amounts got [867299215780000 7q5E] want [in 130576608620000 7q5E]; participants got 5UdR..2Gqn->Ekey..MuXd want 5UdR..2Gqn->5VCw..NmcD
-  transfer-token2022-sponsored-fee-then-close :: 35y6..CsJb: amounts got [1600200 So11] want [out 199000000 2b1k]; participants got GCEX..qEyF->EBBk..YhVz want 35y6..CsJb->Hg9d..o7Fa | Hg9d..o7Fa: amounts got [1600200 So11] want [in 199000000 2b1k]; participants got GCEX..qEyF->EBBk..YhVz want 35y6..CsJb->Hg9d..o7Fa | EBBk..YhVz: predicted transfer, expected account_close
+  transfer-sol-v0-small :: mveQ..Qg1u: kind only (transfer); amounts got [out 113656 So11] want [out 108600 So11] | 5tzF..uAi9: kind only (transfer); amounts got [in 113656 So11] want [in 108600 So11]
+  transfer-sol-with-jito-tip :: 5tK7..Uoi9: kind only (transfer); amounts got [out 1610400 So11] want [out 1400000 So11] | 5tzF..uAi9: kind only (transfer); amounts got [in 1610400 So11] want [in 1400000 So11]
+  transfer-sol-with-memo-v1-program :: 2UPz..Mt4s: kind only (transfer); amounts got [out 1470049163 So11] want [out 1470041000 So11] | GgLn..S9Nq: kind only (transfer); amounts got [in 1470049163 So11] want [in 1470041000 So11]
+  transfer-token2022-multi-recipient-distribution :: 5UdR..2Gqn: kind only (transfer); amounts got [out 867299215780000 7q5E] want [out 163580645280000 7q5E]; participants got 5UdR..2Gqn->Ekey..MuXd want 5UdR..2Gqn->53un..GLyr | 5VCw..NmcD: kind only (transfer); amounts got [867299215780000 7q5E] want [in 130576608620000 7q5E]; participants got 5UdR..2Gqn->Ekey..MuXd want 5UdR..2Gqn->5VCw..NmcD
+  transfer-token2022-sponsored-fee-then-close :: 35y6..CsJb: kind only (transfer); amounts got [1600200 So11] want [out 199000000 2b1k]; participants got GCEX..qEyF->EBBk..YhVz want 35y6..CsJb->Hg9d..o7Fa | Hg9d..o7Fa: kind only (transfer); amounts got [1600200 So11] want [in 199000000 2b1k]; participants got GCEX..qEyF->EBBk..YhVz want 35y6..CsJb->Hg9d..o7Fa | EBBk..YhVz: predicted transfer, expected account_close
 ```

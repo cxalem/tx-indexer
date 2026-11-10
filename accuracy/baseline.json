@@ -1,12 +1,14 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "sdkVersion": "2.0.0",
   "cases": 43,
   "perspectives": 72,
   "disputedPerspectives": 7,
   "overall": {
     "casesPassed": 6,
-    "primaryCorrect": 42,
+    "primaryCorrect": 13,
+    "kindOnly": 29,
+    "primaryKindRight": 42,
     "wrongLabels": 24,
     "abstentions": 4,
     "secondaryHits": 2,
@@ -254,7 +256,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna": {
           "outcome": "wrong_label",
@@ -262,7 +265,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -279,7 +283,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -296,7 +301,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
           "outcome": "correct",
@@ -304,7 +310,8 @@
           "amountsExact": true,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         }
       }
     },
@@ -321,7 +328,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "DjyDQ7nwUMyLWSihdQYU6Hud6sYMxFKnbaTMXng99K8e": {
           "outcome": "wrong_label",
@@ -329,7 +337,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -346,7 +355,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -358,12 +368,13 @@
       "executionAgrees": true,
       "perspectives": {
         "H9Efa3q67vmrJuyefga53DxBZgDCNwn8yyoixXwWgHX1": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51": {
           "outcome": "wrong_label",
@@ -371,7 +382,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -388,7 +400,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -405,7 +418,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -422,7 +436,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG": {
           "outcome": "wrong_label",
@@ -430,7 +445,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -447,7 +463,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz": {
           "outcome": "wrong_label",
@@ -455,7 +472,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -467,12 +485,13 @@
       "executionAgrees": true,
       "perspectives": {
         "4mZuBXA2FQ6vM5My2TJycSpx9KuVupxgNpUHj9CPojng": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU": {
           "outcome": "wrong_label",
@@ -480,7 +499,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -497,15 +517,17 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": false,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -522,7 +544,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3": {
           "outcome": "correct",
@@ -530,7 +553,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         },
         "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt": {
           "outcome": "wrong_label",
@@ -538,7 +562,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -555,7 +580,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th": {
           "outcome": "wrong_label",
@@ -563,7 +589,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3": {
           "outcome": "wrong_label",
@@ -571,7 +598,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -583,12 +611,13 @@
       "executionAgrees": true,
       "perspectives": {
         "HuZaQeqc2cGe1bbuooFhtjWvXZKZ9KxmeeBtPDC31JDL": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "stake_deposit",
           "amountsExact": false,
           "participantsExact": false,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -605,7 +634,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -622,7 +652,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": true,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -634,12 +665,13 @@
       "executionAgrees": true,
       "perspectives": {
         "FXBguGpkMB84QAwGRdcNBFdLD3MnhwaQG4n328b8WxzS": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -651,12 +683,13 @@
       "executionAgrees": true,
       "perspectives": {
         "gainzzMWAYL1gGSvREJN83asUQyMfyz3yG6k2od1vbP": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -668,12 +701,13 @@
       "executionAgrees": true,
       "perspectives": {
         "EMgSdxvQqmaqjynWyNeEXcgpMDERxD7ntvBcUWr3PaEb": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -685,12 +719,13 @@
       "executionAgrees": true,
       "perspectives": {
         "HyotTjJEuufx749H3FE2ENz3tyP47ddv5G2RhKJPNkqg": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -702,12 +737,13 @@
       "executionAgrees": true,
       "perspectives": {
         "6bAWX3qmkmmqmzqsNeWMPTA9iG5k9VfagLBssJxE3Uuh": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -719,12 +755,13 @@
       "executionAgrees": true,
       "perspectives": {
         "CGgMCsQ6kQ2J3BV5ZDh3J7BCMC75JNLbYNMrLttGEpFz": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -736,12 +773,13 @@
       "executionAgrees": true,
       "perspectives": {
         "FUBVxWEmxHbm3H9TbLgEQQ6d8bvsdw4sgkNJysFeSLRG": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "swap",
           "amountsExact": false,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -758,7 +796,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq": {
           "outcome": "wrong_label",
@@ -766,7 +805,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -783,7 +823,8 @@
           "amountsExact": true,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         }
       }
     },
@@ -800,7 +841,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -817,7 +859,13 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": {
+            "action": "actions[2] transfer #7",
+            "kind": "transfer",
+            "amountsExact": true,
+            "participantsExact": true
+          }
         },
         "AEp8SYrGz2kLzuP8Fktejb7s8rhbV9uuZ9WzDHi2ssFL": {
           "outcome": "secondary_hit",
@@ -825,7 +873,13 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": {
+            "action": "actions[2] transfer #7",
+            "kind": "transfer",
+            "amountsExact": true,
+            "participantsExact": true
+          }
         }
       }
     },
@@ -837,20 +891,22 @@
       "executionAgrees": true,
       "perspectives": {
         "95ipm63sgxs1oHtn9rHfuvPKRRA6ZGeL7yBni8aynDW5": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -862,20 +918,22 @@
       "executionAgrees": true,
       "perspectives": {
         "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": false,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -887,20 +945,22 @@
       "executionAgrees": true,
       "perspectives": {
         "HLDiJ4M6Cg6mqdNoATB7mrSKQuWjiMYMcbpgqHrT6DWh": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "G5GFpTfMFPU31nmXzu5C7198RqXiVC49ToUA1h5pGyph": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -912,20 +972,22 @@
       "executionAgrees": true,
       "perspectives": {
         "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "7jADuxRvtLptVAFrd9dcKAzW96aJgVrFes5RWeo38XMd": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -942,7 +1004,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -954,20 +1017,22 @@
       "executionAgrees": true,
       "perspectives": {
         "mveQ2LeVFwW3kN9Hc7PAwB5rwdUymZm8GdzRRQDQg1u": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -979,20 +1044,22 @@
       "executionAgrees": true,
       "perspectives": {
         "5tK7hs9oR81tPnNteWQj57RPrg6idJFqAoquyw4kUoi9": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -1004,20 +1071,22 @@
       "executionAgrees": true,
       "perspectives": {
         "2UPzAimP45QrxJbp5GvxtGYSgdQ1yxYemL6oZrTgMt4s": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "GgLn5nBCghQ8yvYxYtfQcdf75YsWLSiM4WDAC46AS9Nq": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -1034,7 +1103,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         },
         "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
           "outcome": "correct",
@@ -1042,7 +1112,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         }
       }
     },
@@ -1054,20 +1125,22 @@
       "executionAgrees": true,
       "perspectives": {
         "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": false,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": false,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -1084,7 +1157,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         },
         "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz": {
           "outcome": "correct",
@@ -1092,7 +1166,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         }
       }
     },
@@ -1109,7 +1184,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         },
         "68XcwTvgrPmKJ7KdDJ4g5KViZTLuHBNuocQ7wkUwk8qk": {
           "outcome": "correct",
@@ -1117,7 +1193,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         }
       }
     },
@@ -1129,20 +1206,22 @@
       "executionAgrees": true,
       "perspectives": {
         "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": false,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
           "participantsExact": false,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         },
         "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz": {
           "outcome": "wrong_label",
@@ -1150,7 +1229,8 @@
           "amountsExact": null,
           "participantsExact": null,
           "forbiddenViolation": false,
-          "pass": false
+          "pass": false,
+          "secondaryHit": null
         }
       }
     },
@@ -1167,7 +1247,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         },
         "9QDWnjFw2W6faTCrN8K8nGMmhGiHqxESfPnjwtokDA4p": {
           "outcome": "correct",
@@ -1175,7 +1256,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         }
       }
     },
@@ -1192,7 +1274,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         },
         "4FicyJD4oxzvaMEGDtpkhDKE9EHKorA7ZVVoj7pcLDJn": {
           "outcome": "correct",
@@ -1200,7 +1283,8 @@
           "amountsExact": true,
           "participantsExact": true,
           "forbiddenViolation": false,
-          "pass": true
+          "pass": true,
+          "secondaryHit": null
         }
       }
     }

@@ -79,7 +79,9 @@ export const AmountSchema = z
 /**
  * A complete alternative expectation for a disputed or synonymous reading.
  * `accepted`: an explicit synonym that counts as correct in the mandatory score.
- * `reported`: a disputed interpretation, shown in its own report section and never scored or gated.
+ * `reported`: a disputed interpretation, shown in its own report section and not part of the
+ *   mandatory score: a complete match is `disputed_alternative` (still a miss for the primary),
+ *   and replacing a previously correct primary with it fails the gate.
  */
 export const AlternativeSchema = z
   .object({

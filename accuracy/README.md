@@ -27,11 +27,17 @@ are off.
 - **No merge that adds a false positive or lowers a score without a reviewed exception.**
   `baseline.json` stores, per case, a content hash of `case.json` + `rpc.json` +
   `expected.json`, fee and execution agreement, and per perspective the outcome
-  (`correct`, `secondary_hit`, `disputed_alternative`, `abstained`, `wrong_label`, `error`),
-  the predicted kind, and whether amounts and participants were exact. The gate
-  (`bun run accuracy`) fails when, compared with `baseline.json`:
+  (`correct`, `kind_only`, `secondary_hit`, `disputed_alternative`, `abstained`, `wrong_label`,
+  `error`; see [Scoring](#scoring)), the predicted kind, whether amounts and participants were
+  exact, and for a secondary hit which expected action it matched (`actions[<index>] <kind>
+  <refs>`) with that match's exactness. The gate (`bun run accuracy`) fails when, compared with
+  `baseline.json`:
   - a case that passed now fails;
-  - a perspective that was `correct` is no longer correct;
+  - a perspective that was `correct` is no longer `correct` (including `correct` → `kind_only`);
+  - a perspective that was a `secondary_hit` becomes anything other than `correct` or a
+    secondary hit on the same expected action with the same exactness;
+  - a perspective that was `kind_only` loses the primary kind (anything but `correct` or
+    `kind_only`);
   - a new `wrong_label` appears (including a wrong label that changed kind, and an
     abstention that became a wrong label);
   - amounts, participants, fee or execution that were exact become wrong, also inside cases
@@ -43,9 +49,14 @@ are off.
     baseline being regenerated.
 - Improvements and corpus changes are accepted by running `bun run accuracy:baseline` **in
   the same commit** as the change, together with a dated entry in `accuracy/CHANGES.md`
-  saying what changed and why. The test fails if `baseline.json` has uncommitted changes
-  without `CHANGES.md` also changing, and if the last commit that touched `baseline.json`
-  did not touch `CHANGES.md`. Outside a git checkout this check is skipped.
+  saying what changed and why. A co-change reminder backs this up: the test fails if
+  `baseline.json` has uncommitted changes without `CHANGES.md` also changing, and if the last
+  commit that touched `baseline.json` (compared with its first parent) did not touch
+  `CHANGES.md`. It only checks that both files changed together; it does not read the entry,
+  so a trivial `CHANGES.md` edit satisfies it. It is a reminder, not review enforcement. A
+  failing git command fails the test. When the history cannot be verified (not a git
+  checkout, git unusable, a shallow clone, or a last baseline commit without a parent) the
+  test is shown as skipped with `UNAVAILABLE: <reason>` in its name, never as passed.
 - The vocabulary check (the literal kind list in `src/schema.ts` must equal `TxPrimaryType`)
   is a compile-time check. `bun run accuracy` runs `tsc` first, so it cannot drift silently.
 - Known failures do not fail the gate: they are the baseline.
@@ -83,8 +94,11 @@ Each action has:
   `amounts`, `note`) with `scoring`:
   - `accepted`: an explicit synonym that counts as correct in the mandatory score (for example
     `reward` for collected tips). It must not repeat the action's kind or be forbidden.
-  - `reported`: a disputed interpretation. It is listed in its own report section and never
-    counts towards the score or the gate. Only allowed in a `disputed` case.
+  - `reported`: a disputed interpretation. It is listed in its own report section and is not
+    part of the mandatory score: a prediction that equals it completely is
+    `disputed_alternative`, which still leaves the mandatory primary missed (an FN for the
+    primary kind), and replacing a previously `correct` primary with it fails the gate. Only
+    allowed in a `disputed` case.
 
 `expected.json` may also carry `revisions`: label changes made after the first scoring run,
 with the date, who asked for them and what changed.
@@ -156,9 +170,13 @@ Scoring of a disputed case:
 - The objectively verified part (the mandatory primary action, its amounts and participants)
   counts in the mandatory score like any other case.
 - The disputed interpretation is a `reported` alternative. It is shown in the report's
-  "Disputed interpretations" section, and it can never fail the gate. A prediction of a
-  reported kind is recorded as `disputed_alternative`: a miss for the mandatory kind, but not
-  a false positive. It still fails the gate if that perspective used to be correct.
+  "Disputed interpretations" section and is not part of the mandatory score. A prediction
+  that equals a reported alternative **completely** (kind, amounts and non-null participants)
+  is recorded as `disputed_alternative`: a miss for the mandatory kind, but not a false
+  positive. It still fails the gate if that perspective used to be `correct` or a secondary
+  hit. A reported kind alone grants nothing: a prediction of that kind that does not equal
+  the reported expectation completely is scored like any other prediction (usually a
+  `wrong_label`).
 - Headline numbers that include perspectives from disputed cases are marked provisional.
 
 Settled so far:
@@ -185,30 +203,48 @@ predicted action:
   wSOL alike, so the `native` flag is not compared;
 - participants = `sender` and `receiver`. `authority` is not compared.
 
-For each perspective the prediction is matched in this order:
-1. it equals the primary action (or an `accepted` alternative) completely: kind, amounts and
-   non-null participants. Outcome **correct**, amounts and participants exact;
-2. it equals a non-primary expected action completely. Outcome **secondary hit**: not the
-   primary, and not a false positive;
-3. its kind is the primary kind (or an accepted alternative's). Outcome **correct**, with
-   amounts and participants checked and reported separately;
-4. its kind is a `reported` alternative. Outcome **disputed alternative**;
-5. `other`, or `fee_only` where a real action was expected. Outcome **abstention**, a miss;
-6. anything else. Outcome **wrong label**, a false positive for the predicted kind.
+"Equals completely" means: same kind, amounts equal (skipped where the expected `amounts` is
+`null`), and every non-null expected `sender` / `receiver` equal. For each perspective the
+prediction is matched in this order, and gets exactly one outcome:
+1. it equals the primary action, or one of its `accepted` alternatives, completely. Outcome
+   **`correct`**, amounts and participants exact;
+2. it equals a non-primary expected action (or one of its `accepted` alternatives)
+   completely. Outcome **`secondary_hit`**: not the primary, and not a false positive;
+3. it equals a `reported` alternative completely. Outcome **`disputed_alternative`**: a miss,
+   not a false positive. A reported kind with other amounts or participants does not reach
+   this step's outcome;
+4. its kind is the primary kind (or an accepted alternative's), but amounts or participants
+   contradict the expectation where it is non-null. Outcome **`kind_only`**: the primary kind
+   is right, the action is not. (`other` predicted for an `unknown` primary counts as the
+   primary kind here; if its amounts and participants do not contradict the expectation, the
+   outcome is `correct`.)
+5. `other`, or `fee_only` where a real action was expected. Outcome **`abstained`**, a miss;
+6. anything else. Outcome **`wrong_label`**, a false positive for the predicted kind;
+7. the replay threw. Outcome **`error`**.
 
-Per kind, computed on the primary action: TP for outcome correct, FN otherwise, FP for a wrong
-label. Secondary recall is reported per kind and overall: expected non-primary actions that
-the prediction equals completely. The SDK reports one action per transaction, so it is close
-to zero today.
+What each number counts (the outcomes always sum to the number of perspectives; a test checks it):
+
+| Number | Counts |
+| --- | --- |
+| cases passed | cases where every perspective passes (below) and fee and execution agree |
+| primary action correct | perspectives with outcome `correct` |
+| primary kind right | `correct` + `kind_only` (= the sum of per-kind TP) |
+| per-kind TP (for the expected primary kind) | `correct` or `kind_only` |
+| per-kind FN (for the expected primary kind) | `secondary_hit`, `disputed_alternative`, `abstained`, `wrong_label`, `error` |
+| per-kind FP (for the predicted kind) | `wrong_label` only |
+| secondary hits / secondary recall | `secondary_hit`, per matched kind, over all expected non-primary actions |
+| amounts exact | over `correct` + `kind_only` perspectives whose expected amounts are not `null` |
+| participants exact | over `correct` + `kind_only` perspectives with a non-null expected sender or receiver |
+
+The SDK reports one action per transaction, so secondary recall is close to zero today.
 - **Forbidden violation**: the predicted kind is in any `forbidden` list of that perspective.
-- **Amounts** and **participants** are checked only when the kind is right, and only
-  where the expected value is non-null.
 - **Fee**: the `fee` leg compared with `meta.fee`. **Execution**: from `tx.err`.
 - **Reconciliation**: the distribution of `tx.reconciliation.status` is reported, not scored.
 
-A perspective passes when the outcome is correct, there is no forbidden violation, and the
-amounts and participants are exact. A case passes ("primary action correct for every selected
-perspective") when every perspective passes and the fee and execution agree. Secondary actions,
+A perspective passes when the outcome is `correct` and there is no forbidden violation; a
+`correct` outcome already means the kind, the known amounts and the non-null participants
+match. A case passes ("primary action correct for every selected perspective") when every
+perspective passes and the fee and execution agree. Secondary actions,
 `authority`, the native-vs-wSOL flag, and direction where the classification does not expose
 it are **not** part of the case-pass rule today. `[d]` in the report marks disputed cases.
 

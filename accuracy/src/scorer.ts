@@ -189,7 +189,47 @@ export async function predictCase(lc: LoadedCase): Promise<Prediction[]> {
   return out;
 }
 
-export type Outcome = "correct" | "secondary_hit" | "disputed_alternative" | "abstained" | "wrong_label" | "error";
+/**
+ * Exactly one outcome per perspective (they always sum to the number of perspectives):
+ * - `correct`: the prediction equals the primary action (or an `accepted` alternative)
+ *   completely: kind, amounts and non-null participants. (Also: `other` for an `unknown`
+ *   primary whose amounts and participants do not contradict the expectation.)
+ * - `kind_only`: the primary kind is right, but amounts or participants contradict the
+ *   expectation where it is non-null. Primary-kind agreement, not a correct perspective.
+ * - `secondary_hit`: equals a non-primary expected action completely.
+ * - `disputed_alternative`: equals a `reported` alternative completely.
+ * - `abstained`: `other`, or `fee_only` where a real action was expected.
+ * - `wrong_label`: anything else; a false positive for the predicted kind.
+ * - `error`: the replay threw.
+ */
+export type Outcome =
+  | "correct"
+  | "kind_only"
+  | "secondary_hit"
+  | "disputed_alternative"
+  | "abstained"
+  | "wrong_label"
+  | "error";
+
+export const OUTCOMES: readonly Outcome[] = [
+  "correct",
+  "kind_only",
+  "secondary_hit",
+  "disputed_alternative",
+  "abstained",
+  "wrong_label",
+  "error",
+];
+
+/** The non-primary expected action a secondary hit equals completely, and its exactness. */
+export interface SecondaryHit {
+  /** `actions[<index>] <kind> <instructionRefs>` within the perspective's expected actions */
+  action: string;
+  /** kind of the matched expectation (the action's own kind or an accepted alternative's) */
+  kind: string;
+  amountsExact: boolean | null;
+  participantsExact: boolean | null;
+}
 
 export interface PerspectiveResult {
   address: string;
@@ -202,6 +242,7 @@ export interface PerspectiveResult {
   participantsExact: boolean | null;
   /** kind of the non-primary expected action the prediction equals completely, if any */
   secondaryHitKind: string | null;
+  secondaryHit: SecondaryHit | null;
   /** reported (disputed) alternatives and whether the prediction equals each completely */
   reported: Array<{ kind: string; predictedKind: string; completeMatch: boolean }>;
   pass: boolean;
@@ -304,8 +345,25 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
     let amountsExact: boolean | null = null;
     let participantsExact: boolean | null = null;
     let secondaryHitKind: string | null = null;
+    let secondaryHit: SecondaryHit | null = null;
+    // Matching order (README "Scoring"):
+    // 1. complete mandatory match: primary, then accepted alternatives, then secondary actions;
+    // 2. complete match of a `reported` alternative;
+    // 3. kind-only fallback against the primary (and its accepted alternatives).
+    // A reported KIND alone grants nothing.
     const full = primaryCandidates.find((c) => completeMatch(c, p));
-    const secondary = full ? undefined : others.find((a) => asExpectations(a, "accepted").some((c) => completeMatch(c, p)));
+    let secondary: { index: number; action: ExpectedAction; matched: Expectation } | undefined;
+    if (!full) {
+      for (const [index, a] of ep.actions.entries()) {
+        if (a.primary) continue;
+        const matched = asExpectations(a, "accepted").find((c) => completeMatch(c, p));
+        if (matched) {
+          secondary = { index, action: a, matched };
+          break;
+        }
+      }
+    }
+    const reportedFull = full || secondary ? undefined : reportedAlts.find((r) => completeMatch(r, p));
     const kindOnly = primaryCandidates.find((c) => c.kind === p.kind) ??
       (prim.kind === "unknown" && p.kind === "other" ? primaryCandidates[0] : undefined);
     if (p.error) {
@@ -317,10 +375,18 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
       participantsExact = full.sender === null && full.receiver === null ? null : true;
     } else if (secondary) {
       outcome = "secondary_hit";
-      secondaryHitKind = secondary.kind;
-      detail.push(`predicted a secondary action (${secondary.kind} ${instr(secondary)}), expected primary ${accepted.join("|")}`);
+      secondaryHitKind = secondary.matched.kind;
+      secondaryHit = {
+        action: `actions[${secondary.index}] ${secondary.action.kind} ${instr(secondary.action)}`,
+        kind: secondary.matched.kind,
+        amountsExact: secondary.matched.amounts === null ? null : true,
+        participantsExact: secondary.matched.sender === null && secondary.matched.receiver === null ? null : true,
+      };
+      detail.push(`predicted a secondary action (${secondary.matched.kind} ${instr(secondary.action)}), expected primary ${accepted.join("|")}`);
+    } else if (reportedFull) {
+      outcome = "disputed_alternative";
+      detail.push(`predicted ${p.kind} matching a disputed reading completely, expected ${accepted.join("|")}`);
     } else if (kindOnly) {
-      outcome = "correct";
       if (kindOnly.amounts !== null) {
         amountsExact = amountsMatch(kindOnly.amounts, p.amounts);
         if (!amountsExact) detail.push(`amounts got [${fmtAmounts(p.amounts)}] want [${fmtAmounts(kindOnly.amounts)}]`);
@@ -330,9 +396,9 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
         if (!participantsExact)
           detail.push(`participants got ${short(p.sender)}->${short(p.receiver)} want ${short(kindOnly.sender)}->${short(kindOnly.receiver)}`);
       }
-    } else if (reportedAlts.some((r) => r.kind === p.kind)) {
-      outcome = "disputed_alternative";
-      detail.push(`predicted ${p.kind} (a disputed reading), expected ${accepted.join("|")}`);
+      // Right kind, contradicting content: its own class, never a correct perspective.
+      outcome = amountsExact === false || participantsExact === false ? "kind_only" : "correct";
+      if (outcome === "kind_only") detail.unshift(`kind only (${p.kind})`);
     } else if ((p.kind === "other" && prim.kind !== "other") || (p.kind === "fee_only" && prim.kind !== "fee_only" && prim.kind !== "other")) {
       // `other` is the SDK saying "I don't know": a miss, not a wrong label. `fee_only` is an abstention only when a real action was expected.
       outcome = "abstained";
@@ -354,6 +420,7 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
       amountsExact,
       participantsExact,
       secondaryHitKind,
+      secondaryHit,
       reported: reportedAlts.map((r) => ({ kind: r.kind, predictedKind: p.kind, completeMatch: completeMatch(r, p) })),
       pass,
       detail,
@@ -393,6 +460,8 @@ export interface PerspectiveRecord {
   participantsExact: boolean | null;
   forbiddenViolation: boolean;
   pass: boolean;
+  /** set for a secondary hit: which expected action it equals, and its exactness */
+  secondaryHit: SecondaryHit | null;
 }
 
 export interface CaseRecord {
@@ -405,14 +474,19 @@ export interface CaseRecord {
 }
 
 export interface Baseline {
-  schemaVersion: 2;
+  schemaVersion: 3;
   sdkVersion: string;
   cases: number;
   perspectives: number;
   disputedPerspectives: number;
   overall: {
     casesPassed: number;
+    /** outcome `correct`: the primary action right completely (kind, amounts, non-null participants) */
     primaryCorrect: number;
+    /** outcome `kind_only`: primary kind right, amounts or participants contradict the expectation */
+    kindOnly: number;
+    /** primaryCorrect + kindOnly = sum of per-kind TP */
+    primaryKindRight: number;
     wrongLabels: number;
     abstentions: number;
     secondaryHits: number;
@@ -452,6 +526,8 @@ export function aggregate(results: CaseResult[], sdkVersion: string): Baseline {
   const o: Baseline["overall"] = {
     casesPassed: 0,
     primaryCorrect: 0,
+    kindOnly: 0,
+    primaryKindRight: 0,
     wrongLabels: 0,
     abstentions: 0,
     secondaryHits: 0,
@@ -498,9 +574,14 @@ export function aggregate(results: CaseResult[], sdkVersion: string): Baseline {
         participantsExact: p.participantsExact,
         forbiddenViolation: p.forbiddenViolation,
         pass: p.pass,
+        secondaryHit: p.secondaryHit,
       };
-      if (p.outcome === "correct") {
-        o.primaryCorrect++;
+      // Per kind (primary): TP = primary kind right (`correct` or `kind_only`), FN = every other
+      // outcome, FP = `wrong_label` for the predicted kind.
+      if (p.outcome === "correct" || p.outcome === "kind_only") {
+        if (p.outcome === "correct") o.primaryCorrect++;
+        else o.kindOnly++;
+        o.primaryKindRight++;
         k(p.expectedKind).tp++;
       } else {
         k(p.expectedKind).fn++;
@@ -548,7 +629,7 @@ export function aggregate(results: CaseResult[], sdkVersion: string): Baseline {
     s.recall = ratio(s.tp, s.tp + s.fn);
   }
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     sdkVersion,
     cases: results.length,
     perspectives,
@@ -581,13 +662,19 @@ export function renderReport(b: Baseline, results: CaseResult[]): string {
   L.push("Overall");
   L.push(`  cases where the primary action is correct for every selected perspective,`);
   L.push(`    and fee and execution status agree                          ${frac([o.casesPassed, b.cases])}${prov}`);
-  L.push(`  perspectives with the primary kind right                      ${frac([o.primaryCorrect, b.perspectives])}${prov}`);
-  L.push(`  wrong labels (false positives)                                ${o.wrongLabels}`);
-  L.push(`  abstentions (other, or fee_only where an action was expected) ${o.abstentions}`);
-  L.push(`  predicted a secondary action exactly instead of the primary   ${o.secondaryHits}`);
-  L.push(`  predicted a disputed reading (not scored as right or wrong)   ${o.disputedAlternatives}`);
+  L.push(`  perspectives with the primary action correct (kind, amounts`);
+  L.push(`    and non-null participants all match): outcome correct       ${frac([o.primaryCorrect, b.perspectives])}${prov}`);
+  L.push(`  perspectives with the primary kind right (correct + kind_only;`);
+  L.push(`    = per-kind TP)                                              ${frac([o.primaryKindRight, b.perspectives])}${prov}`);
+  L.push(`  Outcomes (one per perspective; they sum to ${b.perspectives})`);
+  L.push(`    correct                                                     ${o.primaryCorrect}`);
+  L.push(`    kind_only (kind right, amounts or participants wrong)       ${o.kindOnly}`);
+  L.push(`    secondary_hit (a secondary action exactly, not the primary) ${o.secondaryHits}`);
+  L.push(`    disputed_alternative (a reported reading exactly; a miss)   ${o.disputedAlternatives}`);
+  L.push(`    abstained (other, or fee_only where an action was expected) ${o.abstentions}`);
+  L.push(`    wrong_label (false positives)                               ${o.wrongLabels}`);
+  L.push(`    error (replay errors)                                       ${o.errors}`);
   L.push(`  forbidden-label violations                                    ${o.forbiddenViolations}`);
-  L.push(`  replay errors                                                 ${o.errors}`);
   L.push(`  amounts exact, over perspectives with the kind right and the`);
   L.push(`    amounts known (mint, raw, decimals; direction where exposed) ${frac(o.amountsExact)}`);
   L.push(`  participants exact, over perspectives with the kind right and`);
@@ -600,7 +687,8 @@ export function renderReport(b: Baseline, results: CaseResult[]): string {
   L.push("Not part of the case-pass rule today: secondary actions (reported above), `authority`,");
   L.push("the native-vs-wSOL flag, and direction where the classification does not expose it.");
   L.push("");
-  L.push("Per kind (primary action, one per perspective)");
+  L.push("Per kind (primary action, one per perspective; TP = correct or kind_only, FN = any other");
+  L.push("outcome, FP = wrong_label for the predicted kind)");
   L.push("  kind               TP  FP  FN  precision  recall");
   for (const [kind, s] of Object.entries(b.perKind)) {
     L.push(`  ${kind.padEnd(17)} ${String(s.tp).padStart(3)} ${String(s.fp).padStart(3)} ${String(s.fn).padStart(3)}     ${pct(s.precision)}  ${pct(s.recall)}`);
@@ -618,7 +706,7 @@ export function renderReport(b: Baseline, results: CaseResult[]): string {
     L.push("");
   }
   if (b.reportedAlternatives.length) {
-    L.push("Disputed interpretations (reported only; never scored or gated)");
+    L.push("Disputed interpretations (reported only: not part of the mandatory score; matching one is a miss for the primary)");
     for (const f of b.reportedAlternatives) L.push(`  ${f}`);
     L.push("");
   }
@@ -663,7 +751,24 @@ export function compareToBaseline(base: Baseline, now: Baseline): string[] {
         out.push(`${at}: perspective removed`);
         continue;
       }
+      // A perspective may only get weaker by becoming a complete primary match (`correct`).
       if (bp.outcome === "correct" && np.outcome !== "correct") out.push(`${at}: was correct, now ${np.outcome} (${np.predictedKind})`);
+      if (bp.outcome === "secondary_hit" && np.outcome !== "correct") {
+        const was = bp.secondaryHit?.action ?? "?";
+        if (np.outcome !== "secondary_hit") {
+          out.push(`${at}: was a secondary hit (${was}), now ${np.outcome} (${np.predictedKind})`);
+        } else if (np.secondaryHit?.action !== bp.secondaryHit?.action) {
+          out.push(`${at}: was a secondary hit (${was}), now a secondary hit on ${np.secondaryHit?.action ?? "?"}`);
+        } else {
+          if (bp.secondaryHit?.amountsExact === true && np.secondaryHit?.amountsExact !== true)
+            out.push(`${at}: secondary hit (${was}) amounts were exact, now not`);
+          if (bp.secondaryHit?.participantsExact === true && np.secondaryHit?.participantsExact !== true)
+            out.push(`${at}: secondary hit (${was}) participants were exact, now not`);
+        }
+      }
+      if (bp.outcome === "kind_only" && np.outcome !== "correct" && np.outcome !== "kind_only") {
+        out.push(`${at}: had the primary kind right (kind_only), now ${np.outcome} (${np.predictedKind})`);
+      }
       if (np.outcome === "wrong_label" && (bp.outcome !== "wrong_label" || bp.predictedKind !== np.predictedKind)) {
         out.push(`${at}: new wrong label ${np.predictedKind} (was ${bp.outcome} ${bp.predictedKind})`);
       }
