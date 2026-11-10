@@ -254,8 +254,19 @@ interface RawTransaction {
   postTokenBalances?: TokenBalance[];
   preBalances?: (bigint | number)[];
   postBalances?: (bigint | number)[];
-  accountKeys?: string[];
+  accountKeys?: string[]; // full resolved list: static, then lookup-table writable, then readonly
+  loadedAddresses?: { writable: string[]; readonly: string[] }; // lookup-table accounts (v0)
   memo?: string | null;
+  reconciliation?: LamportReconciliation; // see Known Limitations: Lamport Reconciliation
+}
+
+interface LamportReconciliation {
+  status: "balanced" | "unbalanced" | "unavailable";
+  feeLamports: string | null; // meta.fee
+  netLamportsOut: string | null; // sum(pre) - sum(post)
+  residualLamports: string | null; // netLamportsOut - feeLamports
+  accountCount: number;
+  reason?: string;
 }
 ```
 
@@ -445,7 +456,26 @@ interface TokenInfo {
 - `Date` objects converted to ISO strings
 - Must use `toJsonClassifiedTransaction` for server-side serialization
 
-### 10. Experimental APIs
+### 10. Transaction Versions (v0 boundary)
+
+- The SDK requests transactions with `maxSupportedTransactionVersion: 0`, so it reads **legacy and v0** transactions only.
+- **Version 1 transactions** (live on mainnet since 2026-09-15) are refused by the RPC (JSON-RPC error `-32015`). They are not retried:
+  - `getTransaction` / `getRawTransaction` and the `tx-indexer/advanced` `fetchTransaction` throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, `retryable: false`, carries `signature`).
+  - `getTransactions` and `getTransactionsBySignatures` **omit them from the result**. They are reported only if you pass `onTransactionSkipped({ signature, reason: "unsupported_version", error })`; without the callback they are still dropped silently. Signatures the RPC does not return are reported as `"not_found"`, other failures as `"fetch_failed"`.
+- v0 address-lookup-table accounts are resolved: `tx.accountKeys` is the full list (static keys, then lookup-table writable, then lookup-table readonly), which is what `preBalances`/`postBalances` and token `accountIndex` refer to.
+
+### 11. Lamport Reconciliation
+
+- The `fee:network` leg is the fee the runtime charged (`meta.fee`), not a computed residual. A hand-built `RawTransaction` without `fee` gets no fee leg.
+- Lamport balances from the fetch path are `bigint`.
+- A wSOL (native-mint) token account is represented once: by its actual **lamport** delta, attributed to the token owner (or to the account's own address when the balance metadata has no owner); the native token-amount change is not emitted, so a `sync_native` alone produces no leg. The full lamport delta goes to the owner, also when the wSOL account is created in the transaction: in that case the owner's credit includes the account's rent-exempt reserve (from a few thousand to about 2 million lamports, depending on the cluster's rent parameters), because the reserve cannot be told apart from funding using transaction data alone. Only the legacy native mint (`So11111111111111111111111111111111111111112`) is recognised; Token-2022's native mint (`9pan9bMn5HatX4EJdBwg9VgCa7Uz5HL8N1m5D3NdXejP`) is not handled and keeps ordinary lamport and token legs. Accounts closed in the transaction (pre-only token entry) are unchanged.
+- Nonzero transaction-level rewards (historical rent collection) make the reconciliation `unavailable` with an explicit reason.
+- Stake withdraw/deposit direction follows the target wallet (fallback: fee payer); a sponsored deposit is attributed to its funder. See CHANGELOG "Unreleased" for migration notes.
+- **Sponsored-deposit inference:** when the wallet pays no SOL but receives a non-SOL token on a stake protocol (and has no net SOL credit and sends no other token), the deposit's funder is inferred as the **largest external SOL debit**. The SDK does not verify that the credited mint is the pool's token, nor that the funder's SOL actually reached the pool.
+- **Follow-up (not fixed):** with lookup tables resolved, lamport legs of third-party accounts (pool vaults, custody, program-owned accounts) become visible, and the transfer, Solana Pay, bridge, Privacy Cash, NFT mint and NFT marketplace classifiers can pick them as sender, receiver or price, exactly as they already do on earlier versions when those accounts are static keys. Fixing this needs payment-specific evidence (instruction or program context), not wallet membership.
+- `tx.reconciliation` reports whether `sum(preBalances) - sum(postBalances)` equals the fee over the full account list: `balanced`, `unbalanced` (with `residualLamports`) or `unavailable` (metadata missing, arrays not matching the account list, imprecise numbers, or nonzero transaction-level rewards). It is computed from raw balances and is **independent** of the legs: `validateLegsBalance` checks the legs separately, and the two can disagree (for example, legs omit pre-only token balances of closed accounts).
+
+### 12. Experimental APIs
 
 - `getSignatures()` and `getTransactionsBySignatures()` marked experimental
 - API shape may change in minor versions

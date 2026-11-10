@@ -178,6 +178,76 @@ export class NftMetadataError extends TxIndexerError {
 }
 
 /**
+ * Error thrown when the RPC refuses to return a transaction because its
+ * version is newer than this SDK requests (`maxSupportedTransactionVersion: 0`).
+ *
+ * Version 1 transactions have been live on mainnet since 2026-09-15; until the
+ * SDK supports them, they surface as this error (single fetch) or as a skipped
+ * signature with reason "unsupported_version" (history fetches). Not retryable.
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await indexer.getTransaction(signature);
+ * } catch (error) {
+ *   if (error instanceof UnsupportedTransactionVersionError) {
+ *     console.log(`Cannot read ${error.signature} yet (v${error.transactionVersion})`);
+ *   }
+ * }
+ * ```
+ */
+export class UnsupportedTransactionVersionError extends TxIndexerError {
+  /** Signature of the transaction that could not be fetched */
+  readonly signature: string;
+
+  /** Version reported by the RPC, when it could be determined */
+  readonly transactionVersion?: number;
+
+  /** Highest transaction version this SDK requests */
+  readonly maxSupportedTransactionVersion: number;
+
+  constructor(
+    signature: string,
+    options?: {
+      transactionVersion?: number;
+      maxSupportedTransactionVersion?: number;
+      message?: string;
+      cause?: Error;
+    },
+  ) {
+    const max = options?.maxSupportedTransactionVersion ?? 0;
+    super(
+      options?.message ??
+        `Transaction ${signature} uses version ${
+          options?.transactionVersion ?? "unknown"
+        }, which is newer than the supported maxSupportedTransactionVersion (${max}).`,
+      "UNSUPPORTED_TRANSACTION_VERSION",
+      "UnsupportedTransactionVersionError",
+      { retryable: false, cause: options?.cause },
+    );
+    this.signature = signature;
+    this.transactionVersion = options?.transactionVersion;
+    this.maxSupportedTransactionVersion = max;
+  }
+}
+
+/**
+ * Converts the fetch layer's unsupported-version error into the public
+ * {@link UnsupportedTransactionVersionError}; any other value is returned
+ * unchanged (no reclassification of unrelated errors).
+ */
+export function toPublicFetchError(error: unknown): unknown {
+  if (
+    error instanceof Error &&
+    !(error instanceof TxIndexerError) &&
+    (error as { code?: unknown }).code === "UNSUPPORTED_TRANSACTION_VERSION"
+  ) {
+    return wrapError(error);
+  }
+  return error;
+}
+
+/**
  * Type guard to check if an error is a TxIndexerError.
  */
 export function isTxIndexerError(error: unknown): error is TxIndexerError {
@@ -221,6 +291,28 @@ export function isRetryableError(error: unknown): boolean {
 export function wrapError(error: unknown, context?: string): TxIndexerError {
   if (error instanceof TxIndexerError) {
     return error;
+  }
+
+  // Fetch-layer unsupported-version error (packages/solana/src/rpc/errors.ts)
+  if (
+    error instanceof Error &&
+    (error as { code?: unknown }).code === "UNSUPPORTED_TRANSACTION_VERSION"
+  ) {
+    const fetchError = error as Error & {
+      signature?: string;
+      transactionVersion?: number;
+      maxSupportedTransactionVersion?: number;
+    };
+    return new UnsupportedTransactionVersionError(
+      fetchError.signature ?? "unknown",
+      {
+        transactionVersion: fetchError.transactionVersion,
+        maxSupportedTransactionVersion:
+          fetchError.maxSupportedTransactionVersion,
+        message: context ? `${context}: ${error.message}` : error.message,
+        cause: error,
+      },
+    );
   }
 
   const cause = error instanceof Error ? error : undefined;

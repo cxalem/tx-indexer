@@ -8,6 +8,17 @@
 import type { Signature } from "@solana/kit";
 import type { RawTransaction } from "@tx-indexer/core/tx/tx.types";
 import { withRetry, type RetryConfig } from "./retry";
+import {
+  resolveAccountKeys,
+  normalizeLoadedAddresses,
+} from "../mappers/account-keys";
+import { reconcileLamports } from "../mappers/lamport-reconciliation";
+import {
+  MAX_SUPPORTED_TRANSACTION_VERSION,
+  UNSUPPORTED_TRANSACTION_VERSION_RPC_CODE,
+  UnsupportedTransactionVersionError,
+  type SkippedTransaction,
+} from "./errors";
 
 export interface BatchConfig {
   /** Max number of RPC calls per HTTP request (default: 10) */
@@ -21,6 +32,11 @@ export interface BatchConfig {
    * Set to 0 to disable throttling. Default: 10 (Helius free tier)
    */
   requestsPerSecond?: number;
+  /**
+   * Called once for every requested signature that does not produce a
+   * transaction ("not_found", "unsupported_version" or "fetch_failed").
+   */
+  onSkipped?: (skipped: SkippedTransaction) => void;
 }
 
 interface JsonRpcRequest {
@@ -63,6 +79,11 @@ interface GetTransactionResponse {
     preBalances?: Array<number | bigint>;
     postBalances?: Array<number | bigint>;
     logMessages?: string[];
+    rewards?: Array<{ lamports: number; rewardType?: string | null }> | null;
+    loadedAddresses?: {
+      writable?: string[];
+      readonly?: string[];
+    };
   } | null;
   transaction: {
     message: {
@@ -169,8 +190,12 @@ function responseToRawTransaction(
   }
 
   const memo = extractMemoFromLogs(resp.meta?.logMessages);
-  const accountKeys = resp.transaction.message.accountKeys.map((key) =>
-    typeof key === "string" ? key : key.pubkey,
+  const loadedAddresses = normalizeLoadedAddresses(resp.meta?.loadedAddresses);
+  // Same canonical order as the kit fetch path: static keys, then lookup-table
+  // writable, then lookup-table readonly. Balances index this full list.
+  const accountKeys = resolveAccountKeys(
+    resp.transaction.message.accountKeys,
+    loadedAddresses,
   );
 
   const preTokenBalances = (resp.meta?.preTokenBalances ?? []).map((bal) => ({
@@ -201,17 +226,26 @@ function responseToRawTransaction(
     signature: sig as unknown as RawTransaction["signature"],
     slot: resp.slot,
     blockTime: resp.blockTime,
-    fee: Number(resp.meta?.fee ?? 0),
+    fee: resp.meta ? Number(resp.meta.fee) : undefined,
     err: resp.meta?.err ?? null,
     programIds: extractProgramIdsFromMessage(resp.transaction.message),
     protocol: null,
     preTokenBalances,
     postTokenBalances,
-    preBalances: (resp.meta?.preBalances ?? []).map((bal) => Number(bal)),
-    postBalances: (resp.meta?.postBalances ?? []).map((bal) => Number(bal)),
+    // This path parses responses with plain JSON.parse, so lamports arrive as
+    // JS numbers and any value above Number.MAX_SAFE_INTEGER has already lost
+    // precision. The values are passed through untouched (never re-rounded);
+    // reconcileLamports() detects unsafe integers and reports the transaction
+    // as "unavailable" instead of producing a wrong balance check.
+    preBalances: resp.meta?.preBalances ?? [],
+    postBalances: resp.meta?.postBalances ?? [],
     accountKeys,
+    ...(loadedAddresses ? { loadedAddresses } : {}),
     memo,
   };
+  rawTx.reconciliation = reconcileLamports(rawTx, {
+    rewards: resp.meta?.rewards,
+  });
 
   return rawTx;
 }
@@ -240,6 +274,7 @@ export async function fetchTransactionsBatched(
     retry,
     // Default to 10 req/sec (Helius free tier limit)
     requestsPerSecond = 10,
+    onSkipped,
   } = config;
 
   if (signatures.length === 0) {
@@ -277,7 +312,7 @@ export async function fetchTransactionsBatched(
         sig,
         {
           commitment,
-          maxSupportedTransactionVersion: 0,
+          maxSupportedTransactionVersion: MAX_SUPPORTED_TRANSACTION_VERSION,
           encoding: "json",
         },
       ],
@@ -302,8 +337,20 @@ export async function fetchTransactionsBatched(
           `Failed to fetch transaction ${sig}: ${resp.error.message}`,
         );
         allResults[idx] = null;
+        const unsupported =
+          resp.error.code === UNSUPPORTED_TRANSACTION_VERSION_RPC_CODE;
+        onSkipped?.({
+          signature: sig,
+          reason: unsupported ? "unsupported_version" : "fetch_failed",
+          error: unsupported
+            ? new UnsupportedTransactionVersionError(sig, { cause: resp.error })
+            : new Error(resp.error.message),
+        });
       } else {
         allResults[idx] = responseToRawTransaction(sig, resp.result ?? null);
+        if (allResults[idx] === null) {
+          onSkipped?.({ signature: sig, reason: "not_found" });
+        }
       }
     }
 

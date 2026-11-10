@@ -19,11 +19,60 @@ export {
   fetchWalletSignatures,
   fetchWalletTokenAccounts,
   fetchWalletAndTokenSignatures,
-  fetchTransaction,
-  fetchTransactionsBatch,
   type FetchBatchOptions,
   type FetchTransactionOptions,
 } from "@tx-indexer/solana/fetcher/transactions";
+
+import {
+  fetchTransaction as fetchTransactionFromRpc,
+  fetchTransactionsBatch as fetchTransactionsBatchFromRpc,
+  type FetchBatchOptions as InternalFetchBatchOptions,
+} from "@tx-indexer/solana/fetcher/transactions";
+import { toPublicFetchError } from "./errors";
+
+/**
+ * Fetches and maps one transaction (null if the RPC does not return it).
+ *
+ * Throws the public `UnsupportedTransactionVersionError` (a `TxIndexerError`)
+ * when the RPC refuses the transaction's version; other errors pass through.
+ */
+export async function fetchTransaction(
+  ...args: Parameters<typeof fetchTransactionFromRpc>
+): ReturnType<typeof fetchTransactionFromRpc> {
+  try {
+    return await fetchTransactionFromRpc(...args);
+  } catch (error) {
+    throw toPublicFetchError(error);
+  }
+}
+
+/**
+ * Fetches many transactions with bounded concurrency. Signatures that do not
+ * produce a transaction are reported through `onSkipped` / `onFetchError`;
+ * unsupported-version errors are delivered as the public
+ * `UnsupportedTransactionVersionError`.
+ */
+export function fetchTransactionsBatch(
+  rpc: Parameters<typeof fetchTransactionsBatchFromRpc>[0],
+  signatures: Parameters<typeof fetchTransactionsBatchFromRpc>[1],
+  options: InternalFetchBatchOptions = {},
+): ReturnType<typeof fetchTransactionsBatchFromRpc> {
+  const { onSkipped, onFetchError } = options;
+  return fetchTransactionsBatchFromRpc(rpc, signatures, {
+    ...options,
+    onFetchError: onFetchError
+      ? (sig, error) => onFetchError(sig, toPublicFetchError(error) as Error)
+      : undefined,
+    onSkipped: onSkipped
+      ? (skip) =>
+          onSkipped(
+            skip.error
+              ? { ...skip, error: toPublicFetchError(skip.error) as Error }
+              : skip,
+          )
+      : undefined,
+  });
+}
 
 // RPC client creation - for custom client setups
 export {

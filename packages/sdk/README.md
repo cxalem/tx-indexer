@@ -348,6 +348,24 @@ try {
 | `InvalidInputError`  | `INVALID_INPUT`       | No        | Invalid address, signature, or parameter |
 | `ConfigurationError` | `CONFIGURATION_ERROR` | No        | Missing required configuration           |
 | `NftMetadataError`   | `NFT_METADATA_ERROR`  | Varies    | NFT metadata fetch failed                |
+| `UnsupportedTransactionVersionError` | `UNSUPPORTED_TRANSACTION_VERSION` | No | Transaction version newer than v0 (see below) |
+
+### Transaction Versions
+
+The SDK reads legacy and v0 transactions (`maxSupportedTransactionVersion: 0`). Version 1 transactions, live on mainnet since 2026-09-15, are rejected by the RPC: `getTransaction` throws `UnsupportedTransactionVersionError` (with `signature`), and history methods omit them from the result. To learn which signatures were skipped and why, pass `onTransactionSkipped` (without it they are dropped silently):
+
+```typescript
+const txs = await indexer.getTransactions(wallet, {
+  onTransactionSkipped: ({ signature, reason }) => {
+    // reason: "unsupported_version" | "not_found" | "fetch_failed"
+    console.warn(`Skipped ${signature}: ${reason}`);
+  },
+});
+```
+
+Migration notes (see CHANGELOG "Unreleased"): the fee leg now comes from `meta.fee` (no fee leg if a hand-built `RawTransaction` has no `fee`), fetched lamport balances are `bigint`, unsupported-version errors are typed (also from `tx-indexer/advanced`), `onTransactionSkipped` is new, wSOL is represented once (the full lamport delta, attributed to the owner; for a wSOL account created in the transaction that credit includes its rent-exempt reserve; legacy native mint only), and stake direction follows the wallet.
+
+Each fetched transaction carries `tx.reconciliation` (`balanced | unbalanced | unavailable`), a check, computed from raw balances and independent of the legs, that lamports leaving all accounts equal the network fee. See SDK.md "Known Limitations".
 
 ### Null vs Throw
 

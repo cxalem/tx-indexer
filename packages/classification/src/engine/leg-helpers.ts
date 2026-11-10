@@ -90,3 +90,15 @@ export function getNetChange(
 
   return net;
 }
+
+/**
+ * The account whose movements decide direction: the explicit target wallet,
+ * falling back to the fee payer (`accountKeys[0]`). Null when neither is known.
+ */
+export function getPerspectiveAddress(
+  walletAddress: string | undefined,
+  accountKeys: readonly string[] | undefined,
+): string | null {
+  return walletAddress ?? accountKeys?.[0] ?? null;
+}
+

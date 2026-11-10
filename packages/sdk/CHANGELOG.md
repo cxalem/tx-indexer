@@ -14,6 +14,19 @@
 
 - Improved SDK docs around null-vs-throw behavior and wallet funding semantics
 
+### Fixed: v0 lookup-table accounts and lamport accounting (migration notes)
+
+- **Lookup-table accounts are resolved.** `tx.accountKeys` is now the full list (static keys, then lookup-table writable, then readonly); lamport movements on lookup-table accounts are no longer dropped. New optional `tx.loadedAddresses`.
+- **Fee leg comes from `meta.fee`.** The `fee:network` leg is the fee the runtime charged, no longer the debit/credit residual. On a hand-built `RawTransaction` with `fee` undefined there is now **no fee leg** (previously the residual was used).
+- **New `tx.reconciliation`** (`balanced | unbalanced | unavailable`, lamports as strings) reports whether `sum(pre) - sum(post)` equals the fee. Transactions with nonzero transaction-level rewards (historical rent collection) report `unavailable`.
+- **Lamport balances are `bigint`** in `preBalances`/`postBalances` from the fetch path (previously `number`, which lost precision above 2^53). `fee` is `undefined` when the RPC returned no metadata.
+- **Typed unsupported-version errors.** Version 1 transactions (RPC error -32015) throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, not retried, carries `signature`) from `getTransaction`, `getRawTransaction` and the `tx-indexer/advanced` fetchers.
+- **New `onTransactionSkipped` option** on `getTransactions` and `getTransactionsBySignatures` reports each signature that produced no transaction (`not_found | unsupported_version | fetch_failed`); `fetchTransactionsBatch` gains `onSkipped` (exactly one notification per signature).
+- **wSOL is represented once.** A wSOL (native-mint) token account is represented once: by its actual **lamport** delta, attributed to the token owner (or to the account's own address when the balance metadata has no owner); the native token-amount change is not emitted, so a `sync_native` alone produces no leg. The full lamport delta goes to the owner, also when the wSOL account is created in the transaction: in that case the owner's credit includes the account's rent-exempt reserve (from a few thousand to about 2 million lamports, depending on the cluster's rent parameters), because the reserve cannot be told apart from funding using transaction data alone. Only the legacy native mint (`So11111111111111111111111111111111111111112`) is recognised; Token-2022's native mint (`9pan9bMn5HatX4EJdBwg9VgCa7Uz5HL8N1m5D3NdXejP`) is not handled and keeps ordinary lamport and token legs. Accounts closed in the transaction (pre-only token entry) are unchanged.
+- **Stake direction follows the wallet.** Stake withdraw requires the target wallet (fallback: fee payer) to receive SOL and not send SOL, so a reserve debit no longer turns a withdrawal into a deposit. Stake deposit uses the wallet's own SOL debit; for a sponsored deposit (wallet receives a non-SOL token, pays no SOL, has no net SOL credit and sends no other token) the amount is the largest external SOL debit and the sender is that funder (the credited mint is not verified to be the pool token).
+- **Lamport reconciliation and leg validation are independent checks.** `tx.reconciliation` works from raw balances; `validateLegsBalance` works from legs. They can disagree (for example, legs omit pre-only token balances of closed accounts) and neither is derived from the other.
+- **Published bundle:** the ESM build now emits a shared chunk so `tx-indexer` and `tx-indexer/advanced` share one copy of the error classes (`instanceof` and `isTxIndexerError` hold across entry points).
+
 ## 1.5.0
 
 ### Minor Changes

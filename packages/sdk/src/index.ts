@@ -45,6 +45,8 @@ export {
   type GetSignaturesOptions,
   type GetSignaturesResult,
   type GetTransactionsBySignaturesOptions,
+  type SkippedTransaction,
+  type TransactionSkipReason,
 } from "./client";
 
 // Re-export IndexerRpcApi for users who need to type their own clients
@@ -100,6 +102,8 @@ export {
   type JsonTransactionClassification,
   type JsonTxLeg,
   type JsonClassifiedTransaction,
+  type JsonLamportReconciliation,
+  type JsonLoadedAddresses,
 } from "./json-types";
 
 // ============================================================================
@@ -114,6 +118,7 @@ export {
   InvalidInputError,
   ConfigurationError,
   NftMetadataError,
+  UnsupportedTransactionVersionError,
   isTxIndexerError,
   isRetryableError,
   wrapError,

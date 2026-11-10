@@ -20,6 +20,8 @@
 import type { ClassifiedTransaction } from "./client";
 import type {
   RawTransaction,
+  LamportReconciliation,
+  LoadedAddresses,
   TxLeg,
   TokenBalance,
   TxLegSide,
@@ -103,9 +105,25 @@ export interface JsonRawTransaction {
   preBalances?: string[];
   /** String representations of lamport balances (originally bigint | number) */
   postBalances?: string[];
+  /**
+   * Full resolved account list: static keys, then lookup-table writable,
+   * then lookup-table readonly. Balances index this list.
+   */
   accountKeys?: string[];
+  /** Addresses loaded from address lookup tables (tail of accountKeys) */
+  loadedAddresses?: JsonLoadedAddresses;
   memo?: string | null;
+  /** Lamport reconciliation diagnostics (all lamport values are strings) */
+  reconciliation?: JsonLamportReconciliation;
 }
+
+/**
+ * JSON-safe lamport reconciliation. Already JSON-safe: lamports are strings.
+ */
+export type JsonLamportReconciliation = LamportReconciliation;
+
+/** JSON-safe lookup-table addresses. */
+export type JsonLoadedAddresses = LoadedAddresses;
 
 // =============================================================================
 // JSON-Safe Classification Types
@@ -236,7 +254,16 @@ function toJsonRawTransaction(tx: RawTransaction): JsonRawTransaction {
     preBalances: tx.preBalances?.map(toJsonBigInt),
     postBalances: tx.postBalances?.map(toJsonBigInt),
     accountKeys: tx.accountKeys,
+    ...(tx.loadedAddresses
+      ? {
+          loadedAddresses: {
+            writable: [...tx.loadedAddresses.writable],
+            readonly: [...tx.loadedAddresses.readonly],
+          },
+        }
+      : {}),
     memo: tx.memo,
+    ...(tx.reconciliation ? { reconciliation: { ...tx.reconciliation } } : {}),
   };
 }
 
