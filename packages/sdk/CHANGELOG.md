@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.6.0
+
+Released 2026-11-10. Everything merged since 1.5.0 (2026-02-01). No change to `TxPrimaryType`; existing code keeps working. `tx-indexer/advanced` users should read the migration notes below.
 
 ### Added
 
@@ -13,6 +15,16 @@
 ### Changed
 
 - Improved SDK docs around null-vs-throw behavior and wallet funding semantics
+
+### Fixed: classification (merged between February and April 2026, not listed before)
+
+- **Swaps are no longer detected on internal rebalances.** Legs are netted per mint first: the same token leaving and returning to the same owner, plus a small SOL fee, is not a swap. A tiny SOL-only outflow outside a known DEX is treated as a fee.
+- **Swap direction follows the wallet you query**, not always the fee payer, so sponsored and relayed swaps read correctly. `getTransaction(signature, { walletAddress })` accepts the perspective wallet.
+- **Transfer and Solana Pay pairing** score sender/receiver pairs (exact amount match first, tiny SOL legs penalised) instead of taking the first credit of the same mint.
+- **Bridge direction** compares total in and out and returns no match when they are equal, instead of always reporting `bridge_in`.
+- **Airdrops** report the largest received token and prefer a protocol account as sender.
+- **NFT marketplace:** removed a rule that labelled any marketplace transaction where the wallet paid and received an NFT as `nft_purchase`.
+- **Engine:** priority ties are broken by registration order; a non-relevant match (fee only) is returned instead of `other` when nothing relevant matches; every result carries a `debugTrace` (`classifyTransactionWithTrace`).
 
 ### Fixed: v0 lookup-table accounts and lamport accounting (migration notes)
 
