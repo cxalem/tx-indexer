@@ -8,18 +8,16 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@tx-indexer/classification": "workspace:*",
+    "@tx-indexer/core": "workspace:*",
+    "@tx-indexer/solana": "workspace:*",
     "hono": "^4.0.0",
-    "@solana/kit": "^5.0.0",
     "zod": "^4.1.13"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241127.0",
     "@repo/typescript-config": "workspace:*",
-    "@tx-indexer/classification": "workspace:*",
-    "@tx-indexer/core": "workspace:*",
-    "@tx-indexer/solana": "workspace:*",
     "typescript": "5.9.2",
     "wrangler": "^4.53.0"
   }
 }
-

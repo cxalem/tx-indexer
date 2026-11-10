@@ -12,9 +12,7 @@
     "@changesets/cli": "^2.29.8",
     "prettier": "^3.6.2",
     "turbo": "^2.6.3",
-    "typescript": "5.9.2",
-    "wrangler": "^4.53.0",
-    "zod": "^4.1.13"
+    "typescript": "5.9.2"
   },
   "engines": {
     "node": ">=18"
@@ -23,11 +21,5 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "dependencies": {
-    "@solana/kit": "^5.0.0",
-    "@solana/pay": "^0.2.6",
-    "bs58": "^6.0.0",
-    "dotenv": "^17.2.3"
-  }
+  ]
 }

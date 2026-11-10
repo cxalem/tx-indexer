@@ -19,8 +19,6 @@
     "@solana/kit": "^5.0.0",
     "tx-indexer": "workspace:*",
     "@tx-indexer/core": "workspace:*",
-    "@tx-indexer/solana": "workspace:*",
-    "@tx-indexer/classification": "workspace:*",
-    "zod": "^4.1.13"
+    "@tx-indexer/solana": "workspace:*"
   }
 }

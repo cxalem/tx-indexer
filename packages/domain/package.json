@@ -19,6 +19,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@solana/kit": "^5.0.0",
     "zod": "^4.1.13"
   }
 }
