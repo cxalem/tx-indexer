@@ -80,7 +80,7 @@ describe("SDK replay of recorded v0 Jupiter swap", () => {
     expect(error.retryable).toBe(false);
   });
 
-  test("getTransactions reports the skipped v1 signature instead of dropping it silently", async () => {
+  test("getTransactions reports the skipped unsupported-version (synthetic v2) signature instead of dropping it silently", async () => {
     const indexer = indexerFor([swap.meta.signature, v2.meta.signature, sell.meta.signature]);
     const skipped: SkippedTransaction[] = [];
     const txs = await indexer.getTransactions(

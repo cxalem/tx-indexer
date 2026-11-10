@@ -11,8 +11,8 @@
     "@tx-indexer/classification": "workspace:*",
     "@tx-indexer/core": "workspace:*",
     "@tx-indexer/solana": "workspace:*",
-    "hono": "^4.13.17",
-    "zod": "^4.6.7"
+    "hono": "^4.0.0",
+    "zod": "4.1.13"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261110.1",
