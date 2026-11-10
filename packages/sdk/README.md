@@ -5,10 +5,12 @@ Solana transaction indexer and classification SDK.
 ## Installation
 
 ```bash
-bun add tx-indexer
+bun add tx-indexer @solana/kit
 # or
-npm install tx-indexer
+npm install tx-indexer @solana/kit
 ```
+
+Requirements: `@solana/kit` 8.x (peer dependency, `^8.0.0`) and Node.js 20.18 or newer (`engines.node: >=20.18.0`, the minimum of `@solana/kit` 8).
 
 ## Quick Start
 
@@ -352,7 +354,7 @@ try {
 
 ### Transaction Versions
 
-The SDK reads legacy, v0 and v1 transactions (`maxSupportedTransactionVersion: 1`); v1 transactions have been live on mainnet since 2026-09-15 and need `@solana/kit` 8 or newer as the peer dependency. A transaction with a version above 1 is rejected by the RPC: `getTransaction` throws `UnsupportedTransactionVersionError` (with `signature`), and history methods omit it from the result. To learn which signatures were skipped and why, pass `onTransactionSkipped` (without it they are dropped silently):
+The SDK reads legacy, v0 and v1 transactions (`maxSupportedTransactionVersion: 1`); v1 transactions have been live on mainnet since 2026-09-15 and need the `@solana/kit` 8.x peer dependency (`^8.0.0`). A transaction with a version above 1 is rejected by the RPC: `getTransaction` throws `UnsupportedTransactionVersionError` (with `signature`), and history methods omit it from the result. To learn which signatures were skipped and why, pass `onTransactionSkipped` (without it they are dropped silently):
 
 ```typescript
 const txs = await indexer.getTransactions(wallet, {
@@ -448,15 +450,19 @@ if (tx.classification.counterparty) {
 
 The SDK is lightweight and tree-shakeable:
 
-| Import                | Size (minified + brotli) |
-| --------------------- | ------------------------ |
-| Full SDK              | ~11 KB                   |
-| `createIndexer` only  | ~11 KB                   |
-| `classifyTransaction` | ~6 KB                    |
+Measured with size-limit 14 (Rolldown), minified + brotli, **including** the tree-shaken parts of `@solana/kit` and `zod` that each import pulls in:
+
+| Import                                  | Size (minified + brotli) |
+| --------------------------------------- | ------------------------ |
+| Full SDK (`createIndexer` + errors)     | ~39 KB                   |
+| `createIndexer` only                    | ~39 KB                   |
+| `classifyTransaction` (advanced)        | ~27 KB                   |
+| `fetchTransaction` (advanced)           | ~30 KB                   |
+| `transactionToLegs` (advanced)          | ~29 KB                   |
 
 ```bash
 bun run size      # Check sizes
-bun run size:why  # Analyze bundle
+bun run size:why  # Analyze bundle (writes rolldown-why-*.html reports and opens them in a browser)
 ```
 
 ## License

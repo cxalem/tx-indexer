@@ -14,16 +14,21 @@
 
 ### Dependencies
 
-- **Runtime**: `zod` ^4.1.13
-- **Peer Dependencies**: `typescript` ^5, `@solana/kit` ^5.0.0
+- **Runtime**: `zod` ^4.6.7
+- **Peer Dependencies**: `typescript` ^5 || ^6, `@solana/kit` ^8.0.0 (8.x)
+- **Node.js**: >=20.18.0 (`engines.node`; the minimum of `@solana/kit` 8)
 
 ### Bundle Size
 
-| Import                | Size (minified + brotli) |
-| --------------------- | ------------------------ |
-| Full SDK              | ~11 KB                   |
-| `createIndexer` only  | ~11 KB                   |
-| `classifyTransaction` | ~6 KB                    |
+Measured with size-limit 14 (Rolldown), minified + brotli, **including** the tree-shaken parts of `@solana/kit` and `zod` that each import pulls in:
+
+| Import                                  | Size (minified + brotli) |
+| --------------------------------------- | ------------------------ |
+| Full SDK (`createIndexer` + errors)     | ~39 KB                   |
+| `createIndexer` only                    | ~39 KB                   |
+| `classifyTransaction` (advanced)        | ~27 KB                   |
+| `fetchTransaction` (advanced)           | ~30 KB                   |
+| `transactionToLegs` (advanced)          | ~29 KB                   |
 
 ---
 

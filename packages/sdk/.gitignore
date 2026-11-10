@@ -1,0 +1,3 @@
+# size-limit --why reports (never commit; do not run --why, it opens a browser)
+rolldown-why-*.html
+esbuild-why*.html

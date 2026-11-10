@@ -3,30 +3,30 @@
     "name": "Main SDK (createIndexer + errors)",
     "path": "src/index.ts",
     "import": "{ createIndexer, RateLimitError, isRetryableError }",
-    "limit": "25 KB"
+    "limit": "41 KB"
   },
   {
     "name": "createIndexer only",
     "path": "src/index.ts",
     "import": "{ createIndexer }",
-    "limit": "25 KB"
+    "limit": "41 KB"
   },
   {
     "name": "Advanced: classifyTransaction",
     "path": "src/advanced.ts",
     "import": "{ classifyTransaction }",
-    "limit": "8 KB"
+    "limit": "28.5 KB"
   },
   {
     "name": "Advanced: fetchTransaction",
     "path": "src/advanced.ts",
     "import": "{ fetchTransaction }",
-    "limit": "10 KB"
+    "limit": "31.5 KB"
   },
   {
     "name": "Advanced: transactionToLegs",
     "path": "src/advanced.ts",
     "import": "{ transactionToLegs }",
-    "limit": "10 KB"
+    "limit": "30.5 KB"
   }
 ]
