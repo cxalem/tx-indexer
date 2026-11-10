@@ -14,6 +14,11 @@ import {
   fetchTransactionsBatch,
 } from "@tx-indexer/solana/fetcher/transactions";
 import type { RetryConfig } from "@tx-indexer/solana/rpc/retry";
+import {
+  UnsupportedTransactionVersionError as FetchUnsupportedTransactionVersionError,
+  type SkippedTransaction as FetchSkippedTransaction,
+  type TransactionSkipReason,
+} from "@tx-indexer/solana/rpc/errors";
 
 export type { FetchTransactionsConfig } from "@tx-indexer/solana/fetcher/transactions";
 import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
@@ -40,7 +45,7 @@ import {
   fetchNftMetadataBatch,
   type NftMetadata,
 } from "./nft";
-import { ConfigurationError } from "./errors";
+import { ConfigurationError, wrapError, type TxIndexerError } from "./errors";
 import {
   DEFAULT_HELIUS_WALLET_API_BASE_URL,
   fetchWalletFundingSource,
@@ -50,6 +55,38 @@ import {
 export type { WalletFundingSource } from "./wallet-api";
 
 const NFT_TRANSACTION_TYPES = ["nft_mint", "nft_purchase", "nft_sale"] as const;
+
+export type { TransactionSkipReason } from "@tx-indexer/solana/rpc/errors";
+
+/**
+ * A signature that was requested but did not produce a transaction.
+ *
+ * - `not_found`: the RPC returned null (unknown or not yet available)
+ * - `unsupported_version`: the RPC refused because the transaction version is
+ *   newer than the SDK supports; `error` is an UnsupportedTransactionVersionError
+ * - `fetch_failed`: any other error after retries
+ */
+export interface SkippedTransaction {
+  signature: string;
+  reason: TransactionSkipReason;
+  error?: TxIndexerError;
+}
+
+function toSdkSkip(skip: FetchSkippedTransaction): SkippedTransaction {
+  return {
+    signature: skip.signature,
+    reason: skip.reason,
+    ...(skip.error ? { error: wrapError(skip.error) } : {}),
+  };
+}
+
+/** Re-throws fetch-layer unsupported-version errors as the SDK error type. */
+function rethrowAsSdkError(error: unknown): never {
+  if (error instanceof FetchUnsupportedTransactionVersionError) {
+    throw wrapError(error);
+  }
+  throw error;
+}
 
 /**
  * Normalizes an address input to the branded Address type.
@@ -365,6 +402,12 @@ export interface GetTransactionsOptions {
    * Set to 0 to skip token account queries entirely.
    */
   maxTokenAccounts?: number;
+  /**
+   * Called for every signature found in history that did not produce a
+   * transaction (not found, unsupported transaction version, or fetch failure).
+   * Without this callback such signatures are omitted from the result.
+   */
+  onTransactionSkipped?: (skipped: SkippedTransaction) => void;
 }
 
 export interface GetTransactionOptions {
@@ -481,6 +524,11 @@ export interface GetTransactionsBySignaturesOptions {
    * Called for each transaction that was fetched from RPC.
    */
   onFetched?: (tx: ClassifiedTransaction) => void;
+  /**
+   * Called for every requested signature that did not produce a transaction
+   * (not found, unsupported transaction version, or fetch failure).
+   */
+  onTransactionSkipped?: (skipped: SkippedTransaction) => void;
 }
 
 export interface ClassifiedTransaction {
@@ -758,6 +806,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         overfetchMultiplier = 2,
         minPageSize = 20,
         maxTokenAccounts = 5,
+        onTransactionSkipped,
       } = options;
 
       // Normalize optional signature inputs
@@ -879,6 +928,9 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
             retry,
             // Enable JSON-RPC batching to reduce HTTP requests
             rpcUrl,
+            onSkipped: onTransactionSkipped
+              ? (skip) => onTransactionSkipped(toSdkSkip(skip))
+              : undefined,
           },
         );
 
@@ -1029,7 +1081,9 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       } = options;
 
       const normalizedSig = normalizeSignature(signature);
-      const tx = await fetchTransaction(client.rpc, normalizedSig);
+      const tx = await fetchTransaction(client.rpc, normalizedSig).catch(
+        rethrowAsSdkError,
+      );
 
       if (!tx) {
         return null;
@@ -1061,7 +1115,9 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       signature: SignatureInput,
     ): Promise<RawTransaction | null> {
       const normalizedSig = normalizeSignature(signature);
-      return fetchTransaction(client.rpc, normalizedSig);
+      return fetchTransaction(client.rpc, normalizedSig).catch(
+        rethrowAsSdkError,
+      );
     },
 
     async getNftMetadata(mintAddress: string): Promise<NftMetadata | null> {
@@ -1267,6 +1323,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         retry,
         getCached,
         onFetched,
+        onTransactionSkipped,
       } = options;
 
       if (signatures.length === 0) {
@@ -1299,6 +1356,9 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
           concurrency,
           retry,
           rpcUrl,
+          onSkipped: onTransactionSkipped
+            ? (skip) => onTransactionSkipped(toSdkSkip(skip))
+            : undefined,
         });
 
         for (const tx of rawTxs) {

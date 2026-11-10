@@ -28,8 +28,10 @@ function isDexProtocol(protocol: ProtocolInfo | null | undefined): boolean {
 /**
  * Converts a raw Solana transaction into a double-entry accounting ledger.
  *
- * Creates TxLeg entries for all SOL and token balance changes, automatically
- * detecting and accounting for network fees. Each leg represents a debit or credit
+ * Creates TxLeg entries for all SOL and token balance changes over the full
+ * resolved account list, plus a network fee leg taken from the fee the runtime
+ * charged (`tx.fee`, i.e. `meta.fee`). Legs only balance when the lamport
+ * reconciliation balances; see `reconcileLamports`. Each leg represents a debit or credit
  * for a specific account and token, enabling transaction classification and validation.
  *
  * For DEX protocols, accounts are tagged based on their role:
@@ -49,8 +51,6 @@ export function transactionToLegs(
   // Wallet address is kept as-is since Solana addresses are case-sensitive (base58)
 
   const solChanges = extractSolBalanceChanges(tx);
-  let totalSolDebits = 0n;
-  let totalSolCredits = 0n;
 
   for (const change of solChanges) {
     if (change.change === 0n) continue;
@@ -65,12 +65,6 @@ export function transactionToLegs(
       throw new Error("SOL token info not found in registry");
     }
 
-    if (change.change > 0n) {
-      totalSolCredits += change.change;
-    } else {
-      totalSolDebits += -change.change;
-    }
-
     legs.push({
       accountId,
       side: change.change > 0n ? "credit" : "debit",
@@ -83,8 +77,11 @@ export function transactionToLegs(
     });
   }
 
-  const networkFee = totalSolDebits - totalSolCredits;
-  if (networkFee > 0n) {
+  // The network fee leg is the fee the runtime charged (meta.fee). It is NOT
+  // derived from the residual of debits minus credits: an unexplained residual
+  // is reported by reconcileLamports(), never renamed "fee".
+  const networkFee = feeLamportsOf(tx);
+  if (networkFee !== null && networkFee > 0n) {
     const solInfo = TOKEN_INFO[KNOWN_TOKENS.SOL];
     if (solInfo) {
       legs.push({
@@ -145,11 +142,17 @@ export function transactionToLegs(
   return legs;
 }
 
+function feeLamportsOf(tx: RawTransaction): bigint | null {
+  if (tx.fee === undefined || tx.fee === null) return null;
+  if (!Number.isSafeInteger(tx.fee)) return null;
+  return BigInt(tx.fee);
+}
+
 /**
  * Determines the role of a SOL balance change in the transaction context.
  *
- * Network fees are handled separately via the fee:network leg (calculated from
- * the imbalance between total debits and credits). This function only categorizes
+ * Network fees are handled separately via the fee:network leg (taken from
+ * the fee the runtime charged, meta.fee). This function only categorizes
  * external account balance changes as sent/received.
  *
  * @param change - SOL balance change for an account

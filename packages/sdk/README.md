@@ -348,6 +348,22 @@ try {
 | `InvalidInputError`  | `INVALID_INPUT`       | No        | Invalid address, signature, or parameter |
 | `ConfigurationError` | `CONFIGURATION_ERROR` | No        | Missing required configuration           |
 | `NftMetadataError`   | `NFT_METADATA_ERROR`  | Varies    | NFT metadata fetch failed                |
+| `UnsupportedTransactionVersionError` | `UNSUPPORTED_TRANSACTION_VERSION` | No | Transaction version newer than v0 (see below) |
+
+### Transaction Versions
+
+The SDK reads legacy and v0 transactions (`maxSupportedTransactionVersion: 0`). Version 1 transactions, live on mainnet since 2026-09-15, are rejected by the RPC: `getTransaction` throws `UnsupportedTransactionVersionError` (with `signature`), and history methods report them instead of dropping them silently:
+
+```typescript
+const txs = await indexer.getTransactions(wallet, {
+  onTransactionSkipped: ({ signature, reason }) => {
+    // reason: "unsupported_version" | "not_found" | "fetch_failed"
+    console.warn(`Skipped ${signature}: ${reason}`);
+  },
+});
+```
+
+Each fetched transaction carries `tx.reconciliation` (`balanced | unbalanced | unavailable`), the independent check that lamports leaving all accounts equal the network fee. See SDK.md "Known Limitations".
 
 ### Null vs Throw
 

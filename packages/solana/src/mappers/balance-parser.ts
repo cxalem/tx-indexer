@@ -116,10 +116,15 @@ export function extractTokenBalanceChanges(
 
 /**
  * Extracts SOL balance changes for all accounts in a transaction.
- * 
- * Compares pre and post lamport balances for each account key to calculate
- * the SOL change. Only includes accounts with non-zero changes.
- * 
+ *
+ * Compares pre and post lamport balances for each resolved account key
+ * (static keys, then lookup-table writable, then lookup-table readonly) and
+ * returns only accounts with non-zero changes. Deltas are exact bigints.
+ *
+ * Missing balances are never fabricated: an index is only considered when the
+ * key, the pre balance and the post balance are all present. If the arrays do
+ * not line up, `reconcileLamports` reports the transaction as `unavailable`.
+ *
  * @param tx - Raw transaction with SOL balance data
  * @returns Array of SOL balance changes with account address and amounts
  */
@@ -133,13 +138,20 @@ export function extractSolBalanceChanges(
   } = tx;
 
   const changes: SolBalanceChange[] = [];
+  const count = Math.min(
+    accountKeys.length,
+    preBalances.length,
+    postBalances.length
+  );
 
-  for (let i = 0; i < accountKeys.length; i++) {
+  for (let i = 0; i < count; i++) {
     const address = accountKeys[i];
-    if (!address) continue;
+    const rawPre = preBalances[i];
+    const rawPost = postBalances[i];
+    if (!address || rawPre === undefined || rawPost === undefined) continue;
 
-    const preBal = BigInt(preBalances[i] ?? 0);
-    const postBal = BigInt(postBalances[i] ?? 0);
+    const preBal = BigInt(rawPre);
+    const postBal = BigInt(rawPost);
     const change = postBal - preBal;
 
     if (change !== 0n) {

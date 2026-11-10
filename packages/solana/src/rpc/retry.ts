@@ -1,3 +1,5 @@
+import { isUnsupportedTransactionVersionRpcError } from "./errors";
+
 export interface RetryConfig {
   maxAttempts?: number;
   baseDelayMs?: number;
@@ -11,6 +13,11 @@ const DEFAULT_CONFIG: Required<RetryConfig> = {
 };
 
 function isRetryableError(error: unknown): boolean {
+  // An unsupported transaction version fails identically on every attempt.
+  if (isUnsupportedTransactionVersionRpcError(error)) {
+    return false;
+  }
+
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
     const errorName = error.name.toLowerCase();

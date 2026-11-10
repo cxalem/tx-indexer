@@ -254,8 +254,19 @@ interface RawTransaction {
   postTokenBalances?: TokenBalance[];
   preBalances?: (bigint | number)[];
   postBalances?: (bigint | number)[];
-  accountKeys?: string[];
+  accountKeys?: string[]; // full resolved list: static, then lookup-table writable, then readonly
+  loadedAddresses?: { writable: string[]; readonly: string[] }; // lookup-table accounts (v0)
   memo?: string | null;
+  reconciliation?: LamportReconciliation; // see Known Limitations: Lamport Reconciliation
+}
+
+interface LamportReconciliation {
+  status: "balanced" | "unbalanced" | "unavailable";
+  feeLamports: string | null; // meta.fee
+  netLamportsOut: string | null; // sum(pre) - sum(post)
+  residualLamports: string | null; // netLamportsOut - feeLamports
+  accountCount: number;
+  reason?: string;
 }
 ```
 
@@ -445,7 +456,20 @@ interface TokenInfo {
 - `Date` objects converted to ISO strings
 - Must use `toJsonClassifiedTransaction` for server-side serialization
 
-### 10. Experimental APIs
+### 10. Transaction Versions (v0 boundary)
+
+- The SDK requests transactions with `maxSupportedTransactionVersion: 0`, so it reads **legacy and v0** transactions only.
+- **Version 1 transactions** (live on mainnet since 2026-09-15) are refused by the RPC (JSON-RPC error `-32015`). They are not retried and never silently disappear:
+  - `getTransaction` / `getRawTransaction` throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, `retryable: false`, carries `signature`).
+  - `getTransactions` and `getTransactionsBySignatures` omit them from the result but report each one through `onTransactionSkipped({ signature, reason: "unsupported_version", error })`. Signatures the RPC does not return are reported as `"not_found"`, other failures as `"fetch_failed"`.
+- v0 address-lookup-table accounts are resolved: `tx.accountKeys` is the full list (static keys, then lookup-table writable, then lookup-table readonly), which is what `preBalances`/`postBalances` and token `accountIndex` refer to.
+
+### 11. Lamport Reconciliation
+
+- The `fee:network` leg is the fee the runtime charged (`meta.fee`), not a computed residual.
+- `tx.reconciliation` reports whether `sum(preBalances) - sum(postBalances)` equals the fee over the full account list: `balanced`, `unbalanced` (with `residualLamports`) or `unavailable` (metadata missing, arrays not matching the account list, or imprecise numbers). Legs only balance when the reconciliation is `balanced`.
+
+### 12. Experimental APIs
 
 - `getSignatures()` and `getTransactionsBySignatures()` marked experimental
 - API shape may change in minor versions
