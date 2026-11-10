@@ -51,8 +51,8 @@ describe("SDK replay of recorded v0 Jupiter swap", () => {
       accountCount: 17,
     });
     expect(legs.find((l) => l.role === "fee")?.amount.amountRaw).toBe("5039");
-    // The lookup-table wSOL vault's lamport credit is the backing of its wSOL
-    // token balance: it appears once, as the token leg of the vault's owner.
+    // The lookup-table wSOL vault appears once: its lamport delta, attributed
+    // to the vault's owner (tagged protocol: because the swap is on Jupiter).
     expect(legs.some((l) => l.accountId.endsWith("C47dRtozmsagyUSwaejLiBSPemvHK7J7U7UH8jibviqp"))).toBe(false);
     expect(
       legs.filter(

@@ -30,7 +30,9 @@
   ],
   "scripts": {
     "build": "tsup",
-    "prepublishOnly": "bun run build",
+    "test:dist": "bun test ./test-dist",
+    "build:verify": "bun run build && bun run test:dist",
+    "prepublishOnly": "bun run build:verify",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "test": "bun test src/client.test.ts src/nft.test.ts src/wallet-api.test.ts src/alt-replay.test.ts",

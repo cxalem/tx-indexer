@@ -5,7 +5,6 @@ import type {
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isBridgeProtocolById } from "../protocols/detector";
-import { preferAccountLegs } from "../engine/leg-helpers";
 
 function getRawAmount(amountRaw: string): bigint {
   try {
@@ -33,14 +32,14 @@ export class BridgeClassifier implements Classifier {
   priority = 88;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, tx, walletAddress } = context;
+    const { legs, tx } = context;
 
     const hasBridgeProtocol = isBridgeProtocolById(tx.protocol?.id);
     if (!hasBridgeProtocol) {
       return null;
     }
 
-    const allTokensOut = legs.filter(
+    const tokensOut = legs.filter(
       (leg) =>
         leg.accountId.startsWith("external:") &&
         leg.side === "debit" &&
@@ -48,22 +47,12 @@ export class BridgeClassifier implements Classifier {
         (leg.role === "sent" || leg.role === "protocol_deposit")
     );
 
-    const allTokensIn = legs.filter(
+    const tokensIn = legs.filter(
       (leg) =>
         leg.accountId.startsWith("external:") &&
         leg.side === "credit" &&
         (leg.role === "received" || leg.role === "protocol_withdraw")
     );
-
-    // With a target wallet that moved funds, only the wallet's legs decide
-    // direction and amount; third-party accounts (bridge custody, vaults)
-    // cannot become the participant.
-    const walletScoped = preferAccountLegs(
-      [...allTokensOut, ...allTokensIn],
-      walletAddress,
-    );
-    const tokensOut = allTokensOut.filter((leg) => walletScoped.includes(leg));
-    const tokensIn = allTokensIn.filter((leg) => walletScoped.includes(leg));
 
     let primaryType: "bridge_in" | "bridge_out";
     let primaryAmount = null;

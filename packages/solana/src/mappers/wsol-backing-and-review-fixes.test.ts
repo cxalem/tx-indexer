@@ -28,8 +28,8 @@ async function legsFor(input: Parameters<typeof syntheticResponse>[0]) {
   return { tx, legs: transactionToLegs(tx) };
 }
 
-describe("wSOL backing lamports are not emitted twice", () => {
-  test("existing wSOL accounts: lamport change fully explained by token change -> token legs only", async () => {
+describe("wSOL accounts are represented once: lamport delta, owner-attributed", () => {
+  test("existing -> existing: owner-attributed lamport legs, no separate token or account legs", async () => {
     const { tx, legs } = await legsFor({
       staticKeys: [ALICE, TOKEN_PROGRAM],
       loaded: { writable: [ALICE_ATA, BOB_ATA], readonly: [] },
@@ -57,7 +57,7 @@ describe("wSOL backing lamports are not emitted twice", () => {
     expect(tx.reconciliation?.status).toBe("balanced");
   });
 
-  test("wSOL account created in the transaction: rent remainder is a non-counterparty rent: leg", async () => {
+  test("created in the transaction: reserve goes to rent:, wrapped amount to the owner", async () => {
     const { legs } = await legsFor({
       staticKeys: [ALICE, TOKEN_PROGRAM],
       loaded: { writable: [BOB_ATA], readonly: [] },
@@ -108,6 +108,40 @@ describe("wSOL backing lamports are not emitted twice", () => {
       ],
     });
     expect(fmt(legs)).toContain(`external:${BOB_ATA} credit ${RENT} received`);
+  });
+});
+
+describe("wSOL edge cases", () => {
+  test("token owner missing: identity falls back to accountKeys[accountIndex], never the mint", async () => {
+    const response = syntheticResponse({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [BOB_ATA], readonly: [] },
+      pre: [5n * SOL, 1n, RENT],
+      post: [4n * SOL - 5000n, 1n, RENT + SOL],
+      preTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: BOB, amount: 0n }],
+      postTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: BOB, amount: SOL }],
+    }) as { meta: { preTokenBalances: Array<{ owner?: string }>; postTokenBalances: Array<{ owner?: string }> } };
+    delete response.meta.preTokenBalances[0]!.owner;
+    delete response.meta.postTokenBalances[0]!.owner;
+    const { rpc } = mockRpc(() => response);
+    const tx = (await fetchTransaction(rpc, SIG))!;
+    const legs = fmt(transactionToLegs(tx));
+    expect(legs).toContain(`external:${BOB_ATA} credit 1000000000 received`);
+    expect(legs.some((l) => l.includes(WSOL_MINT))).toBe(false);
+  });
+
+  test("sync only (lamport delta zero, token amount changes): no leg is emitted", async () => {
+    const { legs } = await legsFor({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [ALICE_ATA], readonly: [] },
+      pre: [SOL, 1n, RENT + 3n * SOL],
+      post: [SOL - 5000n, 1n, RENT + 3n * SOL],
+      preTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: ALICE, amount: SOL }],
+      postTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: ALICE, amount: 3n * SOL }],
+    });
+    expect(fmt(legs)).toEqual(
+      [`external:${ALICE} debit 5000 sent`, "fee:network credit 5000 fee"].sort(),
+    );
   });
 });
 

@@ -29,14 +29,41 @@ export class StakeDepositClassifier implements Classifier {
     }
 
     // Direction comes from the target wallet (or the fee payer): a debit on a
-    // reserve or other third-party account is not the user's stake. Only when
-    // no perspective account is known do we fall back to any external debit.
+    // reserve or other third-party account is not the user's stake.
+    // - The wallet's own SOL debit is the stake.
+    // - Sponsored deposit: the wallet has no SOL debit but receives the pool
+    //   tokens (its participation); the amount is the actual SOL funding leg
+    //   (largest external SOL debit) and the sender is the funder.
+    // Only when no perspective account is known do we fall back to any
+    // external debit (legacy rule).
     const perspective = getPerspectiveAddress(walletAddress, tx.accountKeys);
-    const solDebit = perspective
-      ? legs.find(
-          (leg) => isSolDebit(leg) && leg.accountId === `external:${perspective}`,
-        )
-      : legs.find(isSolDebit);
+    let solDebit: TxLeg | undefined;
+    if (!perspective) {
+      solDebit = legs.find(isSolDebit);
+    } else {
+      const ownId = `external:${perspective}`;
+      solDebit = legs.find((leg) => isSolDebit(leg) && leg.accountId === ownId);
+      if (!solDebit) {
+        const receivesPoolTokens = legs.some(
+          (leg) =>
+            leg.accountId === ownId &&
+            leg.side === "credit" &&
+            leg.amount.token.symbol !== "SOL",
+        );
+        if (receivesPoolTokens) {
+          solDebit = legs
+            .filter(isSolDebit)
+            .reduce<TxLeg | undefined>(
+              (largest, leg) =>
+                !largest ||
+                BigInt(leg.amount.amountRaw) > BigInt(largest.amount.amountRaw)
+                  ? leg
+                  : largest,
+              undefined,
+            );
+        }
+      }
+    }
 
     if (!solDebit) {
       return null;

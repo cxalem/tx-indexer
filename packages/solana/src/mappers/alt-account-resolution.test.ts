@@ -150,10 +150,10 @@ describe("recorded mainnet fixtures (replayed through a kit RPC)", () => {
   }
 
   // In all three swaps the lookup-table writable accounts whose lamports
-  // change are wSOL token accounts (pool vaults / fee account). Their lamport
-  // change is exactly the wSOL token change, so it appears ONCE, as the wSOL
-  // token leg attributed to the token owner; no separate lamport leg and no
-  // rent remainder. The fee leg is meta.fee.
+  // change are existing wSOL token accounts (pool vaults / fee account). Each
+  // appears ONCE: its actual lamport delta, attributed to the token owner
+  // from the balance metadata (the token-amount change is not emitted). No
+  // account is created, so there is no rent leg. The fee leg is meta.fee.
 
   test("Jupiter SOL -> token swap: full key list, wSOL once, fee leg is meta.fee", async () => {
     const tx = await fetchFixture("jupiter-swap-sol-to-token.json");
@@ -167,7 +167,7 @@ describe("recorded mainnet fixtures (replayed through a kit RPC)", () => {
     expect(solLegs(transactionToLegs(tx))).toEqual(
       [
         "external:EMgSdxvQqmaqjynWyNeEXcgpMDERxD7ntvBcUWr3PaEb debit 4147883 sent",
-        // wSOL token leg of vault C47d... (owner = pool authority HLnp...)
+        // lamport delta of vault C47d..., attributed to its owner HLnp...
         "external:HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC credit 4142844 received",
         "fee:network credit 5039 fee",
       ].sort(),
@@ -184,7 +184,7 @@ describe("recorded mainnet fixtures (replayed through a kit RPC)", () => {
     expect(solLegs(transactionToLegs(tx))).toEqual(
       [
         "external:6bAWX3qmkmmqmzqsNeWMPTA9iG5k9VfagLBssJxE3Uuh credit 22237362 received",
-        // wSOL token leg of vault 3Qju... (owner = pool authority 5Q54...)
+        // lamport delta of vault 3Qju..., attributed to its owner 5Q54...
         "external:5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1 debit 22242362 sent",
         "fee:network credit 5000 fee",
       ].sort(),
@@ -202,7 +202,7 @@ describe("recorded mainnet fixtures (replayed through a kit RPC)", () => {
     expect(solLegs(transactionToLegs(tx))).toEqual(
       [
         "external:HyotTjJEuufx749H3FE2ENz3tyP47ddv5G2RhKJPNkqg debit 182605000 sent",
-        // wSOL token legs of 8Tyq... and CASR... (by owner)
+        // lamport deltas of 8Tyq... and CASR..., attributed to their owners
         "external:3mxDjdZ1gAe5HziC4dj4UnLdXJ5DBcC9jsSYq55mFyKg credit 182354941 received",
         "external:5eHhjP8JaYkz83CWwvGU2uMUXefd3AazWGx4gpcuEEYD credit 45059 received",
         "fee:network credit 205000 fee",

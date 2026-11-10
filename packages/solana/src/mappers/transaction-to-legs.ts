@@ -51,7 +51,7 @@ export function transactionToLegs(
   // Wallet address is kept as-is since Solana addresses are case-sensitive (base58)
 
   const solChanges = extractSolBalanceChanges(tx);
-  const wsolBacking = wrappedSolBackingByIndex(tx);
+  const nativeAccounts = nativeTokenAccounts(tx);
 
   for (const change of solChanges) {
     if (change.change === 0n) continue;
@@ -61,26 +61,52 @@ export function transactionToLegs(
       throw new Error("SOL token info not found in registry");
     }
 
-    // A wSOL token account's lamports back its token balance. The backed part
-    // is already represented by the wSOL token leg (attributed to the token
-    // owner), so it is not emitted again as a lamport leg. Only the part the
-    // token delta does not explain (the account's rent-exempt reserve when it
-    // is created, or lamports sent without sync_native) remains, as a
-    // `rent:<address>` leg with role "unknown" that no classifier can pick as
-    // a counterparty. Raw balances (and reconcileLamports) are untouched.
-    const backing = wsolBacking.get(change.accountIndex);
-    if (backing !== undefined) {
-      const remainder = change.change - backing;
-      if (remainder !== 0n) {
+    // Native-mint (wSOL) token accounts: one representation only, the
+    // LAMPORT delta, attributed to the token owner. See nativeTokenAccounts().
+    const native = nativeAccounts.get(change.accountIndex);
+    if (native) {
+      const owner = native.owner ?? change.address;
+      let ownerPart = change.change;
+      let reservePart = 0n;
+      if (native.created) {
+        // Created in this transaction (no pre entry): the lamports held beyond
+        // the wrapped token amount are the rent-exempt reserve. They go to a
+        // rent:<address> leg (role "unknown", never a counterparty); only the
+        // wrapped amount is the owner's movement.
+        const reserve = change.postBalance - native.postAmount;
+        const cap = change.change > 0n ? change.change : 0n;
+        reservePart = reserve < 0n ? 0n : reserve > cap ? cap : reserve;
+        ownerPart = change.change - reservePart;
+      }
+      if (reservePart !== 0n) {
         legs.push({
           accountId: buildAccountId({ type: "rent", address: change.address }),
-          side: remainder > 0n ? "credit" : "debit",
+          side: "credit",
           amount: {
             token: solInfo,
-            amountRaw: (remainder < 0n ? -remainder : remainder).toString(),
-            amountUi: Math.abs(Number(remainder) / 1e9),
+            amountRaw: reservePart.toString(),
+            amountUi: Number(reservePart) / 1e9,
           },
           role: "unknown",
+        });
+      }
+      if (ownerPart !== 0n) {
+        const isPositive = ownerPart > 0n;
+        legs.push({
+          accountId: ownerAccountId(
+            owner,
+            solInfo.symbol,
+            tx,
+            feePayer,
+            walletAddress,
+          ),
+          side: isPositive ? "credit" : "debit",
+          amount: {
+            token: solInfo,
+            amountRaw: (isPositive ? ownerPart : -ownerPart).toString(),
+            amountUi: Math.abs(Number(ownerPart) / 1e9),
+          },
+          role: ownerRole(owner, isPositive, tx, feePayer, walletAddress),
         });
       }
       continue;
@@ -126,32 +152,18 @@ export function transactionToLegs(
   const tokenChanges = extractTokenBalanceChanges(tx);
   for (const change of tokenChanges) {
     if (change.change.raw === "0") continue;
+    // wSOL accounts are represented by their lamport delta (see above); the
+    // token-amount change is not emitted, so a sync_native (token amount
+    // catching up with lamports already held) never appears as a movement.
+    if (nativeAccounts.has(change.accountIndex)) continue;
 
-    let accountId: string;
-    if (isDexProtocol(tx.protocol)) {
-      const isFeePayer = feePayer && change.owner === feePayer;
-      const isWallet = walletAddress && change.owner === walletAddress;
-
-      // Tag as external if the owner is the fee payer OR the target wallet
-      if (isFeePayer || isWallet) {
-        accountId = buildAccountId({
-          type: "external",
-          address: change.owner || feePayer || walletAddress || "",
-        });
-      } else {
-        accountId = buildAccountId({
-          type: "protocol",
-          address: change.owner || change.tokenInfo.mint,
-          protocol: tx.protocol!.id,
-          token: change.tokenInfo.symbol,
-        });
-      }
-    } else {
-      accountId = buildAccountId({
-        type: "external",
-        address: change.owner || change.tokenInfo.mint,
-      });
-    }
+    const accountId = ownerAccountId(
+      change.owner || change.tokenInfo.mint,
+      change.tokenInfo.symbol,
+      tx,
+      feePayer,
+      walletAddress,
+    );
 
     legs.push({
       accountId,
@@ -168,36 +180,86 @@ export function transactionToLegs(
   return legs;
 }
 
+interface NativeTokenAccount {
+  /** Token owner from the balance metadata (undefined if not reported) */
+  owner?: string;
+  /** True when there is no pre entry: the account was created in this tx */
+  created: boolean;
+  /** Wrapped token amount after the transaction (raw lamports) */
+  postAmount: bigint;
+}
+
 /**
- * For every account index that has a POST token balance in the native mint
- * (wSOL), returns the wSOL raw delta (post - pre, missing pre = 0). This is
- * exactly the set of wSOL changes extractTokenBalanceChanges turns into token
- * legs. Accounts with only a PRE native-mint entry (closed during the
- * transaction) are not included: they produce no token leg, so their lamport
- * change stays an ordinary lamport leg (closed-account handling is a known,
- * separate limitation).
+ * Native-mint (wSOL) token accounts that exist AFTER the transaction, i.e.
+ * have a POST token balance entry in the native mint.
+ *
+ * Their economic movement is the actual lamport delta, attributed to the
+ * token owner; the native token-amount change is suppressed so the movement
+ * is represented exactly once. Cases:
+ *
+ * - existing -> existing (pre and post entries): the full lamport delta is the
+ *   owner's movement. Token-amount changes are ignored, so lamports sent
+ *   without sync_native still count, and a sync (token amount catching up,
+ *   lamport delta zero) produces no leg at all.
+ * - created (post entry only): the reserve (post lamports beyond the wrapped
+ *   amount) goes to a rent:<address> leg; the rest is the owner's movement.
+ * - closed (pre entry only): NOT included here, so the lamport change stays
+ *   an ordinary external:<account> leg exactly as on main (closed-account
+ *   handling is a separate, known limitation).
+ *
+ * When the balance metadata has no owner, the account's own address
+ * (accountKeys[accountIndex]) is used as the identity, never the mint.
  */
-function wrappedSolBackingByIndex(tx: RawTransaction): Map<number, bigint> {
-  const backing = new Map<number, bigint>();
+function nativeTokenAccounts(tx: RawTransaction): Map<number, NativeTokenAccount> {
   const nativeMint = KNOWN_TOKENS.SOL;
-  const preByIndex = new Map<number, string>();
+  const preIndexes = new Set<number>();
   for (const pre of tx.preTokenBalances ?? []) {
-    if (pre.mint === nativeMint) {
-      preByIndex.set(pre.accountIndex, pre.uiTokenAmount.amount);
-    }
+    if (pre.mint === nativeMint) preIndexes.add(pre.accountIndex);
   }
+  const accounts = new Map<number, NativeTokenAccount>();
   for (const post of tx.postTokenBalances ?? []) {
     if (post.mint !== nativeMint) continue;
+    let postAmount: bigint;
     try {
-      const delta =
-        BigInt(post.uiTokenAmount.amount) -
-        BigInt(preByIndex.get(post.accountIndex) ?? "0");
-      backing.set(post.accountIndex, delta);
+      postAmount = BigInt(post.uiTokenAmount.amount);
     } catch {
-      // Malformed amount: leave the lamport change as an ordinary leg.
+      continue; // malformed: leave the lamport change as an ordinary leg
     }
+    accounts.set(post.accountIndex, {
+      owner: post.owner || tx.accountKeys?.[post.accountIndex] || undefined,
+      created: !preIndexes.has(post.accountIndex),
+      postAmount,
+    });
   }
-  return backing;
+  return accounts;
+}
+
+/**
+ * Account id for a movement attributed to a token owner. Same tagging as
+ * token legs: for DEX protocols, owners other than the fee payer / wallet are
+ * tagged "protocol:"; otherwise "external:".
+ */
+function ownerAccountId(
+  owner: string,
+  symbol: string,
+  tx: RawTransaction,
+  feePayer?: string,
+  walletAddress?: string,
+): string {
+  if (isDexProtocol(tx.protocol)) {
+    const isFeePayer = feePayer && owner === feePayer;
+    const isWallet = walletAddress && owner === walletAddress;
+    if (isFeePayer || isWallet) {
+      return buildAccountId({ type: "external", address: owner });
+    }
+    return buildAccountId({
+      type: "protocol",
+      address: owner,
+      protocol: tx.protocol!.id,
+      token: symbol,
+    });
+  }
+  return buildAccountId({ type: "external", address: owner });
 }
 
 function feeLamportsOf(tx: RawTransaction): bigint | null {
@@ -236,23 +298,23 @@ function determineSolRole(
 }
 
 /**
- * Determines the role of a token balance change in the transaction context.
+ * Determines the role of a movement attributed to a token owner.
  *
- * @param change - Token balance change for an account
+ * @param owner - Token account owner
+ * @param isPositive - Whether the owner gained
  * @param tx - Raw transaction for protocol context
  * @param feePayer - Fee payer address
  * @param walletAddress - Optional target wallet address for perspective
- * @returns The role of this token balance change
  */
-function determineTokenRole(
-  change: TokenBalanceChange,
+function ownerRole(
+  owner: string | undefined,
+  isPositive: boolean,
   tx: RawTransaction,
   feePayer?: string,
   walletAddress?: string,
 ): TxLegRole {
-  const isFeePayer = feePayer ? change.owner === feePayer : false;
-  const isWallet = walletAddress ? change.owner === walletAddress : false;
-  const isPositive = change.change.ui > 0;
+  const isFeePayer = feePayer ? owner === feePayer : false;
+  const isWallet = walletAddress ? owner === walletAddress : false;
 
   // If the owner is the fee payer or target wallet, use sent/received roles
   if (isFeePayer || isWallet) {
@@ -264,4 +326,13 @@ function determineTokenRole(
   }
 
   return isPositive ? "received" : "sent";
+}
+
+function determineTokenRole(
+  change: TokenBalanceChange,
+  tx: RawTransaction,
+  feePayer?: string,
+  walletAddress?: string,
+): TxLegRole {
+  return ownerRole(change.owner, change.change.ui > 0, tx, feePayer, walletAddress);
 }
