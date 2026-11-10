@@ -1,0 +1,43 @@
+{
+  "id": "lending-kamino-withdraw-usdc",
+  "signature": "augtVHng4Snfop9uEtv76rGAatZTLGjnr7kyXVvRADkraoqEPvKnGcrsCEGtHw5ZAqzbKji47yq8xbT9FQ995fw",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467880861,
+  "blockTime": 1794348048,
+  "transactionVersion": 0,
+  "capturedAt": "2026-11-10T22:01:19Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "augtVHng4Snfop9uEtv76rGAatZTLGjnr7kyXVvRADkraoqEPvKnGcrsCEGtHw5ZAqzbKji47yq8xbT9FQ995fw",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr",
+      "reason": "only signer, the depositor withdrawing"
+    }
+  ],
+  "categories": [
+    "adversarial"
+  ],
+  "tags": [
+    "v0",
+    "lookup-tables",
+    "lending",
+    "kamino",
+    "token-burn"
+  ],
+  "rationale": "#0 program HFn8GnPA... (not identified; no visible balance effect). #1 ATA CreateIdempotent USDC account (already existed). #2 refresh_reserve, #3 refresh_obligation, #4 withdraw_obligation_collateral_and_redeem_reserve_collateral_v2: inner #4.0 Burn 9,367,976,886 collateral tokens DBieuGmP... from 6aTxdy7H... (owner FsvTiXTU..., market authority, not the wallet), #4.1 TransferChecked 10,000,000,481 raw USDC from reserve 8BkQTZsT... to 2k23quQ7... (owner E354kEZj...). Lamports: only fee 51,222.",
+  "sources": [
+    "Anchor instruction names identified by discriminator sha256('global:<name>')[0..8] (withdraw_obligation_collateral_and_redeem_reserve_collateral_v2)"
+  ]
+}

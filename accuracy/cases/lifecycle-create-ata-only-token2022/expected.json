@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "caseId": "lifecycle-create-ata-only-token2022",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a",
+      "actions": [
+        {
+          "kind": "account_create",
+          "primary": true,
+          "sender": "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a",
+          "receiver": "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1600200",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#0",
+            "#0.1",
+            "#0.3"
+          ],
+          "forbidden": [
+            "transfer",
+            "swap",
+            "airdrop"
+          ],
+          "note": "Rent deposit into a new account owned by someone else; not a payment."
+        }
+      ]
+    },
+    {
+      "address": "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz",
+      "actions": [
+        {
+          "kind": "account_create",
+          "primary": true,
+          "sender": "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a",
+          "receiver": "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz",
+          "amounts": [],
+          "amountsNote": "No balance change for this owner.",
+          "instructionRefs": [
+            "#0",
+            "#0.1",
+            "#0.3"
+          ],
+          "forbidden": [
+            "transfer",
+            "swap",
+            "airdrop"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

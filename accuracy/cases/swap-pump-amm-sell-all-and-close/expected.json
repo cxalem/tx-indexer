@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-pump-amm-sell-all-and-close",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "15000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+          "participantsNote": "Swap: counterparty is a pool; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "365053940",
+              "mint": "2uQw2gvnhYYQ5T5jJf3MvLPyUquQ54VFHbMHBTtCpump",
+              "decimals": 6
+            },
+            {
+              "direction": "in",
+              "amountRaw": "8247613",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#3",
+            "#3.1",
+            "#3.2",
+            "#4"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "fee_only"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+          "receiver": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#5"
+          ],
+          "note": "Rent of the emptied Token-2022 account Dk2nHSBU... returns to the owner."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

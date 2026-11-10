@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-usdc-plain",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "106500",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "receiver": "4FicyJD4oxzvaMEGDtpkhDKE9EHKorA7ZVVoj7pcLDJn",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "29086832",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "swap",
+            "fee_only"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "4FicyJD4oxzvaMEGDtpkhDKE9EHKorA7ZVVoj7pcLDJn",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "receiver": "4FicyJD4oxzvaMEGDtpkhDKE9EHKorA7ZVVoj7pcLDJn",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "29086832",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

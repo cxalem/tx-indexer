@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-v1-router-sol-to-token-with-memo",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "12971",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+          "participantsNote": "Swap: counterparty is a route of pools; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "308863640",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "in",
+              "amountRaw": "7074185417628",
+              "mint": "H3xKwSgbEwxTEWSo4KifiFBeB4cTTDUXjvApYdaepump",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#4",
+            "#4.0",
+            "#4.4",
+            "#4.9"
+          ],
+          "forbidden": [
+            "airdrop",
+            "fee_only"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+          "receiver": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1488440",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ],
+          "note": "RAY account AzGtW6xz... stays open with 0 balance."
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+          "receiver": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#3"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+          "receiver": "KfHbT5Jrr5SV3CDkQVCLiSNWyVv5DmuVaCzbAHrzMFQ",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1396169",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#0"
+          ],
+          "note": "Purpose not verified (likely a bot or platform fee)."
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+          "receiver": "4TQLFNWK8AovT1gFvda5jfw2oJeRMKEmw7aH6MGBJ3or",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "10000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#5"
+          ],
+          "note": "Purpose not verified."
+        }
+      ]
+    }
+  ],
+  "notes": "The memo is unrelated to Solana Pay; the token arriving from HscovBe9... is the swap output, not a payment."
+}

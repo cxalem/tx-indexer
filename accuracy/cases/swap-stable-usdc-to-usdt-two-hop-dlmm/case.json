@@ -1,0 +1,39 @@
+{
+  "id": "swap-stable-usdc-to-usdt-two-hop-dlmm",
+  "signature": "362F8GUBj83awKYN6FUaMGUXQK6KzM6g7ttYc3TYDoKcdLh3WxcJLW2WaPWUvgSc7R5Hfdd67zuxSExbxQujwPh9",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467882326,
+  "blockTime": 1794348362,
+  "transactionVersion": "legacy",
+  "capturedAt": "2026-11-10T22:06:19Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "362F8GUBj83awKYN6FUaMGUXQK6KzM6g7ttYc3TYDoKcdLh3WxcJLW2WaPWUvgSc7R5Hfdd67zuxSExbxQujwPh9",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "gainzzMWAYL1gGSvREJN83asUQyMfyz3yG6k2od1vbP",
+      "reason": "only signer"
+    }
+  ],
+  "categories": [
+    "swap"
+  ],
+  "tags": [
+    "legacy",
+    "meteora-dlmm",
+    "direct-dex",
+    "stablecoin"
+  ],
+  "rationale": "Two top-level Meteora DLMM (LBUZKhRx...) instructions with the same discriminator. #1: #1.1 TransferChecked 1,106,941 USDC from 8PmRjMdN... (owner gainzzMW...) to a pool reserve (owner nnDJe81C...); #1.2 TransferChecked 1,106,950 of gainzzpk... (6 decimals) from that pool to 9g9vxZxP... (owner gainzzMW...). #2: #2.1 TransferChecked 1,107,230 gainzzpk... from 9g9v... to a second pool (owner ESudyyiy...); #2.2 TransferChecked 1,107,247 USDT from that pool to 4itRGQJp... (owner gainzzMW...). Each instruction exchanges one token for another with a pool, so the instruction names are not needed to read it as two swaps. Net: -1,106,941 USDC, +1,107,247 USDT, -280 gainzzpk.... Lamports: only the fee 5,000."
+}

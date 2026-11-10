@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-v1-jupiter-circular-route-with-jito-tip",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "FUBVxWEmxHbm3H9TbLgEQQ6d8bvsdw4sgkNJysFeSLRG",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "FUBVxWEmxHbm3H9TbLgEQQ6d8bvsdw4sgkNJysFeSLRG",
+          "participantsNote": "Swap: counterparty is a route of pools; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "723",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "amountsNote": "Gross: 11,272,500 USDC out (#0.2), 11,273,223 USDC in (#0.12).",
+          "instructionRefs": [
+            "#0",
+            "#0.2",
+            "#0.12"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop"
+          ]
+        },
+        {
+          "kind": "tip",
+          "primary": false,
+          "sender": "FUBVxWEmxHbm3H9TbLgEQQ6d8bvsdw4sgkNJysFeSLRG",
+          "receiver": "HFqU5x63VTqvQss8hp11i4wVV8bD44PvwucfZ2bU7gRe",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "2029",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

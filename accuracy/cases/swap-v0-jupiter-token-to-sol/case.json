@@ -1,0 +1,44 @@
+{
+  "id": "swap-v0-jupiter-token-to-sol",
+  "signature": "4AkHKXZmgfsgWyBpWp5ZXwL6GEjttQoyDtnt3oqaECxoQq7Cv6jXN7kfPxZstcWCSbJBDVd9KX8WioDcwKMinuEg",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467812184,
+  "blockTime": 1794333342,
+  "transactionVersion": 0,
+  "capturedAt": "2026-11-10T22:13:59Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "4AkHKXZmgfsgWyBpWp5ZXwL6GEjttQoyDtnt3oqaECxoQq7Cv6jXN7kfPxZstcWCSbJBDVd9KX8WioDcwKMinuEg",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "6bAWX3qmkmmqmzqsNeWMPTA9iG5k9VfagLBssJxE3Uuh",
+      "reason": "only signer, the trader"
+    }
+  ],
+  "categories": [
+    "swap"
+  ],
+  "tags": [
+    "v0",
+    "lookup-tables",
+    "jupiter",
+    "raydium",
+    "wsol-temp-account"
+  ],
+  "rationale": "#1 ATA CreateIdempotent of a temporary wSOL account 5Vi9L5Mj... for 6bAWX3qm.... #2 Jupiter 'route' with inner #2.0 on Raydium AMM v4 (675kPX9M...); #2.1 Transfer 2,231,314,298 EaxAUcXx... (6 decimals) from 8cs8HsrF... (owner 6bAW...) to the pool; #2.2 Transfer 22,242,362 wSOL from pool vault 3QjuKNVi... into 5Vi9.... #3 CloseAccount of 5Vi9... to 6bAW... (unwrap). Net for 6bAW...: +22,237,362 lamports (= 22,242,362 - fee 5,000) and -2,231,314,298 EaxA....",
+  "sources": [
+    "Jupiter v6 (JUP6LkbZ...); instruction names identified by the Anchor discriminator sha256('global:<name>')[0..8]"
+  ],
+  "relatedFixture": "packages/solana/src/__fixtures__/mainnet/jupiter-swap-token-to-sol.json"
+}

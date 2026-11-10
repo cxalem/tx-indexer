@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-v1-jupiter-circular-route-usdc-gain",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "7559",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "CGgMCsQ6kQ2J3BV5ZDh3J7BCMC75JNLbYNMrLttGEpFz",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "CGgMCsQ6kQ2J3BV5ZDh3J7BCMC75JNLbYNMrLttGEpFz",
+          "participantsNote": "Swap: counterparty is a route of pools; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1857",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "amountsNote": "Gross: 70,881,721 USDC out (#1.1), 70,883,578 USDC in (#1.9). No SOL is spent besides the fee.",
+          "instructionRefs": [
+            "#1",
+            "#1.1",
+            "#1.9"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

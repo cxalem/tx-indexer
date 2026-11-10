@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "caseId": "execution-failed-sol-transfer",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "failed",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "36WA9nUCsJaAQL5h44WYoLezDpocy8Q71NZbtrUN8DyC",
+      "actions": [
+        {
+          "kind": "fee_only",
+          "primary": true,
+          "sender": "36WA9nUCsJaAQL5h44WYoLezDpocy8Q71NZbtrUN8DyC",
+          "receiver": null,
+          "participantsNote": "No counterparty.",
+          "amounts": [],
+          "amountsNote": "Only the transaction fee (see `fee`).",
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "transfer",
+            "swap",
+            "airdrop"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+      "actions": [
+        {
+          "kind": "other",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "participantsNote": "Nothing happened to this wallet.",
+          "amounts": [],
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

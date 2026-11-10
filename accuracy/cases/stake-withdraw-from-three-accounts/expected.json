@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "caseId": "stake-withdraw-from-three-accounts",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "15000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "CuEWxg3jVDyuF4TsBi92Sd7EzTkKhtxqqAHp2fkcgn9g",
+      "actions": [
+        {
+          "kind": "stake_withdraw",
+          "primary": true,
+          "sender": null,
+          "receiver": "CuEWxg3jVDyuF4TsBi92Sd7EzTkKhtxqqAHp2fkcgn9g",
+          "authority": "CuEWxg3jVDyuF4TsBi92Sd7EzTkKhtxqqAHp2fkcgn9g",
+          "participantsNote": "Three stake accounts are the sources.",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1187279030",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2",
+            "#3",
+            "#4"
+          ],
+          "forbidden": [
+            "transfer",
+            "swap",
+            "airdrop",
+            "fee_only"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

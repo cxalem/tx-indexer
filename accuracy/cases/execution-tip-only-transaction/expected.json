@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "caseId": "execution-tip-only-transaction",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": true,
+  "openQuestions": [
+    "A System transfer to a tip account is technically a transfer. This set labels it `tip` and does not accept `transfer`, so the SDK's current behaviour is measured as a miss here. Revisit if the project decides tips are transfers."
+  ],
+  "perspectives": [
+    {
+      "address": "CrRj1mgjj7MSh3EVpqLjzYtAVNmiTV5zPxiv2qehNG1G",
+      "actions": [
+        {
+          "kind": "tip",
+          "primary": true,
+          "sender": "CrRj1mgjj7MSh3EVpqLjzYtAVNmiTV5zPxiv2qehNG1G",
+          "receiver": "ADuUkR4vqLUMWXxW9gh6D6L8pMSawimctcNZ5pGwDcEt",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "7156",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

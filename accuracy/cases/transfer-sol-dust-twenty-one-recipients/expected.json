@@ -1,0 +1,425 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-sol-dust-twenty-one-recipients",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "AAAh7LEHqyYRd8eLydwXetH8hRmMwYdeZaRyYjv5RBwb",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "5PHnqDHGXQXMRqVRj4PWtrvb9F993tXe3TFe35tu58ax",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "DcbCNRhyb3JEwiykrksGPanEofNN9EdvHG9sn45i6fCL",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "DDo2medB6eRLLKknfszxBv44HDxZQkwCt3QKCcDC313Q",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#3"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "8fi1t4WGFBr8qi6jVtREvYgxvmcmDnMfUHPiFdLTN5ZR",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#4"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "FQgkHujjSooFWGX3JchTAsjg1hmQzvn5dhfUbdsBiE2L",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#5"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "9MFr5GB8ps4jRBwDoc4c7Jd9HYxEFozzV84JLEzjSsHm",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#6"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "GhdBLpJe5g9knjTwhH1P6JNyYouuPF8LV4LWLojm7vYe",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#7"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "43m6ufR9STotMmZ1Bmx33MSuZrXG87iazh2GranmxnY5",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#8"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "9uFyNUjihpQmWVNKZHshyb19pzrvXkLWKpsGenU8Jm1D",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#9"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "5FfhRM9pVAPcS5572Xyxk5U94auHdDyEePFYE4ovaQXg",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#10"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "HQT2ghZQyidtStH1YQiiMgS1gVpzEhjZ1iqadFmz1UtE",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#11"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "6ETWWL5X1fKHXtGmkvGniaFZEKCMrkYhJepHZRWSvNJ3",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#12"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "F8K5XG1zxQQSebaqZ3stZngKRhrjzRyFum6eFhrBNQL7",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#13"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "9fC73DYLnUDVPWx8wRQvLYc1f8Cnc6zCh7tPZrUzeBkp",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#14"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "BHzuqqUKtqJWnj2JHBPW7DtnHoNTYKH71UXfU1kgpGyG",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#15"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#16"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "6kjcvsbdCSrh83FZZYa3Z2LiMa16avi2XJRuUXg5R2dW",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#17"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "H4PsJK86V4KgJ6FmU5WQvghUBEhHq2JFGCdvRPbsCnRf",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#18"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "EAdYT8M2fqwLrc2E5gE2h4BCWPu48r64VxJ4D7PnhxFu",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#19"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "2ioxH8bsbPCnvTihhEYZzCsAxDrin8Jrk6kQCJJDSwvH",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#20"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW",
+          "receiver": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#16"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": "Dust sends like this are usually spam; spam filtering is out of scope here, the label is still `transfer`."
+}

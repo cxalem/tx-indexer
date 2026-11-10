@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "caseId": "nft-transfer-sponsored-programmable",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "12500",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt",
+      "actions": [
+        {
+          "kind": "nft_send",
+          "primary": true,
+          "sender": "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt",
+          "receiver": "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1",
+              "mint": "GMghqvQrtSxdSnnD2cWcM44DGu55zuWHw95cUJv3oP1u",
+              "decimals": 0
+            }
+          ],
+          "instructionRefs": [
+            "#1",
+            "#1.6"
+          ],
+          "forbidden": [
+            "swap",
+            "nft_sale",
+            "fee_only"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th",
+      "actions": [
+        {
+          "kind": "nft_receive",
+          "primary": true,
+          "sender": "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt",
+          "receiver": "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1",
+              "mint": "GMghqvQrtSxdSnnD2cWcM44DGu55zuWHw95cUJv3oP1u",
+              "decimals": 0
+            }
+          ],
+          "instructionRefs": [
+            "#1",
+            "#1.6"
+          ],
+          "forbidden": [
+            "swap",
+            "nft_purchase"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3",
+          "receiver": "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th",
+          "amounts": [],
+          "instructionRefs": [
+            "#1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3",
+      "actions": [
+        {
+          "kind": "account_create",
+          "primary": true,
+          "sender": "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3",
+          "receiver": "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1488440",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1.0"
+          ],
+          "forbidden": [
+            "swap",
+            "nft_send",
+            "nft_receive"
+          ],
+          "note": "Sponsor: pays the fee and the receiver's token-account rent."
+        }
+      ]
+    }
+  ],
+  "notes": "NFT evidence: mint GMghqvQr... has 0 decimals, exactly 1 unit moves, the move is made by the Token Metadata program (log 'IX: Transfer') with Thaw/Freeze around it (programmable-NFT pattern). Supply = 1 is not visible in this transaction."
+}

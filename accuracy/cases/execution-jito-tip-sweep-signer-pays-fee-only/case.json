@@ -1,0 +1,49 @@
+{
+  "id": "execution-jito-tip-sweep-signer-pays-fee-only",
+  "signature": "wxwmeFMTbAqtnZ8mURjjDAY1PUf3a2JyQxuMqGCtH9ezP7c1wGL5erG5WpHe3Vrb214BhhESuf1f8LY51zMrgTV",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467880940,
+  "blockTime": 1794348065,
+  "transactionVersion": "legacy",
+  "capturedAt": "2026-11-10T22:03:31Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "wxwmeFMTbAqtnZ8mURjjDAY1PUf3a2JyQxuMqGCtH9ezP7c1wGL5erG5WpHe3Vrb214BhhESuf1f8LY51zMrgTV",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "EvnRmnMrd69kFdbLMxWkTn1icZ7DCceRhvmb2SJXqDo4",
+      "reason": "only signer; cranks the tip program and pays only the fee"
+    },
+    {
+      "address": "DjyDQ7nwUMyLWSihdQYU6Hud6sYMxFKnbaTMXng99K8e",
+      "reason": "previous tip receiver; collects the swept tips"
+    }
+  ],
+  "categories": [
+    "execution",
+    "adversarial"
+  ],
+  "tags": [
+    "legacy",
+    "keeper",
+    "jito-tip",
+    "memo",
+    "fee-only"
+  ],
+  "rationale": "#1 and #2 call the Jito Tip Payment program (T1pyyaTN...): discriminators match Anchor 'change_tip_receiver' and 'change_block_builder'. The eight tip accounts (96gYZGLn..., HFqU5x63..., Cw8CFyM9..., ADaUMid9..., DfXygSm4..., ADuUkR4v..., DttWaMuV..., 3AVi9Tg9...) drop to 690,880 lamports each, releasing 1,820,180 in all; DjyDQ7nw... (the 'old tip receiver' account of #1) gains 1,765,575 and GSyXx6WR... (the block builder of #2) gains 54,605. #3 Memo 'MRV'. The signer EvnRmnMr... only pays the 5,000 fee.",
+  "sources": [
+    "Anchor instruction names identified by discriminator sha256('global:<name>')[0..8]",
+    "Jito tip accounts: https://docs.jito.wtf/lowlatencytxnsend/#tips"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "swap-v1-jupiter-circular-route-usdc-gain",
+  "signature": "61BohiiwEJ6Hyn1y21A7RL1VLx9PXXTKjh6t5RY8P7J5XhntQNGP4kT1ihxtdbKXB8KrZ2sCcV6WwcXKus1LMYuG",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467867093,
+  "blockTime": 1794345106,
+  "transactionVersion": 1,
+  "capturedAt": "2026-11-10T21:11:46Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "61BohiiwEJ6Hyn1y21A7RL1VLx9PXXTKjh6t5RY8P7J5XhntQNGP4kT1ihxtdbKXB8KrZ2sCcV6WwcXKus1LMYuG",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "CGgMCsQ6kQ2J3BV5ZDh3J7BCMC75JNLbYNMrLttGEpFz",
+      "reason": "only signer"
+    }
+  ],
+  "categories": [
+    "swap",
+    "adversarial"
+  ],
+  "tags": [
+    "v1",
+    "jupiter",
+    "circular-route",
+    "durable-nonce",
+    "known-failing-fixture"
+  ],
+  "rationale": "#0 AdvanceNonce. #1 Jupiter route_v2: #1.1 Transfer 70,881,721 USDC from 2Em7tDfz... (owner CGgM...) into the route; ... #1.9 TransferChecked 70,883,578 USDC back into 2Em7tDfz.... Intermediate legs move cbBTC and WBTC between other parties (#1.2, #1.4, #1.5, #1.8). Net for CGgM...: +1,857 raw USDC and -7,559 lamports, which is exactly the network fee. A circular USDC -> cbBTC -> WBTC -> USDC route; the wallet's net input is nothing but the fee. Amount convention: when the same mint goes out and comes back inside one action, the action records the net.",
+  "sources": [
+    "Jupiter v6 (JUP6LkbZ...); instruction names identified by the Anchor discriminator sha256('global:<name>')[0..8]"
+  ],
+  "recordedFrom": "packages/solana/src/__fixtures__/mainnet/v1-jupiter-route-usdc-gain.json",
+  "relatedFixture": "packages/solana/src/__fixtures__/mainnet/v1-jupiter-route-usdc-gain.json"
+}

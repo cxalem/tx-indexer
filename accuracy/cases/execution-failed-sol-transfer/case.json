@@ -1,0 +1,42 @@
+{
+  "id": "execution-failed-sol-transfer",
+  "signature": "57i2325snWTEZzhRwxfkePj15s5XTKZMEgNCaxzLzVWWjnP7soGfY66iPEm8QK5pkWSF4Y74eHsF6TwaB44ZUnDZ",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 464777808,
+  "blockTime": 1793683008,
+  "transactionVersion": 0,
+  "capturedAt": "2026-11-10T21:58:39Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "57i2325snWTEZzhRwxfkePj15s5XTKZMEgNCaxzLzVWWjnP7soGfY66iPEm8QK5pkWSF4Y74eHsF6TwaB44ZUnDZ",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "36WA9nUCsJaAQL5h44WYoLezDpocy8Q71NZbtrUN8DyC",
+      "reason": "signer whose transfer failed; still pays the fee"
+    },
+    {
+      "address": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+      "reason": "intended receiver; receives nothing"
+    }
+  ],
+  "categories": [
+    "execution"
+  ],
+  "tags": [
+    "v0",
+    "failed",
+    "sol"
+  ],
+  "rationale": "meta.err = InstructionError [0, InvalidArgument]. #0 System Transfer of 1 lamport from 36WA9nUC... to 5tzFkiKs...; the System program log says 'Transfer: `from` must not carry data'. Only balance change: 36WA... pays the 5,000-lamport fee. Nothing is transferred."
+}

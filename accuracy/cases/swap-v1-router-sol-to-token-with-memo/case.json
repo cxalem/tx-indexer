@@ -1,0 +1,49 @@
+{
+  "id": "swap-v1-router-sol-to-token-with-memo",
+  "signature": "4Kb2yFBTCiBjGpXSbizSvcBgg4v6XxVaykSqXSyQKcU4vtBy267PYkqXAjJ17WgUkzbs99jxhgWWrRbThXVEKysz",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467867093,
+  "blockTime": 1794345106,
+  "transactionVersion": 1,
+  "capturedAt": "2026-11-10T21:11:46Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "4Kb2yFBTCiBjGpXSbizSvcBgg4v6XxVaykSqXSyQKcU4vtBy267PYkqXAjJ17WgUkzbs99jxhgWWrRbThXVEKysz",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye",
+      "reason": "fee payer and buyer (first signer)"
+    }
+  ],
+  "categories": [
+    "swap",
+    "adversarial"
+  ],
+  "tags": [
+    "v1",
+    "router-cpi",
+    "jupiter",
+    "raydium-clmm",
+    "pump",
+    "memo",
+    "known-failing-fixture"
+  ],
+  "rationale": "Version 1. #0 System Transfer 1,396,169 lamports to KfHbT5Jr... (purpose not stated). #1 ATA CreateIdempotent temporary wSOL account AiTC1ZL4...; #2 ATA CreateIdempotent RAY account AzGtW6xz... (rent 1,488,440, stays open with 0 RAY); #3 ATA CreateIdempotent Token-2022 account 3W1ynasy... for H3xKwSgb... (rent 1,513,840). #4 calls program 6Vo3245e... (not identified), which CPIs: #4.0 System Transfer 308,863,640 lamports into AiTC..., #4.1 SyncNative, #4.2 Jupiter route_v2, #4.3 Raydium CLMM swap, #4.4 Transfer 308,863,640 wSOL to pool account 9Jgp8Npq..., #4.5 15,647,614 RAY into AzGt..., #4.7 CloseAccount AiTC..., then a Pump program step: #4.9 TransferChecked 7,074,185,417,628 H3xK... (6 decimals) from HUDMJNNZ... (owner HscovBe9...) to 3W1ynasy... (owner Dha7...), and #4.10/#4.11 the RAY (15,574,205 + 73,409) leaves AzGt... to HscovBe9... and 5YxQFdt3.... #5 System Transfer 10,000 lamports to 4TQLFNWK... (purpose not stated). #6 Memo with an opaque base64-like string. Net for Dha7...: -313,285,060 lamports and +7,074,185,417,628 H3xK...; RAY nets to 0. A SOL -> RAY -> H3xK buy.",
+  "sources": [
+    "Jupiter v6 (JUP6LkbZ...); instruction names identified by the Anchor discriminator sha256('global:<name>')[0..8]",
+    "Pump program instruction names by the same Anchor discriminator rule"
+  ],
+  "recordedFrom": "packages/solana/src/__fixtures__/mainnet/v1-swap-sol-to-token.json",
+  "relatedFixture": "packages/solana/src/__fixtures__/mainnet/v1-swap-sol-to-token.json"
+}

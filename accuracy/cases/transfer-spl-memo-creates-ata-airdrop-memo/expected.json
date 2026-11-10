@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-spl-memo-creates-ata-airdrop-memo",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "6000",
+  "execution": "succeeded",
+  "disputed": true,
+  "openQuestions": [
+    "The memo calls this an airdrop. The transaction itself is a token transfer to a new account; `airdrop` is accepted as an alternative label for the receiver, not required."
+  ],
+  "perspectives": [
+    {
+      "address": "7gcXnEbLpDUXbxmxwr1Q39RgCBu7rNLebti8ZdBQ3fhX",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "7gcXnEbLpDUXbxmxwr1Q39RgCBu7rNLebti8ZdBQ3fhX",
+          "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "581000000",
+              "mint": "5oSoANcLqQjEZ31ngvMmsd71LPUndwhKTe8bMmCysBMe",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#3",
+            "#4"
+          ],
+          "forbidden": [
+            "swap",
+            "fee_only"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "7gcXnEbLpDUXbxmxwr1Q39RgCBu7rNLebti8ZdBQ3fhX",
+          "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1488440",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2",
+            "#2.1"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "7gcXnEbLpDUXbxmxwr1Q39RgCBu7rNLebti8ZdBQ3fhX",
+          "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "581000000",
+              "mint": "5oSoANcLqQjEZ31ngvMmsd71LPUndwhKTe8bMmCysBMe",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#3",
+            "#4"
+          ],
+          "forbidden": [
+            "swap"
+          ],
+          "acceptableKinds": [
+            "airdrop"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "7gcXnEbLpDUXbxmxwr1Q39RgCBu7rNLebti8ZdBQ3fhX",
+          "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+          "amounts": [],
+          "amountsNote": "Rent paid by the sender into the new token account FuAoo3RX....",
+          "instructionRefs": [
+            "#2",
+            "#2.1"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

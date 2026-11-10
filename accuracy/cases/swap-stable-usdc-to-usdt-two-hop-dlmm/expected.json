@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-stable-usdc-to-usdt-two-hop-dlmm",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "gainzzMWAYL1gGSvREJN83asUQyMfyz3yG6k2od1vbP",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "gainzzMWAYL1gGSvREJN83asUQyMfyz3yG6k2od1vbP",
+          "participantsNote": "Swap: counterparty is two pools; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1106941",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            },
+            {
+              "direction": "in",
+              "amountRaw": "1107247",
+              "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+              "decimals": 6
+            },
+            {
+              "direction": "out",
+              "amountRaw": "280",
+              "mint": "gainzzpkFoxn7fJ1Gr4h5yfxYpnDMfWb7vCW9TDu3tF",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#1",
+            "#1.1",
+            "#1.2",
+            "#2",
+            "#2.1",
+            "#2.2"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "fee_only"
+          ],
+          "note": "Stable to stable through an intermediate token; 280 raw of the intermediate is lost on the way."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

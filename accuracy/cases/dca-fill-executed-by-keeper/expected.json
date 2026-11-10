@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "caseId": "dca-fill-executed-by-keeper",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "22852",
+  "execution": "succeeded",
+  "disputed": true,
+  "openQuestions": [
+    "The JitoSOL that pays for the fill sits in an escrow owned by the DCA account, not in 5wQU...'s wallet. It is listed as the user's outflow because the DCA position is the user's; a wallet-only view would show only the JTO arriving."
+  ],
+  "perspectives": [
+    {
+      "address": "JD38n7ynKYcgPpF7k1BhXEeREu1KqptU93fVGy3S624k",
+      "actions": [
+        {
+          "kind": "fee_only",
+          "primary": true,
+          "sender": "JD38n7ynKYcgPpF7k1BhXEeREu1KqptU93fVGy3S624k",
+          "receiver": null,
+          "participantsNote": "Keeper only.",
+          "amounts": [],
+          "amountsNote": "Only the transaction fee.",
+          "instructionRefs": [
+            "#1",
+            "#2",
+            "#3",
+            "#4"
+          ],
+          "forbidden": [
+            "swap",
+            "transfer",
+            "airdrop"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna",
+          "participantsNote": "DCA fill; counterparty is a pool.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1310000000",
+              "mint": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
+              "decimals": 9
+            },
+            {
+              "direction": "in",
+              "amountRaw": "428513360884",
+              "mint": "jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL",
+              "decimals": 9
+            }
+          ],
+          "instructionRefs": [
+            "#1",
+            "#1.0",
+            "#2",
+            "#4",
+            "#4.0"
+          ],
+          "forbidden": [
+            "airdrop",
+            "reward"
+          ],
+          "note": "Output is net of the 428,942,303 JTO DCA fee."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

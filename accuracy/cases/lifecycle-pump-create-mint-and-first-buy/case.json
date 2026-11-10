@@ -1,0 +1,49 @@
+{
+  "id": "lifecycle-pump-create-mint-and-first-buy",
+  "signature": "NqSgbJE7AMsmfGkCkd6S6Kvy5BFsaiXUim3aziYbamgjXfDXif9ruU1R2u6WLQJAeHfUAYjF983YbacX98PZdrY",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467883816,
+  "blockTime": 1794348679,
+  "transactionVersion": 0,
+  "capturedAt": "2026-11-10T22:11:28Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "NqSgbJE7AMsmfGkCkd6S6Kvy5BFsaiXUim3aziYbamgjXfDXif9ruU1R2u6WLQJAeHfUAYjF983YbacX98PZdrY",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "4mZuBXA2FQ6vM5My2TJycSpx9KuVupxgNpUHj9CPojng",
+      "reason": "creator and fee payer (first signer); the mint keypair is the second signer"
+    },
+    {
+      "address": "HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU",
+      "reason": "bonding-curve account that receives the minted supply"
+    }
+  ],
+  "categories": [
+    "lifecycle",
+    "swap"
+  ],
+  "tags": [
+    "v0",
+    "lookup-tables",
+    "pump",
+    "token-2022",
+    "token-mint",
+    "multi-action"
+  ],
+  "rationale": "#2 Pump program 'create_v2': #2.0 CreateAccount for the new mint BnyQUj6r... (Token-2022), #2.2 InitializeMint2, #2.3 CreateAccount HwRJBAps... (166 bytes, owned by the Pump program: the bonding curve), #2.4 ATA Create 3hRDR7K6... for owner HwRJ..., #2.12 Token-2022 MintTo 1,000,000,000,000,000 raw to 3hRD... with authority TSLvdd1p..., #2.13 SetAuthority. #3 ATA CreateIdempotent AXUU4gpw... for the creator. #4 Pump 'buy_v2': #4.1 TransferChecked 1,788,384,000,000 BnyQ... from the curve's account to AXUU... (owner 4mZu...), #4.2-#4.5 System Transfers from 4mZu...: 50,084,894 to the curve HwRJ... and 150,255 + 237,904 + 237,903 to three fee accounts (50,710,956 in all). Curve account HwRJ... ends with +998,211,616,000,000 BnyQ... (= minted - sold) and +51,578,414 lamports (= 1,493,520 rent + 50,084,894).",
+  "sources": [
+    "Anchor instruction names identified by discriminator sha256('global:<name>')[0..8] (create_v2, buy_v2)"
+  ]
+}

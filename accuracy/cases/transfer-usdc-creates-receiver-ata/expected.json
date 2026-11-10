@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-usdc-creates-receiver-ata",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "206500",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "receiver": "9QDWnjFw2W6faTCrN8K8nGMmhGiHqxESfPnjwtokDA4p",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "58369962",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "swap",
+            "fee_only"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "receiver": "9QDWnjFw2W6faTCrN8K8nGMmhGiHqxESfPnjwtokDA4p",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1488440",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#0",
+            "#0.1"
+          ],
+          "note": "Rent for the receiver's new USDC account 5KuGfHmE..., paid by the sender."
+        }
+      ]
+    },
+    {
+      "address": "9QDWnjFw2W6faTCrN8K8nGMmhGiHqxESfPnjwtokDA4p",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "receiver": "9QDWnjFw2W6faTCrN8K8nGMmhGiHqxESfPnjwtokDA4p",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "58369962",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "receiver": "9QDWnjFw2W6faTCrN8K8nGMmhGiHqxESfPnjwtokDA4p",
+          "amounts": [],
+          "amountsNote": "No balance change for this owner: the rent sits in the new token account 5KuGfHmE....",
+          "instructionRefs": [
+            "#0",
+            "#0.1"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

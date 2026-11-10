@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "caseId": "execution-jito-tip-sweep-signer-pays-fee-only",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": true,
+  "openQuestions": [
+    "What kind is the receiver's side: `tip` (tips collected) or `reward`? Labelled `tip`; `reward` accepted."
+  ],
+  "perspectives": [
+    {
+      "address": "EvnRmnMrd69kFdbLMxWkTn1icZ7DCceRhvmb2SJXqDo4",
+      "actions": [
+        {
+          "kind": "fee_only",
+          "primary": true,
+          "sender": "EvnRmnMrd69kFdbLMxWkTn1icZ7DCceRhvmb2SJXqDo4",
+          "receiver": null,
+          "participantsNote": "Crank signer; no counterparty.",
+          "amounts": [],
+          "amountsNote": "Only the transaction fee.",
+          "instructionRefs": [
+            "#1",
+            "#2"
+          ],
+          "forbidden": [
+            "transfer",
+            "swap",
+            "airdrop",
+            "reward"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "DjyDQ7nwUMyLWSihdQYU6Hud6sYMxFKnbaTMXng99K8e",
+      "actions": [
+        {
+          "kind": "tip",
+          "primary": true,
+          "sender": null,
+          "receiver": "DjyDQ7nwUMyLWSihdQYU6Hud6sYMxFKnbaTMXng99K8e",
+          "participantsNote": "Paid out of eight Jito tip accounts at once.",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1765575",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "swap"
+          ],
+          "acceptableKinds": [
+            "reward"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

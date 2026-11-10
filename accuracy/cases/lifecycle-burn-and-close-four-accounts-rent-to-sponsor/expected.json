@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "caseId": "lifecycle-burn-and-close-four-accounts-rent-to-sponsor",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "10000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+      "actions": [
+        {
+          "kind": "token_burn",
+          "primary": true,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": null,
+          "authority": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "participantsNote": "A burn has no receiver.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "930000000",
+              "mint": "5oSoANcLqQjEZ31ngvMmsd71LPUndwhKTe8bMmCysBMe",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "transfer",
+            "swap",
+            "airdrop"
+          ]
+        },
+        {
+          "kind": "token_burn",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": null,
+          "authority": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "participantsNote": "A burn has no receiver.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "42322",
+              "mint": "GtiWDkB5X7VpQPoWjzkPY2TmGKzn2HtCYxsqew8L67ei",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ]
+        },
+        {
+          "kind": "token_burn",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": null,
+          "authority": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "participantsNote": "A burn has no receiver.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "8722914542",
+              "mint": "57tQ8NUj2rsppKMG2QC4zEjwR1J3ufr3S1BHL3jiCaiZ",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#4"
+          ]
+        },
+        {
+          "kind": "token_burn",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": null,
+          "authority": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "participantsNote": "A burn has no receiver.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "149252794641",
+              "mint": "3Qb73S8n3evXcN5KyBPquDawrtyukDKwFg65qsvyTFFM",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#6"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+          "amounts": [],
+          "amountsNote": "Rent goes to the fee payer 8dBo..., not to the owner.",
+          "instructionRefs": [
+            "#1"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+          "amounts": [],
+          "amountsNote": "Rent goes to the fee payer 8dBo..., not to the owner.",
+          "instructionRefs": [
+            "#3"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+          "amounts": [],
+          "amountsNote": "Rent goes to the fee payer 8dBo..., not to the owner.",
+          "instructionRefs": [
+            "#5"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+          "amounts": [],
+          "amountsNote": "Rent goes to the fee payer 8dBo..., not to the owner.",
+          "instructionRefs": [
+            "#7"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+      "actions": [
+        {
+          "kind": "account_close",
+          "primary": true,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1488440",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#3"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#5"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+          "receiver": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#7"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

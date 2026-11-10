@@ -1,0 +1,37 @@
+{
+  "id": "stake-withdraw-from-three-accounts",
+  "signature": "WGAvzzvoLQ3RAhqQgVaJBakxy7MdrMJB3zeU8iuf5premR9VSE4ueCkPHPQeuBK8ytbhbzxQExWguXs2Yr2hyXk",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467880614,
+  "blockTime": 1794347994,
+  "transactionVersion": 0,
+  "capturedAt": "2026-11-10T22:00:15Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "WGAvzzvoLQ3RAhqQgVaJBakxy7MdrMJB3zeU8iuf5premR9VSE4ueCkPHPQeuBK8ytbhbzxQExWguXs2Yr2hyXk",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "CuEWxg3jVDyuF4TsBi92Sd7EzTkKhtxqqAHp2fkcgn9g",
+      "reason": "only signer; withdraw authority and destination"
+    }
+  ],
+  "categories": [
+    "special"
+  ],
+  "tags": [
+    "v0",
+    "stake"
+  ],
+  "rationale": "#2, #3, #4 are Stake Withdraw (tag 4) instructions moving the full balances of three stake accounts 8E365E8c... (199,983,253), 8TTiGFeq... (196,623,246) and FE1T7HdY... (790,672,531) to CuEWxg3j..., authority CuEW.... Each stake account ends at 0. CuEW... gains 1,187,264,030 = 1,187,279,030 - fee 15,000. Same kind, same wallet, same mint: one action with the summed amount."
+}

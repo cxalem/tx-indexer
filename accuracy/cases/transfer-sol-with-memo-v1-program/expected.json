@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-sol-with-memo-v1-program",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "8163",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "2UPzAimP45QrxJbp5GvxtGYSgdQ1yxYemL6oZrTgMt4s",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "2UPzAimP45QrxJbp5GvxtGYSgdQ1yxYemL6oZrTgMt4s",
+          "receiver": "GgLn5nBCghQ8yvYxYtfQcdf75YsWLSiM4WDAC46AS9Nq",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1470041000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2",
+            "#3"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "GgLn5nBCghQ8yvYxYtfQcdf75YsWLSiM4WDAC46AS9Nq",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "2UPzAimP45QrxJbp5GvxtGYSgdQ1yxYemL6oZrTgMt4s",
+          "receiver": "GgLn5nBCghQ8yvYxYtfQcdf75YsWLSiM4WDAC46AS9Nq",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1470041000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2",
+            "#3"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

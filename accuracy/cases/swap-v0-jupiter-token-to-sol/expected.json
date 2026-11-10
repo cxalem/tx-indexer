@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-v0-jupiter-token-to-sol",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "6bAWX3qmkmmqmzqsNeWMPTA9iG5k9VfagLBssJxE3Uuh",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "6bAWX3qmkmmqmzqsNeWMPTA9iG5k9VfagLBssJxE3Uuh",
+          "participantsNote": "Swap: counterparty is a pool; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "2231314298",
+              "mint": "EaxAUcXxNnVwcqm2BBocbows7D1XVY2Q63V38NEypump",
+              "decimals": 6
+            },
+            {
+              "direction": "in",
+              "amountRaw": "22242362",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2",
+            "#2.1",
+            "#2.2",
+            "#3"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "fee_only"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

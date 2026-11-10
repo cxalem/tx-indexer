@@ -1,0 +1,48 @@
+{
+  "id": "liquidity-add-damm-v2-by-keeper",
+  "signature": "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467880964,
+  "blockTime": 1794348070,
+  "transactionVersion": "legacy",
+  "capturedAt": "2026-11-10T22:10:56Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
+      "reason": "owner of the token accounts that fund the liquidity (not a signer)"
+    },
+    {
+      "address": "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF",
+      "reason": "keeper: only signer and fee payer, reimbursed in wSOL"
+    }
+  ],
+  "categories": [
+    "adversarial"
+  ],
+  "tags": [
+    "legacy",
+    "keeper",
+    "liquidity",
+    "meteora-damm-v2",
+    "token-2022",
+    "fee-reimbursed"
+  ],
+  "rationale": "#2 program Hb5uTppR... (not identified) CPIs into Meteora DAMM v2 (cpamdpZC...): #2.0 'swap': #2.1 111,314 wSOL from DUa6tVoX... (owner 2r3XPyQZ...) to the pool, #2.2 181,944,081,423 FT6bnAW3... (9 decimals, Token-2022) from the pool to AVApdSKM... (owner 2r3X...). #2.4 'add_liquidity': #2.5 183,761,651,476 FT6b... and #2.6 83,107 wSOL from 2r3X...'s accounts to the pool. #2.8 'permanent_lock_position'. #2.10/#2.11 the keeper creates a temporary wSOL account zQqeMGTH..., #2.12 receives 19,442 wSOL from DUa6... (authority 2r3X...), #2.13 closes it to ATdpV5tR.... The keeper's lamports end unchanged: the 19,442 fee is exactly reimbursed. 2r3X...: FT6b... -1,817,570,053 and wSOL -213,863 in all.",
+  "sources": [
+    "Anchor instruction names identified by discriminator sha256('global:<name>')[0..8] (swap, add_liquidity, permanent_lock_position on cpamdpZC...)"
+  ]
+}

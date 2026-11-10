@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-token2022-multi-recipient-distribution",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "1629000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "53unSgGWqEWANcPYRF35B2Bgf8BkszUtcccKiXwGGLyr",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "163580645280000",
+              "mint": "7q5EyfGurbHs3unuYexNkJacarcAvhQD9acjTX66xL3f",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#3"
+          ],
+          "forbidden": [
+            "swap",
+            "fee_only"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "38xCLm9kSExfGU1GdyVuX4vop7SZns9kU2mQyTmmMdUP",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "107932045270000",
+              "mint": "7q5EyfGurbHs3unuYexNkJacarcAvhQD9acjTX66xL3f",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#5"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "130576608620000",
+              "mint": "7q5EyfGurbHs3unuYexNkJacarcAvhQD9acjTX66xL3f",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#7"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "C68a6RCGLiPskbPYtAcsCjhG8tfTWYcoB4JjCrXFdqyo",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "125883320620000",
+              "mint": "7q5EyfGurbHs3unuYexNkJacarcAvhQD9acjTX66xL3f",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#9"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "EkeyuVghbRfGWPyEtm3vnjKZPbUXXrPqxdar8fsEMuXd",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "172370106310000",
+              "mint": "7q5EyfGurbHs3unuYexNkJacarcAvhQD9acjTX66xL3f",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#11"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "9un5wqE3q4oCjyrDkwsdD48KteCJitQX5978Vh7KKxHo",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "166956489680000",
+              "mint": "7q5EyfGurbHs3unuYexNkJacarcAvhQD9acjTX66xL3f",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#13"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "53unSgGWqEWANcPYRF35B2Bgf8BkszUtcccKiXwGGLyr",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "38xCLm9kSExfGU1GdyVuX4vop7SZns9kU2mQyTmmMdUP",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#4"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#6"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "C68a6RCGLiPskbPYtAcsCjhG8tfTWYcoB4JjCrXFdqyo",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#8"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "EkeyuVghbRfGWPyEtm3vnjKZPbUXXrPqxdar8fsEMuXd",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#10"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "9un5wqE3q4oCjyrDkwsdD48KteCJitQX5978Vh7KKxHo",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#12"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "EymqsLP7o8bQ1y3UC57aLbUaKJzERyphn8pd3wKfyNYa",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "600000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#14"
+          ],
+          "note": "Purpose not stated in the transaction."
+        }
+      ]
+    },
+    {
+      "address": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "130576608620000",
+              "mint": "7q5EyfGurbHs3unuYexNkJacarcAvhQD9acjTX66xL3f",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#7"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+          "receiver": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+          "amounts": [],
+          "instructionRefs": [
+            "#6"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

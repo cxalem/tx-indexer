@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-v0-jupiter-sol-to-token-with-platform-fee",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "205000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "HyotTjJEuufx749H3FE2ENz3tyP47ddv5G2RhKJPNkqg",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "HyotTjJEuufx749H3FE2ENz3tyP47ddv5G2RhKJPNkqg",
+          "participantsNote": "Swap: counterparty is a pool; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "182400000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "in",
+              "amountRaw": "157291256833",
+              "mint": "9QT8K685Hrae4k11dhGXirdtpfAaimExtyfwt8cPpump",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#3",
+            "#4",
+            "#5",
+            "#5.1",
+            "#5.2",
+            "#5.3"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "fee_only"
+          ],
+          "note": "Of the 182,400,000 lamports, 182,354,941 go to the pool and 45,059 to a fee account (#5.3)."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

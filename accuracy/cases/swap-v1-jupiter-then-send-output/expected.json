@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-v1-jupiter-then-send-output",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "participantsNote": "Swap: counterparty is a pool; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "408372847",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": false
+            },
+            {
+              "direction": "in",
+              "amountRaw": "46030",
+              "mint": "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij",
+              "decimals": 8
+            }
+          ],
+          "instructionRefs": [
+            "#0",
+            "#0.1",
+            "#0.2"
+          ],
+          "forbidden": [
+            "airdrop",
+            "fee_only"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "receiver": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "46030",
+              "mint": "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij",
+              "decimals": 8
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "receiver": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "895880",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#4"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "receiver": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1488440",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "receiver": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1488440",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#3"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "receiver": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "46030",
+              "mint": "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij",
+              "decimals": 8
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "receiver": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "895880",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#4"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "receiver": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+          "amounts": [],
+          "instructionRefs": [
+            "#1"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb",
+          "receiver": "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq",
+          "amounts": [],
+          "instructionRefs": [
+            "#3"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}
