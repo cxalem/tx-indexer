@@ -440,7 +440,8 @@ interface TokenInfo {
 **Measured accuracy.** The repository keeps a hand-labelled set of real mainnet transactions in [`accuracy/`](../../accuracy/README.md), replayed offline through `getTransaction` (enrichment off) and scored against labels written from the instructions, not from SDK output. Current baseline (SDK 2.0.0, 43 transactions, 72 wallet perspectives; see [`accuracy/BASELINE.md`](../../accuracy/BASELINE.md)). Numbers marked * are provisional: 7 of the 72 perspectives come from disputed cases, scored on their verified part only.
 
 - Primary action correct for every selected perspective, with fee and execution status right: **6 of 43 transactions (14%)***.
-- Primary kind right: **42 of 72 perspectives (58%)***. `transfer` precision **58%** (22 wrong `transfer` labels on lending, liquidity, burns, account creation and closing, NFT moves, tips and keeper fee payers); `swap` precision 100%, recall 71%.
+- Primary action fully correct (kind, amounts and participants): **13 of 72 perspectives (18%)***.
+- Primary kind right: **42 of 72 perspectives (58%)***. `transfer` kind precision **58%** (22 wrong `transfer` labels on lending, liquidity, burns, account creation and closing, NFT moves, tips and keeper fee payers); `swap` kind precision 100%, recall 71%. Kind precision counts a right label with wrong amounts as right; the line above is the stricter figure.
 - Amounts exact in **13 of the 42 perspectives** where the kind is right and the amounts are known (mint, raw amount, decimals, and direction where the classification exposes it). SOL amounts usually include the network fee, tips or rent.
 - 11 labels the set marks as wrong outright (for example `transfer` for a lending borrow). Fee and execution status: 43/43.
 - The SDK reports one action per transaction: it finds 2 of the 93 expected secondary actions (tips, account creations, closes, fee reimbursements, second swaps). Secondary actions are not part of the pass rule today.
