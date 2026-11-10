@@ -1,6 +1,6 @@
 {
   "name": "tx-indexer",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "A TypeScript SDK that transforms raw Solana transactions into human-readable financial data with automatic classification and protocol detection",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -62,21 +62,27 @@
   "homepage": "https://itx-indexer.com/",
   "bugs": "https://github.com/cxalem/tx-indexer/issues",
   "license": "MIT",
+  "engines": {
+    "node": ">=20.18.0"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@size-limit/esbuild": "^12.0.0",
-    "@size-limit/esbuild-why": "^12.0.0",
-    "@size-limit/preset-small-lib": "^12.0.0",
-    "@types/bun": "latest",
-    "eslint": "^9.39.1",
-    "size-limit": "^12.0.0",
-    "tsup": "^8.5.1"
+    "@size-limit/preset-small-lib": "^14.3.0",
+    "@size-limit/rolldown-why": "^14.3.0",
+    "@solana/kit": "^8.6.0",
+    "@tx-indexer/classification": "workspace:*",
+    "@tx-indexer/core": "workspace:*",
+    "@tx-indexer/solana": "workspace:*",
+    "@types/bun": "^1.4.4",
+    "eslint": "^9.39.5",
+    "size-limit": "^14.3.0",
+    "tsup": "^9.0.0"
   },
   "peerDependencies": {
-    "typescript": "^5",
-    "@solana/kit": "^5.0.0"
+    "typescript": "^5 || ^6",
+    "@solana/kit": "^8.0.0"
   },
   "dependencies": {
-    "zod": "^4.1.13"
+    "zod": "^4.6.7"
   }
 }

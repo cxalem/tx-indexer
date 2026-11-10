@@ -13,9 +13,8 @@
   "dependencies": {
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.4",
-    "@repo/ui": "*",
     "@solana/client": "^1.1.4",
-    "@solana/kit": "^5.0.0",
+    "@solana/kit": "^8.6.0",
     "@solana/react-hooks": "^1.1.4",
     "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
@@ -26,20 +25,19 @@
     "react-dom": "^19.2.0",
     "shiki": "^3.22.0",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss-animate": "^1.0.7",
     "tx-indexer": "^1.4.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@tailwindcss/postcss": "^4.1.18",
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.20.5",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "autoprefixer": "^10.4.22",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.5",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "5.9.2"
+    "typescript": "6.0.3"
   }
 }

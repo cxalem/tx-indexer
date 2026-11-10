@@ -11,14 +11,15 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/bun": "^1.4.4",
     "@repo/eslint-config": "workspace:*",
-    "eslint": "^9.39.1"
+    "eslint": "^9.39.5"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5 || ^6"
   },
   "dependencies": {
-    "zod": "^4.1.13"
+    "@solana/kit": "^8.6.0",
+    "zod": "^4.6.7"
   }
 }

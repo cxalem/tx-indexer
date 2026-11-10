@@ -1,7 +1,6 @@
 {
   "extends": "../../packages/typescript-config/bun.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "tx-indexer": ["../../packages/sdk/src/index.ts"],
       "tx-indexer/*": ["../../packages/sdk/src/*"],

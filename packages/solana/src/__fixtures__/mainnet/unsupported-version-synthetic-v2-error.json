@@ -1,0 +1,21 @@
+{
+"_meta": {
+  "signature": "3L3RY5sT8K4kyEnqhizwaqxLEbcYvpGrGPNEYRwtbCSUtL6YL86jdrvCbohnP5q8VxQ3qzGmt3W3iQJW97rD7m3",
+  "cluster": "synthetic",
+  "endpoint": null,
+  "slot": null,
+  "blockTime": null,
+  "version": 2,
+  "commitment": "finalized",
+  "method": "getTransaction",
+  "params": {
+    "encoding": "json",
+    "maxSupportedTransactionVersion": 1,
+    "commitment": "finalized"
+  },
+  "capturedAt": null,
+  "description": "SYNTHETIC -32015 rejection for a hypothetical version 2 transaction requested with maxSupportedTransactionVersion 1. Not captured from any cluster: no version 2 exists. The message follows the wording of the real -32015 recorded on 2026-11-10 for a v1 transaction requested with max 0, with the version numbers raised by one. The signature is 64 bytes of 0x02, base58-encoded.",
+  "note": "`response` mimics a JSON-RPC response body. See README.md."
+},
+"response": {"jsonrpc":"2.0","error":{"code":-32015,"message":"Transaction version (2) is not supported by the requesting client. Please try the request again with the following configuration parameter: \"maxSupportedTransactionVersion\": 2"},"id":1}
+}

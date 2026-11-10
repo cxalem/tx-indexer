@@ -5,7 +5,7 @@
 | Property        | Value                                                                                                                                            |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Name**        | `tx-indexer`                                                                                                                                     |
-| **Version**     | `1.5.0`                                                                                                                                          |
+| **Version**     | `2.0.0` (unreleased)                                                                                                                                          |
 | **Description** | A TypeScript SDK that transforms raw Solana transactions into human-readable financial data with automatic classification and protocol detection |
 | **License**     | MIT                                                                                                                                              |
 | **Author**      | cxalem                                                                                                                                           |
@@ -14,16 +14,21 @@
 
 ### Dependencies
 
-- **Runtime**: `zod` ^4.1.13
-- **Peer Dependencies**: `typescript` ^5, `@solana/kit` ^5.0.0
+- **Runtime**: `zod` ^4.6.7
+- **Peer Dependencies**: `typescript` ^5 || ^6, `@solana/kit` ^8.0.0 (8.x)
+- **Node.js**: >=20.18.0 (`engines.node`; the minimum of `@solana/kit` 8)
 
 ### Bundle Size
 
-| Import                | Size (minified + brotli) |
-| --------------------- | ------------------------ |
-| Full SDK              | ~11 KB                   |
-| `createIndexer` only  | ~11 KB                   |
-| `classifyTransaction` | ~6 KB                    |
+Measured with size-limit 14 (Rolldown), minified + brotli, **including** the tree-shaken parts of `@solana/kit` and `zod` that each import pulls in:
+
+| Import                                  | Size (minified + brotli) |
+| --------------------------------------- | ------------------------ |
+| Full SDK (`createIndexer` + errors)     | ~39 KB                   |
+| `createIndexer` only                    | ~39 KB                   |
+| `classifyTransaction` (advanced)        | ~27 KB                   |
+| `fetchTransaction` (advanced)           | ~30 KB                   |
+| `transactionToLegs` (advanced)          | ~29 KB                   |
 
 ---
 
@@ -456,10 +461,11 @@ interface TokenInfo {
 - `Date` objects converted to ISO strings
 - Must use `toJsonClassifiedTransaction` for server-side serialization
 
-### 10. Transaction Versions (v0 boundary)
+### 10. Transaction Versions (v1 boundary)
 
-- The SDK requests transactions with `maxSupportedTransactionVersion: 0`, so it reads **legacy and v0** transactions only.
-- **Version 1 transactions** (live on mainnet since 2026-09-15) are refused by the RPC (JSON-RPC error `-32015`). They are not retried:
+- The SDK requests transactions with `maxSupportedTransactionVersion: 1`, so it reads **legacy, v0 and v1** transactions (v1 is live on mainnet since 2026-09-15).
+- v1 messages have no address lookup tables: every account is a static key, `meta.loadedAddresses` is empty, and balances, token `accountIndex`, `meta.fee` and lamport reconciliation keep their v0 meaning.
+- **Versions above 1** are refused by the RPC (JSON-RPC error `-32015`). They are not retried:
   - `getTransaction` / `getRawTransaction` and the `tx-indexer/advanced` `fetchTransaction` throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, `retryable: false`, carries `signature`).
   - `getTransactions` and `getTransactionsBySignatures` **omit them from the result**. They are reported only if you pass `onTransactionSkipped({ signature, reason: "unsupported_version", error })`; without the callback they are still dropped silently. Signatures the RPC does not return are reported as `"not_found"`, other failures as `"fetch_failed"`.
 - v0 address-lookup-table accounts are resolved: `tx.accountKeys` is the full list (static keys, then lookup-table writable, then lookup-table readonly), which is what `preBalances`/`postBalances` and token `accountIndex` refer to.

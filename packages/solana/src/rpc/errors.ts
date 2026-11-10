@@ -8,8 +8,13 @@
 /** JSON-RPC server error code for "Transaction version (N) is not supported". */
 export const UNSUPPORTED_TRANSACTION_VERSION_RPC_CODE = -32015;
 
-/** Highest transaction version this package requests from the RPC. */
-export const MAX_SUPPORTED_TRANSACTION_VERSION = 0;
+/**
+ * Highest transaction version this package requests from the RPC.
+ * Version 1 (live on mainnet since 2026-09-15) is read; anything newer is
+ * refused by the RPC with -32015 and surfaces as
+ * UnsupportedTransactionVersionError.
+ */
+export const MAX_SUPPORTED_TRANSACTION_VERSION = 1;
 
 const UNSUPPORTED_VERSION_MESSAGE =
   /transaction version \(?\d+\)? is not supported/i;
@@ -67,7 +72,7 @@ function extractTransactionVersion(error: unknown): number | undefined {
 
 /**
  * Thrown when the RPC refuses to return a transaction because its version is
- * newer than this package supports (`maxSupportedTransactionVersion: 0`).
+ * newer than this package supports (`maxSupportedTransactionVersion: 1`).
  *
  * Not retryable: asking again with the same parameters will fail again.
  */

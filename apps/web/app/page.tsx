@@ -44,7 +44,7 @@ export default async function Page() {
           <p className="text-base leading-relaxed text-neutral-600">
             Automatically classifies swaps, transfers, and payments with
             protocol detection and confidence scoring. Lightweight, powered by
-            @solana/kit v5.
+            @solana/kit v8.
           </p>
         </div>
       </div>

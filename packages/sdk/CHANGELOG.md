@@ -1,6 +1,23 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 (unreleased)
+
+Not published yet. Breaking for SDK consumers: see the first section.
+
+### Breaking: `@solana/kit` peer dependency is now `^8.0.0`
+
+- The `@solana/kit` peer range moved from `^5.0.0` to `^8.0.0` (developed and tested against 8.6.0). Projects on kit 5, 6 or 7 must upgrade kit to install this release without a peer-dependency conflict. The SDK's own use of kit (`createSolanaRpc`, `address`, `signature`, RPC types) did not change shape, so no SDK call sites change.
+- The `typescript` peer range is widened to `^5 || ^6`.
+- `engines.node` is now declared as `>=20.18.0`, the minimum Node.js version of `@solana/kit` 8.
+
+### Added: version 1 transactions are read
+
+- Transactions are requested with `maxSupportedTransactionVersion: 1`, so v1 transactions (live on mainnet since 2026-09-15) are fetched and classified instead of throwing `UnsupportedTransactionVersionError` / being skipped as `unsupported_version`. v1 messages have no lookup tables, so `tx.accountKeys` is the static key list and `tx.loadedAddresses` is empty; fee leg and reconciliation work as for v0.
+- `UnsupportedTransactionVersionError` now means a version **above 1**; its `maxSupportedTransactionVersion` is `1`.
+
+## 1.6.0
+
+Released 2026-11-10. Everything merged since 1.5.0 (2026-02-01). No change to `TxPrimaryType`; existing code keeps working. `tx-indexer/advanced` users should read the migration notes below.
 
 ### Added
 
@@ -13,6 +30,16 @@
 ### Changed
 
 - Improved SDK docs around null-vs-throw behavior and wallet funding semantics
+
+### Fixed: classification (merged between February and April 2026, not listed before)
+
+- **Swaps are no longer detected on internal rebalances.** Legs are netted per mint first: the same token leaving and returning to the same owner, plus a small SOL fee, is not a swap. A tiny SOL-only outflow outside a known DEX is treated as a fee.
+- **Swap direction follows the wallet you query**, not always the fee payer, so sponsored and relayed swaps read correctly. `getTransaction(signature, { walletAddress })` accepts the perspective wallet.
+- **Transfer and Solana Pay pairing** score sender/receiver pairs (exact amount match first, tiny SOL legs penalised) instead of taking the first credit of the same mint.
+- **Bridge direction** compares total in and out and returns no match when they are equal, instead of always reporting `bridge_in`.
+- **Airdrops** report the largest received token and prefer a protocol account as sender.
+- **NFT marketplace:** removed a rule that labelled any marketplace transaction where the wallet paid and received an NFT as `nft_purchase`.
+- **Engine:** priority ties are broken by registration order; a non-relevant match (fee only) is returned instead of `other` when nothing relevant matches; every result carries a `debugTrace` (`classifyTransactionWithTrace`).
 
 ### Fixed: v0 lookup-table accounts and lamport accounting (migration notes)
 

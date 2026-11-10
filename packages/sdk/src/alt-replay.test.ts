@@ -16,14 +16,14 @@ import {
 
 const swap = loadFixture("jupiter-swap-sol-to-token.json");
 const sell = loadFixture("jupiter-swap-token-to-sol.json");
-const v1 = loadFixture("unsupported-version-v1-error.json");
+const v2 = loadFixture("unsupported-version-synthetic-v2-error.json");
 
 function indexerFor(historySignatures?: string[]) {
   const { rpc } = createFixtureRpc(
     {
       [swap.meta.signature]: swap.responseText,
       [sell.meta.signature]: sell.responseText,
-      [v1.meta.signature]: v1.responseText,
+      [v2.meta.signature]: v2.responseText,
     },
     { historySignatures },
   );
@@ -68,20 +68,20 @@ describe("SDK replay of recorded v0 Jupiter swap", () => {
     expect(json.tx.preBalances[10]).toBe("135692492640");
   });
 
-  test("getTransaction on a v1 transaction throws UnsupportedTransactionVersionError", async () => {
+  test("getTransaction on a transaction above version 1 (synthetic v2) throws UnsupportedTransactionVersionError", async () => {
     const indexer = indexerFor();
     const error = await indexer
-      .getTransaction(v1.meta.signature, { enrichNftMetadata: false })
+      .getTransaction(v2.meta.signature, { enrichNftMetadata: false })
       .catch((e) => e);
     expect(error).toBeInstanceOf(UnsupportedTransactionVersionError);
     expect(error).toBeInstanceOf(TxIndexerError);
-    expect(error.signature).toBe(v1.meta.signature);
+    expect(error.signature).toBe(v2.meta.signature);
     expect(error.code).toBe("UNSUPPORTED_TRANSACTION_VERSION");
     expect(error.retryable).toBe(false);
   });
 
-  test("getTransactions reports the skipped v1 signature instead of dropping it silently", async () => {
-    const indexer = indexerFor([swap.meta.signature, v1.meta.signature, sell.meta.signature]);
+  test("getTransactions reports the skipped unsupported-version (synthetic v2) signature instead of dropping it silently", async () => {
+    const indexer = indexerFor([swap.meta.signature, v2.meta.signature, sell.meta.signature]);
     const skipped: SkippedTransaction[] = [];
     const txs = await indexer.getTransactions(
       "EMgSdxvQqmaqjynWyNeEXcgpMDERxD7ntvBcUWr3PaEb",
@@ -100,7 +100,7 @@ describe("SDK replay of recorded v0 Jupiter swap", () => {
       [swap.meta.signature, sell.meta.signature].sort(),
     );
     expect(skipped).toHaveLength(1);
-    expect(skipped[0]!.signature).toBe(v1.meta.signature);
+    expect(skipped[0]!.signature).toBe(v2.meta.signature);
     expect(skipped[0]!.reason).toBe("unsupported_version");
     expect(skipped[0]!.error).toBeInstanceOf(UnsupportedTransactionVersionError);
   });
@@ -110,7 +110,7 @@ describe("SDK replay of recorded v0 Jupiter swap", () => {
     const skipped: SkippedTransaction[] = [];
     const missing = "1111111111111111111111111111111111111111111111111111111111111111";
     const txs = await indexer.getTransactionsBySignatures(
-      [swap.meta.signature, v1.meta.signature, missing],
+      [swap.meta.signature, v2.meta.signature, missing],
       "EMgSdxvQqmaqjynWyNeEXcgpMDERxD7ntvBcUWr3PaEb",
       {
         filterSpam: false,
@@ -123,37 +123,38 @@ describe("SDK replay of recorded v0 Jupiter swap", () => {
     expect(txs).toHaveLength(1);
     const reasons = Object.fromEntries(skipped.map((s) => [s.signature, s.reason]));
     expect(reasons).toEqual({
-      [v1.meta.signature]: "unsupported_version",
+      [v2.meta.signature]: "unsupported_version",
       [missing]: "not_found",
     });
   });
 });
 
 describe("tx-indexer/advanced fetchers surface the public error type", () => {
-  test("fetchTransaction throws the public UnsupportedTransactionVersionError on the recorded -32015", async () => {
+  test("fetchTransaction throws the public UnsupportedTransactionVersionError on a -32015 (synthetic v2)", async () => {
     const { fetchTransaction } = await import("./advanced");
     const { isTxIndexerError } = await import("./errors");
-    const { rpc } = createFixtureRpc({ [v1.meta.signature]: v1.responseText });
-    const error = await fetchTransaction(rpc as never, v1.meta.signature as never, {
+    const { rpc } = createFixtureRpc({ [v2.meta.signature]: v2.responseText });
+    const error = await fetchTransaction(rpc as never, v2.meta.signature as never, {
       retry: { maxAttempts: 2, baseDelayMs: 1, maxDelayMs: 1 },
     }).catch((e) => e);
     expect(error).toBeInstanceOf(UnsupportedTransactionVersionError);
     expect(isTxIndexerError(error)).toBe(true);
-    expect(error.signature).toBe(v1.meta.signature);
-    expect(error.transactionVersion).toBe(1);
+    expect(error.signature).toBe(v2.meta.signature);
+    expect(error.transactionVersion).toBe(2);
+    expect(error.maxSupportedTransactionVersion).toBe(1);
   });
 
   test("fetchTransactionsBatch delivers the public error in onSkipped and onFetchError", async () => {
     const { fetchTransactionsBatch } = await import("./advanced");
     const { rpc } = createFixtureRpc({
-      [v1.meta.signature]: v1.responseText,
+      [v2.meta.signature]: v2.responseText,
       [swap.meta.signature]: swap.responseText,
     });
     const skippedErrors: unknown[] = [];
     const fetchErrors: unknown[] = [];
     const txs = await fetchTransactionsBatch(
       rpc as never,
-      [swap.meta.signature, v1.meta.signature] as never,
+      [swap.meta.signature, v2.meta.signature] as never,
       {
         retry: { maxAttempts: 1 },
         onSkipped: (s) => skippedErrors.push(s.error),
@@ -164,5 +165,76 @@ describe("tx-indexer/advanced fetchers surface the public error type", () => {
     expect(skippedErrors).toHaveLength(1);
     expect(skippedErrors[0]).toBeInstanceOf(UnsupportedTransactionVersionError);
     expect(fetchErrors[0]).toBeInstanceOf(UnsupportedTransactionVersionError);
+  });
+});
+
+describe("SDK replay of recorded v1 transactions", () => {
+  async function classify(name: string) {
+    const f = loadFixture(name);
+    const { rpc } = createFixtureRpc({ [f.meta.signature]: f.responseText });
+    const indexer = createIndexer({ client: { rpc: rpc as never } });
+    const result = await indexer.getTransaction(f.meta.signature, {
+      enrichNftMetadata: false,
+      enrichTokenMetadata: false,
+    });
+    expect(result).not.toBeNull();
+    return result!;
+  }
+
+  test("Jupiter token -> token swap (v1): classified as the fee payer's swap", async () => {
+    const { tx, legs, classification } = await classify("v1-jupiter-swap-token-to-token.json");
+    expect(tx.accountKeys).toHaveLength(49);
+    expect(tx.reconciliation?.status).toBe("balanced");
+    expect(legs.find((l) => l.role === "fee")?.amount.amountRaw).toBe("14200");
+    expect(tx.protocol?.id).toBe("jupiter");
+    // Fee payer Fni6... sends 100,000 DKYc... (raw 100000000000, 6 dp) and
+    // receives 119,883.098235 8Xg8... (raw 119883098235, 6 dp).
+    expect(classification.primaryType).toBe("swap");
+    expect(classification.primaryAmount?.token.mint).toBe("DKYcjobF7HPtL9RyQBRdeRQ2iWvizpfbgWwPWNXdpump");
+    expect(classification.primaryAmount?.amountRaw).toBe("100000000000");
+    expect(classification.secondaryAmount?.token.mint).toBe("8Xg89xT8Ve34sKiYqYuMs46mycREsCA2F362UscRpump");
+    expect(classification.secondaryAmount?.amountRaw).toBe("119883098235");
+
+    const json = JSON.parse(JSON.stringify(toJsonClassifiedTransaction({ tx, legs, classification })));
+    expect(json.tx.reconciliation.status).toBe("balanced");
+  });
+
+  test("SOL -> token buy (v1): keys, fee and reconciliation hold", async () => {
+    const { tx, legs } = await classify("v1-swap-sol-to-token.json");
+    expect(tx.accountKeys).toHaveLength(38);
+    expect(tx.reconciliation?.status).toBe("balanced");
+    expect(legs.find((l) => l.role === "fee")?.amount.amountRaw).toBe("12971");
+  });
+
+  // Known classifier gap, not specific to v1: the transaction calls the Memo
+  // program and carries a memo, and isSolanaPayTransaction treats ANY Memo
+  // program call with a non-null memo as Solana Pay. SolanaPayClassifier
+  // (priority 95) therefore claims it and returns "transfer" (pool HscovBe9...
+  // -> buyer), so SwapClassifier (priority 80) never runs. What it really is:
+  // Dha7... pays about 0.309 SOL and receives 7,074,185.417628 H3xK... (see the
+  // fixture README). Flip to `test` when the classifier handles it.
+  test.failing("SOL -> token buy (v1): classified as a swap (known gap, currently 'transfer')", async () => {
+    const { classification } = await classify("v1-swap-sol-to-token.json");
+    expect(classification.primaryType).toBe("swap");
+  });
+
+  test("Jupiter circular route (v1): keys, fee and reconciliation hold; classified as a swap", async () => {
+    const { tx, legs, classification } = await classify("v1-jupiter-route-usdc-gain.json");
+    expect(tx.accountKeys).toHaveLength(35);
+    expect(tx.reconciliation?.status).toBe("balanced");
+    expect(legs.find((l) => l.role === "fee")?.amount.amountRaw).toBe("7559");
+    expect(classification.primaryType).toBe("swap");
+    expect(classification.secondaryAmount?.token.symbol).toBe("USDC");
+    expect(classification.secondaryAmount?.amountRaw).toBe("1857");
+  });
+
+  // Known classifier gap, not specific to v1: the signer puts nothing into
+  // the route (USDC -> cbBTC -> WBTC -> USDC across pools). Its only SOL debit
+  // is the whole 7,559-lamport network fee; because the protocol is a known
+  // DEX (Jupiter), the tiny-SOL guard does not apply and SwapClassifier picks
+  // that full SOL debit as the swap's consideration (primaryAmount).
+  test.failing("Jupiter circular route (v1): the network fee is not reported as the swap input (known gap)", async () => {
+    const { classification } = await classify("v1-jupiter-route-usdc-gain.json");
+    expect(classification.primaryAmount?.amountRaw).not.toBe("7559");
   });
 });
