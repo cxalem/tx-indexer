@@ -5,7 +5,7 @@
 | Property        | Value                                                                                                                                            |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Name**        | `tx-indexer`                                                                                                                                     |
-| **Version**     | `1.5.0`                                                                                                                                          |
+| **Version**     | `1.6.0`                                                                                                                                          |
 | **Description** | A TypeScript SDK that transforms raw Solana transactions into human-readable financial data with automatic classification and protocol detection |
 | **License**     | MIT                                                                                                                                              |
 | **Author**      | cxalem                                                                                                                                           |
