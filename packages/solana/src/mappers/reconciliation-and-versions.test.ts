@@ -233,8 +233,8 @@ describe("unsupported transaction versions", () => {
     });
     const { rpc } = mockRpc((sig) => {
       if (sig === "missing") return null;
-      if (sig === "v1") {
-        const err = new Error("Transaction version (1) is not supported by the requesting client.");
+      if (sig === "v2") {
+        const err = new Error("Transaction version (2) is not supported by the requesting client.");
         Object.assign(err, { context: { __code: -32015 } });
         throw err;
       }
@@ -245,7 +245,7 @@ describe("unsupported transaction versions", () => {
     const fetchErrors: string[] = [];
     const result = await fetchTransactionsBatch(
       rpc,
-      ["ok", "missing", "v1", "boom"] as Signature[],
+      ["ok", "missing", "v2", "boom"] as Signature[],
       {
         retry: { maxAttempts: 1 },
         onSkipped: (s) => skipped.push(s),
@@ -257,11 +257,11 @@ describe("unsupported transaction versions", () => {
     const bySig = Object.fromEntries(skipped.map((s) => [s.signature, s]));
     expect(bySig.missing?.reason).toBe("not_found");
     expect(bySig.missing?.error).toBeUndefined();
-    expect(bySig.v1?.reason).toBe("unsupported_version");
-    expect(bySig.v1?.error).toBeInstanceOf(UnsupportedTransactionVersionError);
-    expect((bySig.v1?.error as UnsupportedTransactionVersionError).signature).toBe("v1");
+    expect(bySig.v2?.reason).toBe("unsupported_version");
+    expect(bySig.v2?.error).toBeInstanceOf(UnsupportedTransactionVersionError);
+    expect((bySig.v2?.error as UnsupportedTransactionVersionError).signature).toBe("v2");
     expect(bySig.boom?.reason).toBe("fetch_failed");
-    expect(fetchErrors.sort()).toEqual(["boom", "v1"]);
+    expect(fetchErrors.sort()).toEqual(["boom", "v2"]);
   });
 });
 
@@ -271,9 +271,13 @@ describe("JSON-RPC batch path (rpc/batch.ts) stays consistent", () => {
     globalThis.fetch = originalFetch;
   });
 
+  const sentRequests: Array<{ id: number; params: unknown[] }> = [];
+
   function installFetch(bodies: Array<Record<string, unknown>>) {
+    sentRequests.length = 0;
     globalThis.fetch = (async (_url: unknown, init?: { body?: string }) => {
-      const requests = JSON.parse(String(init?.body)) as Array<{ id: number }>;
+      const requests = JSON.parse(String(init?.body)) as Array<{ id: number; params: unknown[] }>;
+      sentRequests.push(...requests);
       const out = requests.map((r, i) => ({ jsonrpc: "2.0", id: r.id, ...bodies[i] }));
       return new Response(JSON.stringify(out), { status: 200 });
     }) as unknown as typeof fetch;
@@ -321,7 +325,7 @@ describe("JSON-RPC batch path (rpc/batch.ts) stays consistent", () => {
       {
         error: {
           code: -32015,
-          message: "Transaction version (1) is not supported by the requesting client.",
+          message: "Transaction version (2) is not supported by the requesting client.",
         },
       },
     ]);
@@ -344,5 +348,11 @@ describe("JSON-RPC batch path (rpc/batch.ts) stays consistent", () => {
     expect(skipped).toHaveLength(1);
     expect(skipped[0]!.signature).toBe("c");
     expect(skipped[0]!.reason).toBe("unsupported_version");
+    expect((skipped[0]!.error as UnsupportedTransactionVersionError).transactionVersion).toBe(2);
+    // Every outgoing getTransaction asked for up to version 1.
+    expect(sentRequests).toHaveLength(3);
+    for (const req of sentRequests) {
+      expect(req.params[1]).toMatchObject({ maxSupportedTransactionVersion: 1 });
+    }
   });
 });

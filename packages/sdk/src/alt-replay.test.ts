@@ -206,12 +206,13 @@ describe("SDK replay of recorded v1 transactions", () => {
     expect(legs.find((l) => l.role === "fee")?.amount.amountRaw).toBe("12971");
   });
 
-  // Known classifier gap, not specific to v1: the buy goes through program
-  // 6Vo3245e... (not a recognised protocol) and the transaction also calls the
-  // Memo program, so it is classified as a token "transfer" from the pool
-  // HscovBe9... to the buyer. What it really is: Dha7... pays SOL and receives
-  // 7,074,185.417628 H3xK... (see the fixture README). Flip to `test` when the
-  // classifier recognises it.
+  // Known classifier gap, not specific to v1: the transaction calls the Memo
+  // program and carries a memo, and isSolanaPayTransaction treats ANY Memo
+  // program call with a non-null memo as Solana Pay. SolanaPayClassifier
+  // (priority 95) therefore claims it and returns "transfer" (pool HscovBe9...
+  // -> buyer), so SwapClassifier (priority 80) never runs. What it really is:
+  // Dha7... pays about 0.309 SOL and receives 7,074,185.417628 H3xK... (see the
+  // fixture README). Flip to `test` when the classifier handles it.
   test.failing("SOL -> token buy (v1): classified as a swap (known gap, currently 'transfer')", async () => {
     const { classification } = await classify("v1-swap-sol-to-token.json");
     expect(classification.primaryType).toBe("swap");
@@ -228,8 +229,10 @@ describe("SDK replay of recorded v1 transactions", () => {
   });
 
   // Known classifier gap, not specific to v1: the signer puts nothing into
-  // the route (USDC -> cbBTC -> WBTC -> USDC across pools) and only pays the
-  // 7,559-lamport network fee, but the swap's input is reported as that fee.
+  // the route (USDC -> cbBTC -> WBTC -> USDC across pools). Its only SOL debit
+  // is the whole 7,559-lamport network fee; because the protocol is a known
+  // DEX (Jupiter), the tiny-SOL guard does not apply and SwapClassifier picks
+  // that full SOL debit as the swap's consideration (primaryAmount).
   test.failing("Jupiter circular route (v1): the network fee is not reported as the swap input (known gap)", async () => {
     const { classification } = await classify("v1-jupiter-route-usdc-gain.json");
     expect(classification.primaryAmount?.amountRaw).not.toBe("7559");

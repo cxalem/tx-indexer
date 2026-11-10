@@ -138,9 +138,10 @@ else in the fields this SDK reads changed. In all three, `meta.fee` = 5000 x sig
 - Reading: the fee payer bought 7,074,185.417628 H3xK with about 0.3089 SOL, routed SOL -> RAY ->
   H3xK; the other lamport credits are new-account reserves and a 10,000-lamport payment (their
   purpose was not verified). Expected classification: `swap`. **The SDK currently says
-  `transfer`** (from `HscovBe9...` to the buyer): the program is not recognised and the Memo call
-  wins protocol detection. This is a classifier gap, not a v1 issue; the SDK test records it
-  with `test.failing`.
+  `transfer`** (from `HscovBe9...` to the buyer): the transaction calls the Memo program with a
+  non-null memo, which `isSolanaPayTransaction` treats as Solana Pay, so `SolanaPayClassifier`
+  (priority 95) claims it before `SwapClassifier` (priority 80) runs. This is a classifier gap,
+  not a v1 issue; the SDK test records it with `test.failing`.
 
 ## v1-jupiter-route-usdc-gain.json
 
@@ -155,5 +156,6 @@ else in the fields this SDK reads changed. In all three, `meta.fee` = 5000 x sig
 - Reading: a circular Jupiter route (USDC -> cbBTC -> WBTC -> USDC) in which the signer puts
   nothing in, pays the network fee and keeps 1857 raw USDC. The SDK classifies it as `swap`
   with USDC 1857 received, which matches the route, but reports the **network fee (7559
-  lamports) as the swap input**; that part is a known classifier gap recorded with
-  `test.failing`.
+  lamports) as the swap input**: the signer's full SOL debit is only the fee, and because the
+  protocol is a known DEX the tiny-SOL guard is skipped and `SwapClassifier` takes that debit
+  as the consideration. Known classifier gap, recorded with `test.failing`.
