@@ -363,7 +363,7 @@ const txs = await indexer.getTransactions(wallet, {
 });
 ```
 
-Migration notes (see CHANGELOG "Unreleased"): the fee leg now comes from `meta.fee` (no fee leg if a hand-built `RawTransaction` has no `fee`), fetched lamport balances are `bigint`, unsupported-version errors are typed (also from `tx-indexer/advanced`), `onTransactionSkipped` is new, wSOL is represented once (owner-attributed lamport delta; reserve of a new wSOL account as a `rent:` leg), `AccountIdType` gained `"rent"` (update exhaustive switches; minor-version change), and stake direction follows the wallet.
+Migration notes (see CHANGELOG "Unreleased"): the fee leg now comes from `meta.fee` (no fee leg if a hand-built `RawTransaction` has no `fee`), fetched lamport balances are `bigint`, unsupported-version errors are typed (also from `tx-indexer/advanced`), `onTransactionSkipped` is new, wSOL is represented once (owner-attributed lamport delta; for a new wSOL account, the standard 2,039,280-lamport token-account reserve as a `rent:` leg when the account was funded with at least that much; legacy native mint only), `AccountIdType` gained `"rent"` (update exhaustive switches; minor-version change), and stake direction follows the wallet.
 
 Each fetched transaction carries `tx.reconciliation` (`balanced | unbalanced | unavailable`), a check, computed from raw balances and independent of the legs, that lamports leaving all accounts equal the network fee. See SDK.md "Known Limitations".
 

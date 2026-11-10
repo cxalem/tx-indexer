@@ -44,13 +44,23 @@ export class StakeDepositClassifier implements Classifier {
       const ownId = `external:${perspective}`;
       solDebit = legs.find((leg) => isSolDebit(leg) && leg.accountId === ownId);
       if (!solDebit) {
-        const receivesPoolTokens = legs.some(
-          (leg) =>
-            leg.accountId === ownId &&
-            leg.side === "credit" &&
-            leg.amount.token.symbol !== "SOL",
+        const ownLegs = legs.filter((leg) => leg.accountId === ownId);
+        const receivesPoolTokens = ownLegs.some(
+          (leg) => leg.side === "credit" && leg.amount.token.symbol !== "SOL",
         );
-        if (receivesPoolTokens) {
+        // The sponsored fallback never fires when the wallet itself gains SOL
+        // (net SOL credit) or gives up another token (e.g. its pool tokens
+        // decreasing): those are withdrawal/redeem shapes, not deposits.
+        let walletNetSol = 0n;
+        for (const leg of ownLegs) {
+          if (leg.amount.token.symbol !== "SOL") continue;
+          const raw = BigInt(leg.amount.amountRaw);
+          walletNetSol += leg.side === "credit" ? raw : -raw;
+        }
+        const sendsOtherToken = ownLegs.some(
+          (leg) => leg.side === "debit" && leg.amount.token.symbol !== "SOL",
+        );
+        if (receivesPoolTokens && walletNetSol <= 0n && !sendsOtherToken) {
           solDebit = legs
             .filter(isSolDebit)
             .reduce<TxLeg | undefined>(

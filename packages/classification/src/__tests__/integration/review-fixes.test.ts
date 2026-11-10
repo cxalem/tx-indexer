@@ -216,3 +216,51 @@ describe("ruling B: wSOL economic movement is the lamport delta, owner-attribute
     expect(classification.primaryAmount?.amountRaw).toBe(SOL.toString());
   });
 });
+
+describe("round 3 regressions", () => {
+  test("R1: create Bob's wSOL account and fund it without sync_native is a transfer Alice -> Bob", async () => {
+    const { legs, classification } = await run(
+      syntheticResponse({
+        staticKeys: [ALICE, SYSTEM_PROGRAM],
+        loaded: { writable: [BOB_ATA], readonly: [] },
+        pre: [5n * SOL, 1n, 0n],
+        post: [5n * SOL - SOL - RENT - 5000n, 1n, SOL + RENT],
+        instructions: [{ programIdIndex: 1, accounts: [0, 2] }],
+        postTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: BOB, amount: 0n }],
+      }),
+    );
+    const bob = legs.find((l) => l.accountId === `external:${BOB}`);
+    expect(bob?.side).toBe("credit");
+    expect(bob?.amount.amountRaw).toBe("1000000000");
+    expect(classification.primaryType).toBe("transfer");
+    expect(classification.sender).toBe(ALICE);
+    expect(classification.receiver).toBe(BOB);
+  });
+
+  test("R2: stake-pool redeem paying Alice SOL (with a USDC side movement) stays stake_withdraw", async () => {
+    const USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+    const ALICE_USDC = "A1iceUSDC11111111111111111111111111111111111";
+    const BOB_USDC = "BobUSDC1111111111111111111111111111111111111";
+    const { classification } = await run(
+      syntheticResponse({
+        staticKeys: [ALICE, POOL_ATA, ALICE_USDC, BOB_USDC, SYSTEM_PROGRAM],
+        loaded: { writable: [RESERVE], readonly: [] },
+        pre: [SOL, RENT, RENT, RENT, 1n, 100n * SOL],
+        post: [SOL + 999_995_000n, RENT, RENT, RENT, 1n, 99n * SOL],
+        preTokenBalances: [
+          { accountIndex: 1, mint: POOL_MINT, owner: ALICE, amount: 5n * SOL },
+          { accountIndex: 2, mint: USDC, owner: ALICE, amount: 0n, decimals: 6 },
+          { accountIndex: 3, mint: USDC, owner: BOB, amount: 1_000_000n, decimals: 6 },
+        ],
+        postTokenBalances: [
+          { accountIndex: 1, mint: POOL_MINT, owner: ALICE, amount: 4n * SOL },
+          { accountIndex: 2, mint: USDC, owner: ALICE, amount: 1_000_000n, decimals: 6 },
+          { accountIndex: 3, mint: USDC, owner: BOB, amount: 0n, decimals: 6 },
+        ],
+      }),
+      { protocol: { id: "stake-pool", name: "Stake Pool Program" }, walletAddress: ALICE },
+    );
+    expect(classification.primaryType).toBe("stake_withdraw");
+    expect(classification.receiver).toBe(ALICE);
+  });
+});

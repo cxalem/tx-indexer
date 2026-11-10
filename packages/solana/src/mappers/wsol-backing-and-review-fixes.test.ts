@@ -111,6 +111,58 @@ describe("wSOL accounts are represented once: lamport delta, owner-attributed", 
   });
 });
 
+describe("created wSOL accounts: only the verified standard reserve is rent", () => {
+  test("create then fund WITHOUT sync_native: reserve to rent:, all funding to the owner", async () => {
+    const { legs } = await legsFor({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [BOB_ATA], readonly: [] },
+      pre: [5n * SOL, 1n, 0n],
+      post: [5n * SOL - SOL - RENT - 5000n, 1n, SOL + RENT],
+      postTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: BOB, amount: 0n }],
+    });
+    expect(fmt(legs)).toEqual(
+      [
+        `external:${ALICE} debit ${SOL + RENT + 5000n} sent`,
+        `external:${BOB} credit 1000000000 received`,
+        `rent:${BOB_ATA} credit ${RENT} unknown`,
+        `fee:network credit 5000 fee`,
+      ].sort(),
+    );
+  });
+
+  test("created, funded 1 SOL, 0.4 SOL spent: reserve to rent:, 0.6 SOL to the owner", async () => {
+    const CAROL = "Caro11111111111111111111111111111111111111";
+    const { legs } = await legsFor({
+      staticKeys: [ALICE, CAROL, TOKEN_PROGRAM],
+      loaded: { writable: [ALICE_ATA], readonly: [] },
+      pre: [5n * SOL, 0n, 1n, 0n],
+      post: [4n * SOL - RENT - 5000n, 400_000_000n, 1n, RENT + 600_000_000n],
+      postTokenBalances: [{ accountIndex: 3, mint: WSOL_MINT, owner: ALICE, amount: 600_000_000n }],
+    });
+    expect(fmt(legs)).toContain(`rent:${ALICE_ATA} credit ${RENT} unknown`);
+    expect(fmt(legs)).toContain(`external:${ALICE} credit 600000000 received`);
+    expect(fmt(legs)).toContain(`external:${CAROL} credit 400000000 received`);
+  });
+
+  test("created with lamports below the standard reserve: no rent leg, whole delta to the owner", async () => {
+    const { legs } = await legsFor({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [BOB_ATA], readonly: [] },
+      pre: [SOL, 1n, 0n],
+      post: [SOL - 1_000_000n - 5000n, 1n, 1_000_000n],
+      postTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: BOB, amount: 0n }],
+    });
+    expect(fmt(legs)).toEqual(
+      [
+        `external:${ALICE} debit 1005000 sent`,
+        `external:${BOB} credit 1000000 received`,
+        `fee:network credit 5000 fee`,
+      ].sort(),
+    );
+    expect(legs.every((l) => BigInt(l.amount.amountRaw) > 0n)).toBe(true);
+  });
+});
+
 describe("wSOL edge cases", () => {
   test("token owner missing: identity falls back to accountKeys[accountIndex], never the mint", async () => {
     const response = syntheticResponse({
