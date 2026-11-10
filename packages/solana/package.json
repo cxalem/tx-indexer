@@ -19,10 +19,10 @@
     "typescript": "^5 || ^6"
   },
   "dependencies": {
-    "@solana/kit": "^5.0.0",
+    "@solana/kit": "^8.6.0",
     "@tx-indexer/core": "workspace:*",
     "bs58": "^6.0.0",
-    "p-limit": "^6.2.0",
-    "zod": "^4.1.13"
+    "p-limit": "^7.3.3",
+    "zod": "^4.6.7"
   }
 }

@@ -67,7 +67,7 @@
     "@size-limit/esbuild": "^14.3.0",
     "@size-limit/esbuild-why": "^14.3.0",
     "@size-limit/preset-small-lib": "^14.3.0",
-    "@solana/kit": "^5.0.0",
+    "@solana/kit": "^8.6.0",
     "@types/bun": "^1.4.4",
     "eslint": "^9.39.5",
     "size-limit": "^14.3.0",
@@ -75,9 +75,9 @@
   },
   "peerDependencies": {
     "typescript": "^5 || ^6",
-    "@solana/kit": "^5.0.0"
+    "@solana/kit": "^8.0.0"
   },
   "dependencies": {
-    "zod": "^4.1.13"
+    "zod": "^4.6.7"
   }
 }

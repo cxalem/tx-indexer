@@ -16,7 +16,7 @@
     "typescript": "^5 || ^6"
   },
   "dependencies": {
-    "@solana/kit": "^5.0.0",
+    "@solana/kit": "^8.6.0",
     "tx-indexer": "workspace:*",
     "@tx-indexer/core": "workspace:*",
     "@tx-indexer/solana": "workspace:*"
