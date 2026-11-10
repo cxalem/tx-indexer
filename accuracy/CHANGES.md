@@ -3,6 +3,28 @@
 Every regeneration of `baseline.json` / `BASELINE.md` adds one entry here, in the same commit:
 date, what changed, why. `bun run accuracy` fails if `baseline.json` changed without this file.
 
+## 2026-11-11: scorer v4, exactness per component; secondary synonym bucket; baseline schema 4 (no SDK or label change)
+
+No case file and no SDK code changed. Every headline number, per-kind count, per-category count and
+per-perspective outcome is identical to the previous baseline (13 correct, 29 kind_only, 2 secondary_hit,
+0 disputed_alternative, 4 abstained, 24 wrong_label, 0 error of 72; cases passed 6/43); `BASELINE.md`
+is byte-identical. Only the shape of `baseline.json` changed.
+
+- Exactness per component. Each perspective record now also stores `components`: one boolean per
+  expected amount leg (`actions[i] amount <direction> <mint>`) and per non-null participant field
+  (`actions[i] sender` / `receiver`), measured against the expectation the prediction was scored on
+  (`actions[i]` or `actions[i].alternatives[j]`) for `correct`, `kind_only` and `secondary_hit`. The
+  gate now fails when a component that was exact is wrong or no longer measured, unless the perspective
+  became `correct`. Before, exactness was one boolean per perspective, so inside a perspective that was
+  already inexact a previously exact leg could go wrong without failing the gate (example, now a test:
+  in `swap-v0-jupiter-sol-to-token` the SOL leg is wrong and the FUSE leg exact; FUSE 1994890919495 →
+  1994890919496 passed the gate, now it fails). The per-perspective `amountsExact` / `participantsExact`
+  stay and still drive the headline.
+- Secondary synonym bucket. A secondary hit on an accepted synonym of a secondary action is now counted
+  in the expected action's kind (`secondaryPerKind`), not the synonym's; the matched kind stays in
+  `secondaryHit.kind` for display. No secondary hit in the set matched a synonym, so no count moved;
+  a synthetic test covers it.
+
 ## 2026-11-11: scorer v3, stricter outcome classes; baseline schema 3 (no SDK or label change)
 
 No case file and no SDK code changed; every delta below comes from the scoring rules.

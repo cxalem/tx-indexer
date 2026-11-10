@@ -385,6 +385,65 @@ describe("regression gate (synthetic predictions)", () => {
     );
   });
 
+  test("per component: an exact leg going wrong inside an already inexact perspective fails the gate", () => {
+    // Reviewer's example: the SOL leg is already wrong, the FUSE leg is exact. Corrupting FUSE does not
+    // change the per-perspective booleans (amountsExact stays false), so only the component check sees it.
+    const id = "swap-v0-jupiter-sol-to-token";
+    const addr = "EMgSdxvQqmaqjynWyNeEXcgpMDERxD7ntvBcUWr3PaEb";
+    const fuse = "FUSE3in85PPWaA7BdRucpRyemH69nLQHdCU6NfwfWXqL";
+    const sol = "So11111111111111111111111111111111111111112";
+    const before = outcomeOf(current, id, addr);
+    expect(before.outcome).toBe("kind_only");
+    expect(before.amountsExact).toBe(false);
+    expect(before.components).toEqual({ [`actions[0] amount out ${sol}`]: false, [`actions[0] amount in ${fuse}`]: true });
+    const worse = rescore((cid, p) =>
+      cid === id
+        ? p.map((x) =>
+            x.address === addr
+              ? { ...x, amounts: x.amounts.map((m) => (m.amountRaw === "1994890919495" ? { ...m, amountRaw: "1994890919496" } : m)) }
+              : x,
+          )
+        : p,
+    );
+    const after = outcomeOf(worse, id, addr);
+    expect(after.outcome).toBe("kind_only");
+    expect(after.amountsExact).toBe(false);
+    expect(after.components[`actions[0] amount in ${fuse}`]).toBe(false);
+    expect(compareToBaseline(current, worse)).toEqual([`${id} @${addr}: actions[0] amount in ${fuse} was exact, now wrong`]);
+  });
+
+  test("per component: an exact participant field going wrong inside an inexact perspective fails the gate", () => {
+    const hit = Object.entries(current.caseResults)
+      .flatMap(([cid, c]) => Object.entries(c.perspectives).map(([a, p]) => [cid, a, p] as const))
+      .find(([, , p]) => p.outcome === "kind_only" && Object.entries(p.components).some(([k, v]) => k.endsWith(" sender") && v));
+    expect(hit).toBeDefined();
+    const [id, addr] = hit!;
+    const worse = rescore((cid, p) => (cid === id ? p.map((x) => (x.address === addr ? { ...x, sender: "11111111111111111111111111111111" } : x)) : p));
+    expect(compareToBaseline(current, worse).some((f) => f.startsWith(`${id} @${addr}: actions[`) && f.endsWith(" sender was exact, now wrong"))).toBe(true);
+  });
+
+  test("a secondary hit on an accepted synonym is counted in the expected action's kind, shown with the matched kind", () => {
+    const id = "transfer-four-tokens-one-recipient-sweep";
+    const lc = structuredClone(find(id));
+    const addr = lc.case.perspectives[0]!.address;
+    const action = lc.expected.perspectives[0]!.actions[2]!;
+    expect(action.primary).toBe(false);
+    expect(action.kind).toBe("transfer");
+    action.alternatives = [
+      { kind: "reward", scoring: "accepted", sender: action.sender, receiver: action.receiver, amounts: action.amounts, note: "synthetic synonym" } as never,
+    ];
+    const p = structuredClone(preds.get(id)!).map((x) => (x.address === addr ? { ...x, kind: "reward" } : x));
+    const r = scoreCase(lc, p);
+    const pr = r.perspectives.find((x) => x.address === addr)!;
+    expect(pr.outcome).toBe("secondary_hit");
+    expect(pr.secondaryHitKind).toBe("transfer");
+    expect(pr.secondaryHit).toEqual({ action: "actions[2] transfer #7", kind: "reward", amountsExact: true, participantsExact: true });
+    const b = aggregate([r], sdkVersion);
+    expect(b.secondaryPerKind.reward).toBeUndefined();
+    expect(b.secondaryPerKind.transfer![0]).toBe(r.perspectives.filter((x) => x.outcome === "secondary_hit").length);
+    expect(b.overall.secondaryRecall[0]).toBe(b.secondaryPerKind.transfer![0]);
+  });
+
   test("outcome classes always sum to the number of perspectives", () => {
     const variants: Baseline[] = [
       current,
