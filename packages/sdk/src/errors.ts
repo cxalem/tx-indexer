@@ -232,6 +232,22 @@ export class UnsupportedTransactionVersionError extends TxIndexerError {
 }
 
 /**
+ * Converts the fetch layer's unsupported-version error into the public
+ * {@link UnsupportedTransactionVersionError}; any other value is returned
+ * unchanged (no reclassification of unrelated errors).
+ */
+export function toPublicFetchError(error: unknown): unknown {
+  if (
+    error instanceof Error &&
+    !(error instanceof TxIndexerError) &&
+    (error as { code?: unknown }).code === "UNSUPPORTED_TRANSACTION_VERSION"
+  ) {
+    return wrapError(error);
+  }
+  return error;
+}
+
+/**
  * Type guard to check if an error is a TxIndexerError.
  */
 export function isTxIndexerError(error: unknown): error is TxIndexerError {

@@ -36,10 +36,68 @@ function scoreTransferPair(senderLeg: TxLeg, receiverLeg: TxLeg): number {
   return transferUi + exactAmountBonus + tinySolPenalty;
 }
 
+/**
+ * Finds the best sender/receiver pair among external legs.
+ *
+ * @param preferAccount - Optional target wallet. When at least one candidate
+ *   pair has this wallet as sender or receiver, only such pairs are
+ *   considered, so movements between third-party accounts (e.g. pool vaults
+ *   resolved from lookup tables) cannot displace the wallet's own transfer.
+ *   When no pair involves the wallet, all pairs are considered as before.
+ */
 export function findBestExternalTransferPair(
   legs: TxLeg[],
   senderRoles: Array<TxLeg["role"]> = ["sent"],
   receiverRoles: Array<TxLeg["role"]> = ["received"],
+  preferAccount?: string | null,
+): TransferPair | null {
+  if (preferAccount) {
+    const preferredId = `external:${preferAccount}`;
+    const involvesWallet = (pair: TransferPair) =>
+      pair.senderLeg.accountId === preferredId ||
+      pair.receiverLeg.accountId === preferredId;
+    const preferred = findBestPair(
+      legs,
+      senderRoles,
+      receiverRoles,
+      involvesWallet,
+      scoreWalletPair,
+    );
+    if (preferred) return preferred;
+  }
+  return findBestPair(
+    legs,
+    senderRoles,
+    receiverRoles,
+    () => true,
+    scoreTransferPair,
+  );
+}
+
+/**
+ * Score for pairs that involve the target wallet: the counterpart whose
+ * amount is closest to the wallet's own movement wins (an exact match first),
+ * instead of the largest amount, so a large unrelated credit elsewhere cannot
+ * be taken as the wallet's counterparty.
+ */
+function scoreWalletPair(senderLeg: TxLeg, receiverLeg: TxLeg): number {
+  const a = toRawAmount(senderLeg);
+  const b = toRawAmount(receiverLeg);
+  const exactAmountBonus = a === b ? 500 : 0;
+  const tinySolPenalty =
+    isTinySolMovement(senderLeg) || isTinySolMovement(receiverLeg) ? -1000 : 0;
+  const larger = a > b ? a : b;
+  const diff = a > b ? a - b : b - a;
+  const closeness = larger === 0n ? 0 : 1 - Number((diff * 1_000_000n) / larger) / 1_000_000;
+  return exactAmountBonus + tinySolPenalty + closeness;
+}
+
+function findBestPair(
+  legs: TxLeg[],
+  senderRoles: Array<TxLeg["role"]>,
+  receiverRoles: Array<TxLeg["role"]>,
+  accept: (pair: TransferPair) => boolean,
+  score: (senderLeg: TxLeg, receiverLeg: TxLeg) => number,
 ): TransferPair | null {
   const senderLegs = legs.filter(
     (leg) =>
@@ -66,9 +124,10 @@ export function findBestExternalTransferPair(
     if (candidates.length === 0) continue;
 
     for (const receiverLeg of candidates) {
-      const score = scoreTransferPair(senderLeg, receiverLeg);
-      if (score > bestScore) {
-        bestScore = score;
+      if (!accept({ senderLeg, receiverLeg })) continue;
+      const pairScore = score(senderLeg, receiverLeg);
+      if (pairScore > bestScore) {
+        bestScore = pairScore;
         bestPair = { senderLeg, receiverLeg };
       }
     }

@@ -149,45 +149,60 @@ describe("recorded mainnet fixtures (replayed through a kit RPC)", () => {
     return tx;
   }
 
-  test("Jupiter SOL -> token swap: lookup-table wSOL vault credit is a leg; fee leg is meta.fee", async () => {
+  // In all three swaps the lookup-table writable accounts whose lamports
+  // change are wSOL token accounts (pool vaults / fee account). Their lamport
+  // change is exactly the wSOL token change, so it appears ONCE, as the wSOL
+  // token leg attributed to the token owner; no separate lamport leg and no
+  // rent remainder. The fee leg is meta.fee.
+
+  test("Jupiter SOL -> token swap: full key list, wSOL once, fee leg is meta.fee", async () => {
     const tx = await fetchFixture("jupiter-swap-sol-to-token.json");
     expect(tx.accountKeys).toHaveLength(17); // 9 static + 3 writable + 5 readonly
+    expect(tx.accountKeys![10]).toBe("C47dRtozmsagyUSwaejLiBSPemvHK7J7U7UH8jibviqp");
     expect(tx.fee).toBe(5039);
+    expect(extractSolBalanceChanges(tx).map((c) => [c.accountIndex, c.change])).toEqual([
+      [0, -4147883n],
+      [10, 4142844n],
+    ]);
     expect(solLegs(transactionToLegs(tx))).toEqual(
       [
         "external:EMgSdxvQqmaqjynWyNeEXcgpMDERxD7ntvBcUWr3PaEb debit 4147883 sent",
-        "external:C47dRtozmsagyUSwaejLiBSPemvHK7J7U7UH8jibviqp credit 4142844 received",
-        // wSOL token-balance leg of the same vault (owner = pool authority);
-        // token legs were already indexed correctly before this fix.
+        // wSOL token leg of vault C47d... (owner = pool authority HLnp...)
         "external:HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC credit 4142844 received",
         "fee:network credit 5039 fee",
       ].sort(),
     );
   });
 
-  test("Jupiter token -> SOL swap: lookup-table vault debit is a leg; fee leg present", async () => {
+  test("Jupiter token -> SOL swap: vault debit appears once (as wSOL), fee leg present", async () => {
     const tx = await fetchFixture("jupiter-swap-token-to-sol.json");
     expect(tx.accountKeys).toHaveLength(15); // 9 static + 3 writable + 3 readonly
+    expect(extractSolBalanceChanges(tx).map((c) => [c.accountIndex, c.change])).toEqual([
+      [0, 22237362n],
+      [9, -22242362n],
+    ]);
     expect(solLegs(transactionToLegs(tx))).toEqual(
       [
         "external:6bAWX3qmkmmqmzqsNeWMPTA9iG5k9VfagLBssJxE3Uuh credit 22237362 received",
-        "external:3QjuKNViic2ffQwH5zGqFbtjAsJhJWoaAtT3ZDkwwUnF debit 22242362 sent",
-        // wSOL token-balance leg of the same vault (owner = pool authority)
+        // wSOL token leg of vault 3Qju... (owner = pool authority 5Q54...)
         "external:5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1 debit 22242362 sent",
         "fee:network credit 5000 fee",
       ].sort(),
     );
   });
 
-  test("Jupiter swap with two lookup-table writable credits (vault + fee account)", async () => {
+  test("Jupiter swap with two lookup-table wSOL credits (vault + fee account)", async () => {
     const tx = await fetchFixture("jupiter-swap-with-alt-fee-account.json");
     expect(tx.accountKeys).toHaveLength(21); // 10 static + 4 writable + 7 readonly
+    expect(extractSolBalanceChanges(tx).map((c) => [c.accountIndex, c.change])).toEqual([
+      [0, -182605000n],
+      [11, 182354941n],
+      [12, 45059n],
+    ]);
     expect(solLegs(transactionToLegs(tx))).toEqual(
       [
         "external:HyotTjJEuufx749H3FE2ENz3tyP47ddv5G2RhKJPNkqg debit 182605000 sent",
-        "external:8Tyqob7oyMHAxVYw5PvEjGeDWL7E6emhXBACFUo69YFd credit 182354941 received",
-        "external:CASRL2zkwDnppxEFQ4LgdwgR9pdz5Q8R8nEMKVZ9QoLp credit 45059 received",
-        // wSOL token-balance legs of the same two accounts (by owner)
+        // wSOL token legs of 8Tyq... and CASR... (by owner)
         "external:3mxDjdZ1gAe5HziC4dj4UnLdXJ5DBcC9jsSYq55mFyKg credit 182354941 received",
         "external:5eHhjP8JaYkz83CWwvGU2uMUXefd3AazWGx4gpcuEEYD credit 45059 received",
         "fee:network credit 205000 fee",

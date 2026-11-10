@@ -14,7 +14,7 @@ export class SolanaPayClassifier implements Classifier {
   priority = 95;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { tx, legs } = context;
+    const { tx, legs, walletAddress } = context;
 
     if (!isSolanaPayTransaction(tx.programIds, tx.memo)) {
       return null;
@@ -22,7 +22,12 @@ export class SolanaPayClassifier implements Classifier {
 
     const memo = parseSolanaPayMemo(tx.memo!);
 
-    const pair = findBestExternalTransferPair(legs);
+    const pair = findBestExternalTransferPair(
+      legs,
+      undefined,
+      undefined,
+      walletAddress,
+    );
 
     const senderLeg = pair?.senderLeg ?? null;
     const receiverLeg = pair?.receiverLeg ?? null;

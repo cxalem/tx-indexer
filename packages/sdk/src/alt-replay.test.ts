@@ -51,14 +51,14 @@ describe("SDK replay of recorded v0 Jupiter swap", () => {
       accountCount: 17,
     });
     expect(legs.find((l) => l.role === "fee")?.amount.amountRaw).toBe("5039");
+    // The lookup-table wSOL vault's lamport credit is the backing of its wSOL
+    // token balance: it appears once, as the token leg of the vault's owner.
+    expect(legs.some((l) => l.accountId.endsWith("C47dRtozmsagyUSwaejLiBSPemvHK7J7U7UH8jibviqp"))).toBe(false);
     expect(
-      legs.some(
-        (l) =>
-          l.accountId.endsWith("C47dRtozmsagyUSwaejLiBSPemvHK7J7U7UH8jibviqp") &&
-          l.side === "credit" &&
-          l.amount.amountRaw === "4142844",
-      ),
-    ).toBe(true);
+      legs.filter(
+        (l) => l.side === "credit" && l.amount.amountRaw === "4142844",
+      ).map((l) => l.accountId),
+    ).toEqual(["protocol:jupiter:SOL:HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"]);
     expect(classification.primaryType).toBe("swap");
 
     const json = JSON.parse(JSON.stringify(toJsonClassifiedTransaction(result!)));
@@ -126,5 +126,43 @@ describe("SDK replay of recorded v0 Jupiter swap", () => {
       [v1.meta.signature]: "unsupported_version",
       [missing]: "not_found",
     });
+  });
+});
+
+describe("tx-indexer/advanced fetchers surface the public error type", () => {
+  test("fetchTransaction throws the public UnsupportedTransactionVersionError on the recorded -32015", async () => {
+    const { fetchTransaction } = await import("./advanced");
+    const { isTxIndexerError } = await import("./errors");
+    const { rpc } = createFixtureRpc({ [v1.meta.signature]: v1.responseText });
+    const error = await fetchTransaction(rpc as never, v1.meta.signature as never, {
+      retry: { maxAttempts: 2, baseDelayMs: 1, maxDelayMs: 1 },
+    }).catch((e) => e);
+    expect(error).toBeInstanceOf(UnsupportedTransactionVersionError);
+    expect(isTxIndexerError(error)).toBe(true);
+    expect(error.signature).toBe(v1.meta.signature);
+    expect(error.transactionVersion).toBe(1);
+  });
+
+  test("fetchTransactionsBatch delivers the public error in onSkipped and onFetchError", async () => {
+    const { fetchTransactionsBatch } = await import("./advanced");
+    const { rpc } = createFixtureRpc({
+      [v1.meta.signature]: v1.responseText,
+      [swap.meta.signature]: swap.responseText,
+    });
+    const skippedErrors: unknown[] = [];
+    const fetchErrors: unknown[] = [];
+    const txs = await fetchTransactionsBatch(
+      rpc as never,
+      [swap.meta.signature, v1.meta.signature] as never,
+      {
+        retry: { maxAttempts: 1 },
+        onSkipped: (s) => skippedErrors.push(s.error),
+        onFetchError: (_sig, e) => fetchErrors.push(e),
+      },
+    );
+    expect(txs).toHaveLength(1);
+    expect(skippedErrors).toHaveLength(1);
+    expect(skippedErrors[0]).toBeInstanceOf(UnsupportedTransactionVersionError);
+    expect(fetchErrors[0]).toBeInstanceOf(UnsupportedTransactionVersionError);
   });
 });

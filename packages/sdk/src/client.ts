@@ -14,10 +14,9 @@ import {
   fetchTransactionsBatch,
 } from "@tx-indexer/solana/fetcher/transactions";
 import type { RetryConfig } from "@tx-indexer/solana/rpc/retry";
-import {
-  UnsupportedTransactionVersionError as FetchUnsupportedTransactionVersionError,
-  type SkippedTransaction as FetchSkippedTransaction,
-  type TransactionSkipReason,
+import type {
+  SkippedTransaction as FetchSkippedTransaction,
+  TransactionSkipReason,
 } from "@tx-indexer/solana/rpc/errors";
 
 export type { FetchTransactionsConfig } from "@tx-indexer/solana/fetcher/transactions";
@@ -45,7 +44,12 @@ import {
   fetchNftMetadataBatch,
   type NftMetadata,
 } from "./nft";
-import { ConfigurationError, wrapError, type TxIndexerError } from "./errors";
+import {
+  ConfigurationError,
+  wrapError,
+  toPublicFetchError,
+  type TxIndexerError,
+} from "./errors";
 import {
   DEFAULT_HELIUS_WALLET_API_BASE_URL,
   fetchWalletFundingSource,
@@ -82,10 +86,7 @@ function toSdkSkip(skip: FetchSkippedTransaction): SkippedTransaction {
 
 /** Re-throws fetch-layer unsupported-version errors as the SDK error type. */
 function rethrowAsSdkError(error: unknown): never {
-  if (error instanceof FetchUnsupportedTransactionVersionError) {
-    throw wrapError(error);
-  }
-  throw error;
+  throw toPublicFetchError(error);
 }
 
 /**

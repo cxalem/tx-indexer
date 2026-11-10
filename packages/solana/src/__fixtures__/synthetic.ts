@@ -15,6 +15,35 @@ export interface SyntheticTxInput {
   instructions?: Array<{ programIdIndex: number; accounts?: number[]; data?: string }>;
   version?: 0 | "legacy";
   metaNull?: boolean;
+  preTokenBalances?: SyntheticTokenBalance[];
+  postTokenBalances?: SyntheticTokenBalance[];
+  rewards?: Array<{ pubkey: string; lamports: bigint; postBalance: bigint; rewardType: string }>;
+}
+
+export interface SyntheticTokenBalance {
+  accountIndex: number;
+  mint: string;
+  owner: string;
+  amount: bigint;
+  decimals?: number;
+}
+
+export const WSOL_MINT = "So11111111111111111111111111111111111111112";
+export const TOKEN_PROGRAM = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+
+function kitTokenBalance(b: SyntheticTokenBalance) {
+  const decimals = b.decimals ?? 9;
+  return {
+    accountIndex: b.accountIndex,
+    mint: b.mint,
+    owner: b.owner,
+    programId: TOKEN_PROGRAM,
+    uiTokenAmount: {
+      amount: b.amount.toString(),
+      decimals,
+      uiAmountString: (Number(b.amount) / 10 ** decimals).toString(),
+    },
+  };
 }
 
 export function syntheticResponse(input: SyntheticTxInput) {
@@ -27,6 +56,9 @@ export function syntheticResponse(input: SyntheticTxInput) {
     instructions = [{ programIdIndex: staticKeys.length - 1, accounts: [0, 1] }],
     version = 0,
     metaNull = false,
+    preTokenBalances = [],
+    postTokenBalances = [],
+    rewards,
   } = input;
   return {
     slot: 1000n,
@@ -40,8 +72,9 @@ export function syntheticResponse(input: SyntheticTxInput) {
           logMessages: [],
           preBalances: pre,
           postBalances: post,
-          preTokenBalances: [],
-          postTokenBalances: [],
+          preTokenBalances: preTokenBalances.map(kitTokenBalance),
+          postTokenBalances: postTokenBalances.map(kitTokenBalance),
+          rewards: rewards ?? [],
           ...(loaded === undefined || loaded === null
             ? {}
             : { loadedAddresses: loaded }),

@@ -79,6 +79,7 @@ interface GetTransactionResponse {
     preBalances?: Array<number | bigint>;
     postBalances?: Array<number | bigint>;
     logMessages?: string[];
+    rewards?: Array<{ lamports: number; rewardType?: string | null }> | null;
     loadedAddresses?: {
       writable?: string[];
       readonly?: string[];
@@ -242,7 +243,9 @@ function responseToRawTransaction(
     ...(loadedAddresses ? { loadedAddresses } : {}),
     memo,
   };
-  rawTx.reconciliation = reconcileLamports(rawTx);
+  rawTx.reconciliation = reconcileLamports(rawTx, {
+    rewards: resp.meta?.rewards,
+  });
 
   return rawTx;
 }

@@ -11,13 +11,18 @@ export class TransferClassifier implements Classifier {
   priority = 20;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, tx } = context;
+    const { legs, tx, walletAddress } = context;
 
     const facilitator = tx.accountKeys
       ? detectFacilitator(tx.accountKeys)
       : null;
 
-    const pair = findBestExternalTransferPair(legs);
+    const pair = findBestExternalTransferPair(
+      legs,
+      undefined,
+      undefined,
+      walletAddress,
+    );
     if (!pair) return null;
 
     const { senderLeg, receiverLeg } = pair;

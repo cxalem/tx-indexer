@@ -23,6 +23,7 @@ import type {
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isPrivacyCashProtocolById } from "../protocols/detector";
+import { preferAccountLegs } from "../engine/leg-helpers";
 import {
   PRIVACY_CASH_SPL_POOL,
   PRIVACY_CASH_FEE_RECIPIENT,
@@ -88,7 +89,7 @@ export class PrivacyCashClassifier implements Classifier {
   priority = 86;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, tx } = context;
+    const { legs, tx, walletAddress } = context;
 
     // Detect Privacy Cash transactions by:
     // 1. Protocol ID match (shield/deposit transactions)
@@ -101,7 +102,7 @@ export class PrivacyCashClassifier implements Classifier {
     }
 
     // Filter legs: user debits are outflows from non-pool accounts
-    const userDebits = legs.filter(
+    const allUserDebits = legs.filter(
       (leg) =>
         leg.accountId.startsWith("external:") &&
         leg.side === "debit" &&
@@ -110,12 +111,23 @@ export class PrivacyCashClassifier implements Classifier {
     );
 
     // User credits are inflows to non-pool accounts
-    const userCredits = legs.filter(
+    const allUserCredits = legs.filter(
       (leg) =>
         leg.accountId.startsWith("external:") &&
         leg.side === "credit" &&
         leg.role !== "fee" &&
         !isPrivacyCashPoolLeg(leg),
+    );
+
+    // With a target wallet that moved funds, only the wallet's legs count as
+    // the user's; other accounts (relayers, vaults) cannot become the user.
+    const walletScoped = preferAccountLegs(
+      [...allUserDebits, ...allUserCredits],
+      walletAddress,
+    );
+    const userDebits = allUserDebits.filter((leg) => walletScoped.includes(leg));
+    const userCredits = allUserCredits.filter((leg) =>
+      walletScoped.includes(leg),
     );
 
     // Check if tokens are coming FROM the pool (withdrawal/unshield)

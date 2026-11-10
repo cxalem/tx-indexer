@@ -363,7 +363,7 @@ export async function fetchTransaction(
     ...(loadedAddresses ? { loadedAddresses } : {}),
     memo,
   };
-  rawTx.reconciliation = reconcileLamports(rawTx);
+  rawTx.reconciliation = reconcileLamports(rawTx, { rewards: meta?.rewards });
 
   return rawTx;
 }
@@ -418,26 +418,36 @@ export async function fetchTransactionsBatch(
   // Fall back to individual requests with concurrency limiting
   const limit = pLimit(concurrency);
 
+  // Exactly one notification per skipped signature. The try/catch covers
+  // only the RPC fetch; callbacks run afterwards, so an exception thrown by a
+  // callback propagates to the caller and is never relabelled as a fetch
+  // failure (and never triggers a second notification).
   const safeFetch = async (sig: Signature): Promise<RawTransaction | null> => {
+    let tx: RawTransaction | null = null;
+    let failure: Error | null = null;
     try {
-      const tx = await fetchTransaction(rpc, sig, { commitment, retry });
-      if (!tx) {
-        onSkipped?.({ signature: sig, reason: "not_found" });
-      }
-      return tx;
+      tx = await fetchTransaction(rpc, sig, { commitment, retry });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      onFetchError?.(sig, err);
+      failure = error instanceof Error ? error : new Error(String(error));
+    }
+
+    if (failure) {
+      onFetchError?.(sig, failure);
       onSkipped?.({
         signature: sig,
         reason:
-          err instanceof UnsupportedTransactionVersionError
+          failure instanceof UnsupportedTransactionVersionError
             ? "unsupported_version"
             : "fetch_failed",
-        error: err,
+        error: failure,
       });
       return null;
     }
+
+    if (!tx) {
+      onSkipped?.({ signature: sig, reason: "not_found" });
+    }
+    return tx;
   };
 
   const promises = signatures.map((sig) => limit(() => safeFetch(sig)));

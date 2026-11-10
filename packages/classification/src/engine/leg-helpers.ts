@@ -90,3 +90,32 @@ export function getNetChange(
 
   return net;
 }
+
+/**
+ * The account whose movements decide direction: the explicit target wallet,
+ * falling back to the fee payer (`accountKeys[0]`). Null when neither is known.
+ */
+export function getPerspectiveAddress(
+  walletAddress: string | undefined,
+  accountKeys: readonly string[] | undefined,
+): string | null {
+  return walletAddress ?? accountKeys?.[0] ?? null;
+}
+
+/**
+ * Restricts candidate legs to those of `external:{address}` when that account
+ * has at least one candidate leg; otherwise returns the candidates unchanged.
+ *
+ * Used so that third-party accounts made visible by lookup-table resolution
+ * (pool vaults, reserves, program-owned accounts) cannot displace the target
+ * wallet as the participant when the wallet itself moved funds.
+ */
+export function preferAccountLegs(
+  candidates: TxLeg[],
+  address: string | null | undefined,
+): TxLeg[] {
+  if (!address) return candidates;
+  const accountId = `external:${address}`;
+  const own = candidates.filter((leg) => leg.accountId === accountId);
+  return own.length > 0 ? own : candidates;
+}

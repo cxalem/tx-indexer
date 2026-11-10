@@ -51,19 +51,45 @@ export function transactionToLegs(
   // Wallet address is kept as-is since Solana addresses are case-sensitive (base58)
 
   const solChanges = extractSolBalanceChanges(tx);
+  const wsolBacking = wrappedSolBackingByIndex(tx);
 
   for (const change of solChanges) {
     if (change.change === 0n) continue;
-
-    const accountId = buildAccountId({
-      type: "external",
-      address: change.address,
-    });
 
     const solInfo = TOKEN_INFO[KNOWN_TOKENS.SOL];
     if (!solInfo) {
       throw new Error("SOL token info not found in registry");
     }
+
+    // A wSOL token account's lamports back its token balance. The backed part
+    // is already represented by the wSOL token leg (attributed to the token
+    // owner), so it is not emitted again as a lamport leg. Only the part the
+    // token delta does not explain (the account's rent-exempt reserve when it
+    // is created, or lamports sent without sync_native) remains, as a
+    // `rent:<address>` leg with role "unknown" that no classifier can pick as
+    // a counterparty. Raw balances (and reconcileLamports) are untouched.
+    const backing = wsolBacking.get(change.accountIndex);
+    if (backing !== undefined) {
+      const remainder = change.change - backing;
+      if (remainder !== 0n) {
+        legs.push({
+          accountId: buildAccountId({ type: "rent", address: change.address }),
+          side: remainder > 0n ? "credit" : "debit",
+          amount: {
+            token: solInfo,
+            amountRaw: (remainder < 0n ? -remainder : remainder).toString(),
+            amountUi: Math.abs(Number(remainder) / 1e9),
+          },
+          role: "unknown",
+        });
+      }
+      continue;
+    }
+
+    const accountId = buildAccountId({
+      type: "external",
+      address: change.address,
+    });
 
     legs.push({
       accountId,
@@ -140,6 +166,38 @@ export function transactionToLegs(
   }
 
   return legs;
+}
+
+/**
+ * For every account index that has a POST token balance in the native mint
+ * (wSOL), returns the wSOL raw delta (post - pre, missing pre = 0). This is
+ * exactly the set of wSOL changes extractTokenBalanceChanges turns into token
+ * legs. Accounts with only a PRE native-mint entry (closed during the
+ * transaction) are not included: they produce no token leg, so their lamport
+ * change stays an ordinary lamport leg (closed-account handling is a known,
+ * separate limitation).
+ */
+function wrappedSolBackingByIndex(tx: RawTransaction): Map<number, bigint> {
+  const backing = new Map<number, bigint>();
+  const nativeMint = KNOWN_TOKENS.SOL;
+  const preByIndex = new Map<number, string>();
+  for (const pre of tx.preTokenBalances ?? []) {
+    if (pre.mint === nativeMint) {
+      preByIndex.set(pre.accountIndex, pre.uiTokenAmount.amount);
+    }
+  }
+  for (const post of tx.postTokenBalances ?? []) {
+    if (post.mint !== nativeMint) continue;
+    try {
+      const delta =
+        BigInt(post.uiTokenAmount.amount) -
+        BigInt(preByIndex.get(post.accountIndex) ?? "0");
+      backing.set(post.accountIndex, delta);
+    } catch {
+      // Malformed amount: leave the lamport change as an ordinary leg.
+    }
+  }
+  return backing;
 }
 
 function feeLamportsOf(tx: RawTransaction): bigint | null {

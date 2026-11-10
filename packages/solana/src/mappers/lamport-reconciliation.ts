@@ -28,6 +28,12 @@ function unavailable(
   };
 }
 
+/** A transaction-level reward entry from `meta.rewards` (e.g. rent collection). */
+export interface TransactionRewardInput {
+  lamports: number | bigint;
+  rewardType?: string | null;
+}
+
 /**
  * Independently reconciles a transaction's lamport balances against the
  * network fee it was charged.
@@ -41,8 +47,16 @@ function unavailable(
  * missing, the balance arrays are missing or do not match the resolved key
  * count, or any value is a JavaScript number that is not an exact integer
  * (precision already lost upstream).
+ *
+ * Transaction-level rewards (`meta.rewards`, historically rent collected
+ * from accounts) also move lamports outside the fee. When any nonzero reward
+ * is present the check is reported `unavailable` with an explicit reason
+ * rather than `unbalanced`.
  */
-export function reconcileLamports(tx: RawTransaction): LamportReconciliation {
+export function reconcileLamports(
+  tx: RawTransaction,
+  options: { rewards?: readonly TransactionRewardInput[] | null } = {},
+): LamportReconciliation {
   const accountKeys = tx.accountKeys;
   const accountCount = accountKeys?.length ?? 0;
 
@@ -58,6 +72,22 @@ export function reconcileLamports(tx: RawTransaction): LamportReconciliation {
   }
   if (!accountKeys || accountKeys.length === 0) {
     return unavailable("account keys missing", accountCount, feeLamports);
+  }
+
+  const nonzeroRewards = (options.rewards ?? []).filter(
+    (reward) => reward.lamports !== 0 && reward.lamports !== 0n,
+  );
+  if (nonzeroRewards.length > 0) {
+    const types = [
+      ...new Set(nonzeroRewards.map((r) => String(r.rewardType ?? "unknown"))),
+    ].join(", ");
+    return unavailable(
+      `transaction-level rewards present (${nonzeroRewards.length} entr${
+        nonzeroRewards.length === 1 ? "y" : "ies"
+      }, type: ${types}); lamport check not attempted`,
+      accountCount,
+      feeLamports,
+    );
   }
 
   const { preBalances, postBalances } = tx;

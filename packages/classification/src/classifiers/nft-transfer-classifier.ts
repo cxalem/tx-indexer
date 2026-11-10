@@ -110,7 +110,9 @@ export class NftTransferClassifier implements Classifier {
 
       // NFT Purchase: wallet received NFT (credit)
       if (walletCredits.length > 0) {
-        const paymentLeg = findPaymentLeg(legs, "debit");
+        const paymentLeg =
+          findWalletPaymentLeg(legs, walletAddress, "debit") ??
+          findPaymentLeg(legs, "debit");
         const primaryNft = walletCredits[0]!;
         const buyer = primaryNft.accountId.replace("external:", "");
 
@@ -140,7 +142,9 @@ export class NftTransferClassifier implements Classifier {
 
       // NFT Sale: wallet sent NFT (debit)
       if (walletDebits.length > 0) {
-        const proceedsLeg = findPaymentLeg(legs, "credit");
+        const proceedsLeg =
+          findWalletPaymentLeg(legs, walletAddress, "credit") ??
+          findPaymentLeg(legs, "credit");
         const primaryNft = walletDebits[0]!;
         const seller = primaryNft.accountId.replace("external:", "");
 
