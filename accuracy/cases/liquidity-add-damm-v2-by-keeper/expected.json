@@ -51,6 +51,7 @@
           "sender": null,
           "receiver": null,
           "authority": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
+          "participantsNote": "Swap against the pool before adding liquidity.",
           "amounts": [
             {
               "direction": "out",
