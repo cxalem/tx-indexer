@@ -7,6 +7,11 @@
 - The `@solana/kit` peer range moved from `^5.0.0` to `^8.0.0` (developed and tested against 8.6.0). Projects on kit 5, 6 or 7 must upgrade kit to install this release without a peer-dependency conflict. The SDK's own use of kit (`createSolanaRpc`, `address`, `signature`, RPC types) did not change shape, so no SDK call sites change.
 - The `typescript` peer range is widened to `^5 || ^6`.
 
+### Added: version 1 transactions are read
+
+- Transactions are requested with `maxSupportedTransactionVersion: 1`, so v1 transactions (live on mainnet since 2026-09-15) are fetched and classified instead of throwing `UnsupportedTransactionVersionError` / being skipped as `unsupported_version`. v1 messages have no lookup tables, so `tx.accountKeys` is the static key list and `tx.loadedAddresses` is empty; fee leg and reconciliation work as for v0.
+- `UnsupportedTransactionVersionError` now means a version **above 1**; its `maxSupportedTransactionVersion` is `1`.
+
 ### Added
 
 - Add stable Helius Wallet API funding-source support:
@@ -25,7 +30,7 @@
 - **Fee leg comes from `meta.fee`.** The `fee:network` leg is the fee the runtime charged, no longer the debit/credit residual. On a hand-built `RawTransaction` with `fee` undefined there is now **no fee leg** (previously the residual was used).
 - **New `tx.reconciliation`** (`balanced | unbalanced | unavailable`, lamports as strings) reports whether `sum(pre) - sum(post)` equals the fee. Transactions with nonzero transaction-level rewards (historical rent collection) report `unavailable`.
 - **Lamport balances are `bigint`** in `preBalances`/`postBalances` from the fetch path (previously `number`, which lost precision above 2^53). `fee` is `undefined` when the RPC returned no metadata.
-- **Typed unsupported-version errors.** Version 1 transactions (RPC error -32015) throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, not retried, carries `signature`) from `getTransaction`, `getRawTransaction` and the `tx-indexer/advanced` fetchers.
+- **Typed unsupported-version errors.** Transactions newer than the supported version (RPC error -32015; at the time of this entry, version 1) throw `UnsupportedTransactionVersionError` (`code: "UNSUPPORTED_TRANSACTION_VERSION"`, not retried, carries `signature`) from `getTransaction`, `getRawTransaction` and the `tx-indexer/advanced` fetchers.
 - **New `onTransactionSkipped` option** on `getTransactions` and `getTransactionsBySignatures` reports each signature that produced no transaction (`not_found | unsupported_version | fetch_failed`); `fetchTransactionsBatch` gains `onSkipped` (exactly one notification per signature).
 - **wSOL is represented once.** A wSOL (native-mint) token account is represented once: by its actual **lamport** delta, attributed to the token owner (or to the account's own address when the balance metadata has no owner); the native token-amount change is not emitted, so a `sync_native` alone produces no leg. The full lamport delta goes to the owner, also when the wSOL account is created in the transaction: in that case the owner's credit includes the account's rent-exempt reserve (from a few thousand to about 2 million lamports, depending on the cluster's rent parameters), because the reserve cannot be told apart from funding using transaction data alone. Only the legacy native mint (`So11111111111111111111111111111111111111112`) is recognised; Token-2022's native mint (`9pan9bMn5HatX4EJdBwg9VgCa7Uz5HL8N1m5D3NdXejP`) is not handled and keeps ordinary lamport and token legs. Accounts closed in the transaction (pre-only token entry) are unchanged.
 - **Stake direction follows the wallet.** Stake withdraw requires the target wallet (fallback: fee payer) to receive SOL and not send SOL, so a reserve debit no longer turns a withdrawal into a deposit. Stake deposit uses the wallet's own SOL debit; for a sponsored deposit (wallet receives a non-SOL token, pays no SOL, has no net SOL credit and sends no other token) the amount is the largest external SOL debit and the sender is that funder (the credited mint is not verified to be the pool token).

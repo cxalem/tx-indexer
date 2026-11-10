@@ -195,20 +195,26 @@ describe("reconcileLamports", () => {
 });
 
 describe("unsupported transaction versions", () => {
-  const v1 = loadFixture("unsupported-version-v1-error.json");
+  const v2 = loadFixture("unsupported-version-synthetic-v2-error.json");
 
-  test("recorded -32015 rejection surfaces as UnsupportedTransactionVersionError with the signature, without retries", async () => {
-    const { rpc, calls } = createFixtureRpc({ [v1.meta.signature]: v1.responseText });
-    const error = await fetchTransaction(rpc, v1.meta.signature as Signature, {
+  test("a -32015 for a version above 1 (synthetic v2) surfaces as UnsupportedTransactionVersionError with the signature, without retries", async () => {
+    const { rpc, calls } = createFixtureRpc({ [v2.meta.signature]: v2.responseText });
+    const error = await fetchTransaction(rpc, v2.meta.signature as Signature, {
       retry: { maxAttempts: 3, baseDelayMs: 1, maxDelayMs: 1 },
     }).catch((e) => e);
 
     expect(error).toBeInstanceOf(UnsupportedTransactionVersionError);
-    expect(error.signature).toBe(v1.meta.signature);
+    expect(error.signature).toBe(v2.meta.signature);
     expect(error.code).toBe("UNSUPPORTED_TRANSACTION_VERSION");
     expect(error.retryable).toBe(false);
-    expect(error.transactionVersion).toBe(1);
+    expect(error.transactionVersion).toBe(2);
+    expect(error.maxSupportedTransactionVersion).toBe(1);
     expect(calls).toHaveLength(1);
+    // The request asked for up to version 1.
+    expect((calls[0]!.params as unknown[])[1]).toMatchObject({
+      maxSupportedTransactionVersion: 1,
+      encoding: "json",
+    });
   });
 
   test("detects kit, raw JSON-RPC and message forms; ignores unrelated errors", () => {

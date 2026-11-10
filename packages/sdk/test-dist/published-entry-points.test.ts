@@ -26,16 +26,16 @@ describe("published entry points share error identity", () => {
   test("advanced fetchTransaction error is instanceof the root entry's classes", async () => {
     const root = await import(join(dist, "index.js"));
     const advanced = await import(join(dist, "advanced.js"));
-    const v1 = loadFixture("unsupported-version-v1-error.json");
-    const { rpc } = createFixtureRpc({ [v1.meta.signature]: v1.responseText });
+    const v2 = loadFixture("unsupported-version-synthetic-v2-error.json");
+    const { rpc } = createFixtureRpc({ [v2.meta.signature]: v2.responseText });
 
     const error = await advanced
-      .fetchTransaction(rpc, v1.meta.signature, { retry: { maxAttempts: 1 } })
+      .fetchTransaction(rpc, v2.meta.signature, { retry: { maxAttempts: 1 } })
       .catch((e: unknown) => e);
 
     expect(error).toBeInstanceOf(root.UnsupportedTransactionVersionError);
     expect(error).toBeInstanceOf(root.TxIndexerError);
     expect(root.isTxIndexerError(error)).toBe(true);
-    expect((error as { signature: string }).signature).toBe(v1.meta.signature);
+    expect((error as { signature: string }).signature).toBe(v2.meta.signature);
   });
 });

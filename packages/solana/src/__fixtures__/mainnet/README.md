@@ -67,9 +67,93 @@ Index layout: `[static keys][loadedAddresses.writable][loadedAddresses.readonly]
   credits appear once each, attributed to owners `3mxDjdZ1...` (+182354941) and `5eHhjP8J...` (+45059).
 - Old mapping: both credits dropped, fee leg 182605000 (inflated ~890x).
 
-## unsupported-version-v1-error.json
+## unsupported-version-synthetic-v2-error.json (synthetic)
 
-- Signature `5qKSzfbM8GtbLeJifdfeLruiHoCJzNnA9UWBXG9ivaNC7JSbjMDkLFwQnpc2vZVGi89tKTznJuHvtY5rf72Umzs8`
-  (a Jupiter transaction from the same signature page)
-- Verbatim RPC rejection: `{"code":-32015,"message":"Transaction version (1) is not supported by the requesting client. ..."}`.
-  Of the 15 successful signatures in the page, 8 were version 1 and were refused this way.
+- Not captured. Replaces the recorded `unsupported-version-v1-error.json` (a real -32015 for a
+  v1 transaction requested with max version 0), which stopped describing reality once the SDK
+  started requesting `maxSupportedTransactionVersion: 1`: the same request now returns the
+  transaction.
+- Body: `{"code":-32015,"message":"Transaction version (2) is not supported by the requesting client. ..."}`,
+  the recorded wording with both version numbers raised by one. No version 2 exists on any
+  cluster; this exercises the typed `UnsupportedTransactionVersionError` path for versions above
+  the supported one. Signature: 64 bytes of `0x02`, base58-encoded.
+
+# Recorded version 1 fixtures
+
+Captured once, on 2026-11-10 (21:11:46 UTC), from `https://api.mainnet-beta.solana.com`
+(no API key, 2 s between calls) with:
+
+```
+getTransaction(<signature>, { encoding: "json", maxSupportedTransactionVersion: 1, commitment: "finalized" })
+```
+
+Candidates came from `getSignaturesForAddress("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4", { limit: 20, commitment: "finalized" })`;
+14 of the 20 were successful. Walking them in order, the first six fetched were 2 x v0 and 4 x v1;
+three of the v1 ones are kept (the fourth, `4fE9NY6V...`, goes through the same program as
+`v1-swap-sol-to-token.json`).
+
+Shape compared with v0 (same `encoding: "json"` response): `version: 1`; the message has no
+`addressTableLookups` and a new `transactionConfig` object (`computeUnitLimit`, `heapSize`,
+`loadedAccountsDataSizeLimit`, `priorityFee`) instead of compute-budget instructions;
+`meta.loadedAddresses` is present and empty. Every account is a static key, so the resolved key
+list is `transaction.message.accountKeys` and its length equals `meta.preBalances.length`. Nothing
+else in the fields this SDK reads changed. In all three, `meta.fee` = 5000 x signatures +
+`transactionConfig.priorityFee`.
+
+## v1-jupiter-swap-token-to-token.json
+
+- Signature `4qKaNNi5MokSHFS2ANVcPjodCzSJCbmcoySq31bTMmAjWDgWPQ419VZ5SgcLVsHZ7dc8EhBxioPptpHyVeeQnotn`
+- Slot 467867094, version 1, 49 static keys, 2 signers (`Fni6bHeA...` fee payer, `sighWH8K...`),
+  `meta.fee` 14200 = 2 x 5000 + priorityFee 4200
+- Lamport changes:
+  - [0] `Fni6bHeA...` (fee payer): **-14200**
+  - [5] `6wWVbLeH...` (wSOL account): **-3685826317**
+  - [13] `BdY9QB2X...` (wSOL account, owner `Em6RvzGX...`): **+3684912174**
+  - [24] `GYH1Gae1...` (wSOL account, owner `5cjcW9wE...`): **+914143**
+- Check: 3685826317 - 3684912174 - 914143 = 0; the fee payer's 14200 = `meta.fee`. Balanced.
+- Fee payer's token changes: -100000000000 raw `DKYcjobF...` (6 dp: -100,000) and
+  +119883098235 raw `8Xg89xT8...` (6 dp: +119,883.098235). Everything else moves between pool
+  and route accounts (USDC, wSOL, `TTWofwAg...`). Instructions call Jupiter v6.
+- Reading: the fee payer swapped 100,000 DKYc for 119,883.098235 8Xg8 on Jupiter. Expected
+  classification: `swap`, primary = DKYc out, secondary = 8Xg8 in. The SDK agrees.
+
+## v1-swap-sol-to-token.json
+
+- Signature `4Kb2yFBTCiBjGpXSbizSvcBgg4v6XxVaykSqXSyQKcU4vtBy267PYkqXAjJ17WgUkzbs99jxhgWWrRbThXVEKysz`
+- Slot 467867093, version 1, 38 static keys, 2 signers (`Dha7rX3G...` fee payer, `E9BzZER9...`),
+  `meta.fee` 12971 = 2 x 5000 + priorityFee 2971. Programs: System, Associated Token,
+  `6Vo3245e...` (not recognised by this SDK), Memo.
+- Lamport changes:
+  - [0] `Dha7rX3G...` (fee payer): **-313285060**
+  - [2] `KfHbT5Jr...`: +1396169
+  - [6] `3W1ynasy...` (the buyer's new `H3xKwSgb...` token account): +1513840
+  - [7] `4TQLFNWK...`: +10000
+  - [10] `9Jgp8Npq...` (wSOL account, owner `2AXXcN6o...`): +308863640
+  - [14] `AzGtW6xz...`: +1488440
+- Check: 313285060 - (1396169 + 1513840 + 10000 + 308863640 + 1488440) = 12971 = `meta.fee`. Balanced.
+- Token changes: buyer `Dha7rX3G...` +7074185417628 raw `H3xKwSgb...` (6 dp: +7,074,185.417628),
+  paid out by `HscovBe9...`; along the route `2AXXcN6o...` (which received the 308863640
+  lamports of wSOL) pays 15647614 raw RAY, of which `HscovBe9...` gets 15574205 and `5YxQFdt3...`
+  73409.
+- Reading: the fee payer bought 7,074,185.417628 H3xK with about 0.3089 SOL, routed SOL -> RAY ->
+  H3xK; the other lamport credits are new-account reserves and a 10,000-lamport payment (their
+  purpose was not verified). Expected classification: `swap`. **The SDK currently says
+  `transfer`** (from `HscovBe9...` to the buyer): the program is not recognised and the Memo call
+  wins protocol detection. This is a classifier gap, not a v1 issue; the SDK test records it
+  with `test.failing`.
+
+## v1-jupiter-route-usdc-gain.json
+
+- Signature `61BohiiwEJ6Hyn1y21A7RL1VLx9PXXTKjh6t5RY8P7J5XhntQNGP4kT1ihxtdbKXB8KrZ2sCcV6WwcXKus1LMYuG`
+- Slot 467867093, version 1, 35 static keys, 1 signer `CGgMCsQ6...`, `meta.fee` 7559 = 5000 +
+  priorityFee 2559. Programs: System, Jupiter v6.
+- Lamport changes: only [0] `CGgMCsQ6...` (fee payer): **-7559** = `meta.fee`. Balanced.
+- Token changes: the signer's USDC account +1857 raw (0.001857 USDC). Route: `3fUj4dDS...` pays
+  70883578 USDC and receives 96055 WBTC (`3NZ9JMVB...`); `2vPjbPRn...` receives 70881721 USDC and
+  pays 95927 cbBTC (`cbbtcf3a...`) to `5CUmy7rX...`; `DUJ6Gqqn...` pays 96055 WBTC. USDC: 70883578
+  = 70881721 + 1857.
+- Reading: a circular Jupiter route (USDC -> cbBTC -> WBTC -> USDC) in which the signer puts
+  nothing in, pays the network fee and keeps 1857 raw USDC. The SDK classifies it as `swap`
+  with USDC 1857 received, which matches the route, but reports the **network fee (7559
+  lamports) as the swap input**; that part is a known classifier gap recorded with
+  `test.failing`.

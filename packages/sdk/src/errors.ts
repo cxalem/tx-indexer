@@ -4,6 +4,8 @@
  * @module tx-indexer/errors
  */
 
+import { MAX_SUPPORTED_TRANSACTION_VERSION } from "@tx-indexer/solana/rpc/errors";
+
 /**
  * Base class for all tx-indexer errors.
  * Extends the built-in Error with additional context.
@@ -179,11 +181,11 @@ export class NftMetadataError extends TxIndexerError {
 
 /**
  * Error thrown when the RPC refuses to return a transaction because its
- * version is newer than this SDK requests (`maxSupportedTransactionVersion: 0`).
+ * version is newer than this SDK requests (`maxSupportedTransactionVersion: 1`).
  *
- * Version 1 transactions have been live on mainnet since 2026-09-15; until the
- * SDK supports them, they surface as this error (single fetch) or as a skipped
- * signature with reason "unsupported_version" (history fetches). Not retryable.
+ * The SDK reads legacy, v0 and v1 transactions. A transaction with a version
+ * above 1 surfaces as this error (single fetch) or as a skipped signature with
+ * reason "unsupported_version" (history fetches). Not retryable.
  *
  * @example
  * ```typescript
@@ -215,7 +217,9 @@ export class UnsupportedTransactionVersionError extends TxIndexerError {
       cause?: Error;
     },
   ) {
-    const max = options?.maxSupportedTransactionVersion ?? 0;
+    const max =
+      options?.maxSupportedTransactionVersion ??
+      MAX_SUPPORTED_TRANSACTION_VERSION;
     super(
       options?.message ??
         `Transaction ${signature} uses version ${

@@ -348,11 +348,11 @@ try {
 | `InvalidInputError`  | `INVALID_INPUT`       | No        | Invalid address, signature, or parameter |
 | `ConfigurationError` | `CONFIGURATION_ERROR` | No        | Missing required configuration           |
 | `NftMetadataError`   | `NFT_METADATA_ERROR`  | Varies    | NFT metadata fetch failed                |
-| `UnsupportedTransactionVersionError` | `UNSUPPORTED_TRANSACTION_VERSION` | No | Transaction version newer than v0 (see below) |
+| `UnsupportedTransactionVersionError` | `UNSUPPORTED_TRANSACTION_VERSION` | No | Transaction version newer than v1 (see below) |
 
 ### Transaction Versions
 
-The SDK reads legacy and v0 transactions (`maxSupportedTransactionVersion: 0`). Version 1 transactions, live on mainnet since 2026-09-15, are rejected by the RPC: `getTransaction` throws `UnsupportedTransactionVersionError` (with `signature`), and history methods omit them from the result. To learn which signatures were skipped and why, pass `onTransactionSkipped` (without it they are dropped silently):
+The SDK reads legacy, v0 and v1 transactions (`maxSupportedTransactionVersion: 1`); v1 transactions have been live on mainnet since 2026-09-15 and need `@solana/kit` 8 or newer as the peer dependency. A transaction with a version above 1 is rejected by the RPC: `getTransaction` throws `UnsupportedTransactionVersionError` (with `signature`), and history methods omit it from the result. To learn which signatures were skipped and why, pass `onTransactionSkipped` (without it they are dropped silently):
 
 ```typescript
 const txs = await indexer.getTransactions(wallet, {
