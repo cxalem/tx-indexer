@@ -1,7 +1,6 @@
 {
   "extends": "../typescript-config/bun.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@tx-indexer/core/*": ["../domain/src/*"],
       "@tx-indexer/solana/*": ["./src/*"]

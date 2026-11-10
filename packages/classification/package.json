@@ -13,12 +13,12 @@
     "test:watch": "bun test --watch"
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/bun": "^1.4.4",
     "@repo/eslint-config": "workspace:*",
-    "eslint": "^9.39.1"
+    "eslint": "^9.39.5"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5 || ^6"
   },
   "dependencies": {
     "@solana/kit": "^5.0.0",

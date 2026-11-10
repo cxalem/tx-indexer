@@ -1,9 +1,8 @@
 {
   "extends": "../typescript-config/bun.json",
   "compilerOptions": {
-    "baseUrl": "./src",
     "paths": {
-      "@tx-indexer/core/*": ["./*"]
+      "@tx-indexer/core/*": ["./src/*"]
     }
   }
 }
