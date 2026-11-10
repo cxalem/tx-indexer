@@ -6,6 +6,7 @@
 
 - The `@solana/kit` peer range moved from `^5.0.0` to `^8.0.0` (developed and tested against 8.6.0). Projects on kit 5, 6 or 7 must upgrade kit to install this release without a peer-dependency conflict. The SDK's own use of kit (`createSolanaRpc`, `address`, `signature`, RPC types) did not change shape, so no SDK call sites change.
 - The `typescript` peer range is widened to `^5 || ^6`.
+- `engines.node` is now declared as `>=20.18.0`, the minimum Node.js version of `@solana/kit` 8.
 
 ### Added: version 1 transactions are read
 
