@@ -1,0 +1,45 @@
+{
+  "id": "lifecycle-burn-and-close-four-accounts-rent-to-sponsor",
+  "signature": "4J4SYZZneN6EYdaeFW2STkqvthLNhmiUTSHm4A1ykV4bV1ykb8R2PDRgMUFE5zD61d1myRSt4DLLdyEKrspgALmp",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467665575,
+  "blockTime": 1794301937,
+  "transactionVersion": 0,
+  "capturedAt": "2026-11-10T22:12:58Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "4J4SYZZneN6EYdaeFW2STkqvthLNhmiUTSHm4A1ykV4bV1ykb8R2PDRgMUFE5zD61d1myRSt4DLLdyEKrspgALmp",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD",
+      "reason": "owner and authority of the four token accounts (second signer)"
+    },
+    {
+      "address": "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG",
+      "reason": "fee payer and destination of all reclaimed rent (first signer)"
+    }
+  ],
+  "categories": [
+    "lifecycle",
+    "adversarial"
+  ],
+  "tags": [
+    "v0",
+    "token-burn",
+    "account-close",
+    "fee-sponsored",
+    "token-2022"
+  ],
+  "rationale": "Two signers: 8dBouoL5... (fee payer) and J2A8tQeQ... (token authority). Four pairs: Burn (tag 8) of the whole balance then CloseAccount (tag 9) with destination 8dBo...: #0/#1 930,000,000 5oSoANcL... (SPL Token), #2/#3 42,322 GtiWDkB5..., #4/#5 8,722,914,542 57tQ8NUj..., #6/#7 149,252,794,641 3Qb73S8n... (Token-2022; all 6 decimals). The four closed accounts release 1,488,440 + 3 x 1,513,840 = 6,029,960 lamports to 8dBo..., which nets +6,019,960 after the 10,000 fee. J2A8... pays nothing in SOL and receives no rent."
+}

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "caseId": "execution-failed-jupiter-swap",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5666",
+  "execution": "failed",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "7nwPXZNhBj88jcC22VNBQUYLohTsQWh5VGxWqnAAcvMf",
+      "actions": [
+        {
+          "kind": "fee_only",
+          "primary": true,
+          "sender": "7nwPXZNhBj88jcC22VNBQUYLohTsQWh5VGxWqnAAcvMf",
+          "receiver": null,
+          "participantsNote": "No counterparty.",
+          "amounts": [],
+          "amountsNote": "Only the transaction fee.",
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "swap",
+            "transfer",
+            "airdrop"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

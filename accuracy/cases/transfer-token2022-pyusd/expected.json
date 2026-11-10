@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-token2022-pyusd",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5203",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a",
+          "receiver": "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1000000",
+              "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "swap",
+            "fee_only"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a",
+          "receiver": "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1000000",
+              "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

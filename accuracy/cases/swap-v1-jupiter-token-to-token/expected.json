@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-v1-jupiter-token-to-token",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "14200",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "Fni6bHeAT9scmcuYjy95EADowAXFt21Q5YzYjkPjswxY",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "Fni6bHeAT9scmcuYjy95EADowAXFt21Q5YzYjkPjswxY",
+          "participantsNote": "Swap: counterparty is a route of pools; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "100000000000",
+              "mint": "DKYcjobF7HPtL9RyQBRdeRQ2iWvizpfbgWwPWNXdpump",
+              "decimals": 6
+            },
+            {
+              "direction": "in",
+              "amountRaw": "119883098235",
+              "mint": "8Xg89xT8Ve34sKiYqYuMs46mycREsCA2F362UscRpump",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "fee_only"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

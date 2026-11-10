@@ -1,0 +1,16 @@
+{
+  "extends": "../packages/typescript-config/bun.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "typeRoots": ["../packages/sdk/node_modules/@types"],
+    "paths": {
+      "zod": ["../packages/sdk/node_modules/zod"],
+      "@solana/kit": ["../packages/sdk/node_modules/@solana/kit"],
+      "@tx-indexer/core/*": ["../packages/domain/src/*"],
+      "@tx-indexer/solana/*": ["../packages/solana/src/*"],
+      "@tx-indexer/classification/*": ["../packages/classification/src/*"]
+    }
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["cases"]
+}

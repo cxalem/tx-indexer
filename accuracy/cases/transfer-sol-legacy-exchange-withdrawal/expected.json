@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-sol-legacy-exchange-withdrawal",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "8000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "receiver": "7jADuxRvtLptVAFrd9dcKAzW96aJgVrFes5RWeo38XMd",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "83913000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "swap",
+            "airdrop",
+            "fee_only"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "7jADuxRvtLptVAFrd9dcKAzW96aJgVrFes5RWeo38XMd",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS",
+          "receiver": "7jADuxRvtLptVAFrd9dcKAzW96aJgVrFes5RWeo38XMd",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "83913000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

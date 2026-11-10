@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "caseId": "lifecycle-pump-create-mint-and-first-buy",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "33569",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "4mZuBXA2FQ6vM5My2TJycSpx9KuVupxgNpUHj9CPojng",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "4mZuBXA2FQ6vM5My2TJycSpx9KuVupxgNpUHj9CPojng",
+          "participantsNote": "Swap against the bonding curve; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "50710956",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "in",
+              "amountRaw": "1788384000000",
+              "mint": "BnyQUj6rytdSkkfA4GcQaWjPYkXxrzD1vPLxhLXQpump",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#4",
+            "#4.1",
+            "#4.2",
+            "#4.3",
+            "#4.4",
+            "#4.5"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "fee_only"
+          ]
+        },
+        {
+          "kind": "token_mint",
+          "primary": false,
+          "sender": null,
+          "receiver": "HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU",
+          "authority": "TSLvdd1pWpHVjahSpsvCXUbgwsL3JAcvokwaKt1eokM",
+          "participantsNote": "A mint has no sender.",
+          "amounts": [],
+          "amountsNote": "Minted to the bonding curve's account, not to the creator.",
+          "instructionRefs": [
+            "#2",
+            "#2.12"
+          ]
+        },
+        {
+          "kind": "account_create",
+          "primary": false,
+          "sender": "4mZuBXA2FQ6vM5My2TJycSpx9KuVupxgNpUHj9CPojng",
+          "receiver": null,
+          "participantsNote": "Several new accounts: the mint, the curve, the curve's token account and the creator's own token account.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1838960",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "out",
+              "amountRaw": "924560",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "out",
+              "amountRaw": "1493520",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "out",
+              "amountRaw": "1513840",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "amountsNote": "1,838,960 + 924,560 top-up for the mint, 1,493,520 curve, 1,513,840 curve token account, 1,513,840 creator token account.",
+          "instructionRefs": [
+            "#2.0",
+            "#2.3",
+            "#2.6",
+            "#2.9",
+            "#3.1"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU",
+      "actions": [
+        {
+          "kind": "token_mint",
+          "primary": true,
+          "sender": null,
+          "receiver": "HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU",
+          "authority": "TSLvdd1pWpHVjahSpsvCXUbgwsL3JAcvokwaKt1eokM",
+          "participantsNote": "A mint has no sender.",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1000000000000000",
+              "mint": "BnyQUj6rytdSkkfA4GcQaWjPYkXxrzD1vPLxhLXQpump",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#2.12"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop"
+          ]
+        },
+        {
+          "kind": "swap",
+          "primary": false,
+          "sender": null,
+          "receiver": null,
+          "authority": "HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU",
+          "participantsNote": "The curve is the pool side of the creator's buy.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1788384000000",
+              "mint": "BnyQUj6rytdSkkfA4GcQaWjPYkXxrzD1vPLxhLXQpump",
+              "decimals": 6
+            },
+            {
+              "direction": "in",
+              "amountRaw": "50084894",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#4",
+            "#4.1",
+            "#4.3"
+          ],
+          "note": "The curve's own 1,493,520-lamport rent (#2.3, paid by the creator) is not listed: it is the account's creation, not a movement by the curve."
+        }
+      ]
+    }
+  ],
+  "notes": "Resolved by the disputes policy: the creator's primary action is the first buy (`swap`), its own balance change. The mint (#2.12) is a separate action: 1,000,000,000,000,000 raw to the bonding curve's account.",
+  "revisions": [
+    {
+      "date": "2026-11-10",
+      "by": "independent review (Astra)",
+      "change": "creator: removed acceptableKinds token_mint from the primary swap (a mint label would carry the buy amounts); added #2.9 to the account-creation refs; case no longer disputed."
+    }
+  ]
+}

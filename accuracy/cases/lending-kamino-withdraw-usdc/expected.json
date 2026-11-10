@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "caseId": "lending-kamino-withdraw-usdc",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "51222",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr",
+      "actions": [
+        {
+          "kind": "lending_withdraw",
+          "primary": true,
+          "sender": null,
+          "receiver": "E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr",
+          "authority": "E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr",
+          "participantsNote": "Source is the reserve's liquidity account.",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "10000000481",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#4",
+            "#4.0",
+            "#4.1"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "swap",
+            "reward"
+          ],
+          "note": "The burned collateral tokens sat in an account of the market authority, so they are not the wallet's outflow."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

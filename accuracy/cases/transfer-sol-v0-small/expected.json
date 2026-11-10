@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-sol-v0-small",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5056",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "mveQ2LeVFwW3kN9Hc7PAwB5rwdUymZm8GdzRRQDQg1u",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "mveQ2LeVFwW3kN9Hc7PAwB5rwdUymZm8GdzRRQDQg1u",
+          "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "108600",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ],
+          "forbidden": [
+            "swap",
+            "fee_only"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "mveQ2LeVFwW3kN9Hc7PAwB5rwdUymZm8GdzRRQDQg1u",
+          "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "108600",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

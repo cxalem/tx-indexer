@@ -1,0 +1,45 @@
+{
+  "id": "swap-v1-jupiter-circular-route-with-jito-tip",
+  "signature": "p9vMstVDErWwXso3UQNmFNqQYBnBR5WHnuF5Kbj4jtyTt9LqY551CY3iyJM2HdBxo7QReDSNggNeQU2aPbsmtGw",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467881189,
+  "blockTime": 1794348119,
+  "transactionVersion": 1,
+  "capturedAt": "2026-11-10T22:02:11Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "p9vMstVDErWwXso3UQNmFNqQYBnBR5WHnuF5Kbj4jtyTt9LqY551CY3iyJM2HdBxo7QReDSNggNeQU2aPbsmtGw",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "FUBVxWEmxHbm3H9TbLgEQQ6d8bvsdw4sgkNJysFeSLRG",
+      "reason": "only signer"
+    }
+  ],
+  "categories": [
+    "swap",
+    "adversarial"
+  ],
+  "tags": [
+    "v1",
+    "jupiter",
+    "circular-route",
+    "jito-tip",
+    "token-2022"
+  ],
+  "rationale": "#0 Jupiter route_v2 through four venues: #0.2 TransferChecked 11,272,500 USDC from 5Z8rYhZ8... (owner FUBV...) out; wSOL (#0.3/#0.5), Xs3oZwbH... (#0.6/#0.8) and SPCXxcqX... (#0.9/#0.11) legs pass between pools and route accounts; #0.12 TransferChecked 11,273,223 USDC from 2Xfc8WFf... back into 5Z8r.... #1 System Transfer 2,029 lamports to HFqU5x63..., a Jito tip account. Net for FUBV...: +723 raw USDC and -7,029 lamports = 2,029 tip + 5,000 fee.",
+  "sources": [
+    "Jupiter v6 (JUP6LkbZ...); instruction names identified by the Anchor discriminator sha256('global:<name>')[0..8]",
+    "Jito tip accounts: https://docs.jito.wtf/lowlatencytxnsend/#tips"
+  ]
+}

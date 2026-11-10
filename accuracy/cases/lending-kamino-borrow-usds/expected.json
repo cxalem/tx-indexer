@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "caseId": "lending-kamino-borrow-usds",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "51222",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb",
+      "actions": [
+        {
+          "kind": "lending_borrow",
+          "primary": true,
+          "sender": null,
+          "receiver": "3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb",
+          "authority": "3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb",
+          "participantsNote": "Source is the reserve's supply account.",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1100000000",
+              "mint": "USDSwr9ApdHk5bvJKMjzff41FfuX8bSxdKcR81vTwcA",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#5",
+            "#5.0"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "swap",
+            "reward"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

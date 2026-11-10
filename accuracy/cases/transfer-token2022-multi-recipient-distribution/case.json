@@ -1,0 +1,43 @@
+{
+  "id": "transfer-token2022-multi-recipient-distribution",
+  "signature": "56fUWTgPDiqCkEkCdembwc2i4HEcs5tbCS6oH62BzPC3BQEpHeTfAGDhGcbY9to3LpztTrE6pcX3HrbPDSHAt3kv",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 451924539,
+  "blockTime": 1790760591,
+  "transactionVersion": "legacy",
+  "capturedAt": "2026-11-10T22:07:37Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "56fUWTgPDiqCkEkCdembwc2i4HEcs5tbCS6oH62BzPC3BQEpHeTfAGDhGcbY9to3LpztTrE6pcX3HrbPDSHAt3kv",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn",
+      "reason": "sender, fee payer and rent payer for six new accounts"
+    },
+    {
+      "address": "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD",
+      "reason": "one of the six receivers (third transfer)"
+    }
+  ],
+  "categories": [
+    "transfer"
+  ],
+  "tags": [
+    "token-2022",
+    "legacy",
+    "multi-recipient",
+    "ata-create"
+  ],
+  "rationale": "One signer 5UdR18Qo.... Six pairs of instructions: ATA Create (#2, #4, #6, #8, #10, #12; each new Token-2022 account funded with 1,513,840 lamports) followed by Token-2022 TransferChecked of mint 7q5EyfGu... (6 decimals) from 6ADXnkBS... (owner 5UdR...) to that new account (#3, #5, #7, #9, #11, #13). Six different owners receive 163,580,645,280,000 / 107,932,045,270,000 / 130,576,608,620,000 / 125,883,320,620,000 / 172,370,106,310,000 / 166,956,489,680,000 raw. #14 System Transfer of 600,000 lamports to EymqsLP7.... 5UdR... loses 11,312,040 lamports = 6 x 1,513,840 + 600,000 + fee 1,629,000. Primary for the sender is the first transfer by the 'first in instruction order' rule."
+}

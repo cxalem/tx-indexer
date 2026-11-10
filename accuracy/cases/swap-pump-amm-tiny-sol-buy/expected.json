@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "caseId": "swap-pump-amm-tiny-sol-buy",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "FXBguGpkMB84QAwGRdcNBFdLD3MnhwaQG4n328b8WxzS",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "FXBguGpkMB84QAwGRdcNBFdLD3MnhwaQG4n328b8WxzS",
+          "participantsNote": "Swap: counterparty is a pool; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "193714",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "in",
+              "amountRaw": "102337683",
+              "mint": "wGoXZH4o4mLoV9HfcVU4dAH3P4uS6YoVbo54S74pump",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#1",
+            "#2",
+            "#3",
+            "#3.1",
+            "#3.2",
+            "#3.3",
+            "#3.4",
+            "#3.5"
+          ],
+          "forbidden": [
+            "transfer",
+            "airdrop",
+            "fee_only"
+          ],
+          "note": "The SOL side is everything spent inside the swap: 191,894 to the pool and 1,820 to fee accounts."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

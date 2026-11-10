@@ -1,0 +1,1336 @@
+{
+  "schemaVersion": 3,
+  "sdkVersion": "2.0.0",
+  "cases": 43,
+  "perspectives": 72,
+  "disputedPerspectives": 7,
+  "overall": {
+    "casesPassed": 6,
+    "primaryCorrect": 13,
+    "kindOnly": 29,
+    "primaryKindRight": 42,
+    "wrongLabels": 24,
+    "abstentions": 4,
+    "secondaryHits": 2,
+    "disputedAlternatives": 0,
+    "errors": 0,
+    "forbiddenViolations": 11,
+    "amountsExact": [
+      13,
+      42
+    ],
+    "participantsExact": [
+      24,
+      31
+    ],
+    "feeAgreement": [
+      43,
+      43
+    ],
+    "executionAgreement": [
+      43,
+      43
+    ],
+    "secondaryRecall": [
+      2,
+      93
+    ]
+  },
+  "reconciliation": {
+    "balanced": 43
+  },
+  "perKind": {
+    "account_close": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": null,
+      "recall": 0
+    },
+    "account_create": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "precision": null,
+      "recall": 0
+    },
+    "airdrop": {
+      "tp": 0,
+      "fp": 2,
+      "fn": 0,
+      "precision": 0,
+      "recall": null
+    },
+    "fee_only": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 5,
+      "precision": null,
+      "recall": 0
+    },
+    "lending_borrow": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "lending_withdraw": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "liquidity_add": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "nft_receive": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": null,
+      "recall": 0
+    },
+    "nft_sale": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "nft_send": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "other": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1
+    },
+    "stake_deposit": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1
+    },
+    "stake_withdraw": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "swap": {
+      "tp": 10,
+      "fp": 0,
+      "fn": 4,
+      "precision": 1,
+      "recall": 0.7143
+    },
+    "tip": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "precision": null,
+      "recall": 0
+    },
+    "token_burn": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "token_mint": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "transfer": {
+      "tp": 30,
+      "fp": 22,
+      "fn": 3,
+      "precision": 0.5769,
+      "recall": 0.9091
+    }
+  },
+  "secondaryPerKind": {
+    "account_close": [
+      0,
+      13
+    ],
+    "account_create": [
+      0,
+      29
+    ],
+    "swap": [
+      0,
+      3
+    ],
+    "tip": [
+      0,
+      3
+    ],
+    "token_burn": [
+      0,
+      3
+    ],
+    "token_mint": [
+      0,
+      1
+    ],
+    "transfer": [
+      2,
+      41
+    ]
+  },
+  "perCategory": {
+    "adversarial": [
+      0,
+      16
+    ],
+    "execution": [
+      0,
+      4
+    ],
+    "lifecycle": [
+      1,
+      6
+    ],
+    "special": [
+      0,
+      4
+    ],
+    "swap": [
+      1,
+      15
+    ],
+    "transfer": [
+      5,
+      17
+    ]
+  },
+  "forbiddenViolations": [
+    "dca-fill-executed-by-keeper @5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna: airdrop",
+    "execution-jito-tip-sweep-signer-pays-fee-only @EvnRmnMrd69kFdbLMxWkTn1icZ7DCceRhvmb2SJXqDo4: transfer",
+    "keeper-bot-executes-sell-for-user @AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51: transfer",
+    "lending-kamino-borrow-usds @3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb: transfer",
+    "lending-kamino-withdraw-usdc @E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr: transfer",
+    "lifecycle-burn-and-close-four-accounts-rent-to-sponsor @J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD: transfer",
+    "lifecycle-create-ata-only-token2022 @3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a: transfer",
+    "lifecycle-create-ata-only-token2022 @EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz: transfer",
+    "lifecycle-pump-create-mint-and-first-buy @HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU: transfer",
+    "nft-sale-buyback-for-usdc @BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th: transfer",
+    "swap-pump-amm-sell-all-and-close @32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt: transfer"
+  ],
+  "reportedAlternatives": [
+    "dca-fill-executed-by-keeper @5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna: disputed reading swap; SDK says airdrop",
+    "nft-sale-buyback-for-usdc @GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3: disputed reading nft_purchase; SDK says transfer",
+    "nft-sale-buyback-for-usdc @miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt: disputed reading nft_purchase; SDK says transfer",
+    "transfer-spl-memo-creates-ata-airdrop-memo @5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9: disputed reading airdrop; SDK says transfer"
+  ],
+  "caseResults": {
+    "dca-fill-executed-by-keeper": {
+      "hash": "c1cb1cda5e6989813129125885f7a729702413dc13834e0709c949cfdf2ccd4b",
+      "pass": false,
+      "disputed": true,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "JD38n7ynKYcgPpF7k1BhXEeREu1KqptU93fVGy3S624k": {
+          "outcome": "abstained",
+          "predictedKind": "other",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna": {
+          "outcome": "wrong_label",
+          "predictedKind": "airdrop",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "execution-failed-jupiter-swap": {
+      "hash": "2502a041a40f7023a95262b636b3e86abb1cbd1c6c49f41fc917b0fbb43c4b06",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "7nwPXZNhBj88jcC22VNBQUYLohTsQWh5VGxWqnAAcvMf": {
+          "outcome": "abstained",
+          "predictedKind": "other",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "execution-failed-sol-transfer": {
+      "hash": "603f47ce0b6ec6ed9203607581037f4872664e1623ed78315cbf28b9d4bc6e4a",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "36WA9nUCsJaAQL5h44WYoLezDpocy8Q71NZbtrUN8DyC": {
+          "outcome": "abstained",
+          "predictedKind": "other",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
+          "outcome": "correct",
+          "predictedKind": "other",
+          "amountsExact": true,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        }
+      }
+    },
+    "execution-jito-tip-sweep-signer-pays-fee-only": {
+      "hash": "8b25359a3560bdfeeb30eee9ca46651c4252902fa8aef0f7a1ee35fd869757a8",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "EvnRmnMrd69kFdbLMxWkTn1icZ7DCceRhvmb2SJXqDo4": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "DjyDQ7nwUMyLWSihdQYU6Hud6sYMxFKnbaTMXng99K8e": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "execution-tip-only-transaction": {
+      "hash": "b9dead2ae46bd0230f1c1b82a4fc7254f7d142eaa0363d796bb0500b2bee8eb8",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "CrRj1mgjj7MSh3EVpqLjzYtAVNmiTV5zPxiv2qehNG1G": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "keeper-bot-executes-sell-for-user": {
+      "hash": "cfc31ccefd2bee6856307f2b5e4870f1d318a9924915bc5090a43572de99ce8e",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "H9Efa3q67vmrJuyefga53DxBZgDCNwn8yyoixXwWgHX1": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "lending-kamino-borrow-usds": {
+      "hash": "1a39c20f3c65b44f3495eed72b21a245f5827e2b99a37aee373148ecfaf4e153",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "lending-kamino-withdraw-usdc": {
+      "hash": "b5dbc8b7f3d7058781ed8e17fa4276acaec9ef1f8f7e4359658733ea334fb30c",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "lifecycle-burn-and-close-four-accounts-rent-to-sponsor": {
+      "hash": "07901a772cd7e0162e7ed6648e000e2154d48e7ce558385f2090be21507a00e1",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "lifecycle-create-ata-only-token2022": {
+      "hash": "483ace235063d1f76642805171a77e25c18282fbd271da245b06d2745e4f776a",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "lifecycle-pump-create-mint-and-first-buy": {
+      "hash": "1c34469acfca7b15d94b7daa224b2668075e142bcf8c0531990baf1db38a223f",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "4mZuBXA2FQ6vM5My2TJycSpx9KuVupxgNpUHj9CPojng": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "liquidity-add-damm-v2-by-keeper": {
+      "hash": "1a813e30b1d7419780d4d4019ec80232f847f5b3438f39667bc32721b0c2cba7",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": false,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "nft-sale-buyback-for-usdc": {
+      "hash": "a921d7e4f64bbef17b31baa3c94f260fa3fd435df512145969174571e9b0218e",
+      "pass": false,
+      "disputed": true,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        },
+        "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "nft-transfer-sponsored-programmable": {
+      "hash": "c80d64517f7be0eca4ee594ee84accabd6fdc460377ea212b4f96ca3fd6b489d",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "stake-create-and-delegate": {
+      "hash": "8fee25cffeb798261779102c7a5b2e75edb0cba03a7ce693b8e1121e732c9b51",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "HuZaQeqc2cGe1bbuooFhtjWvXZKZ9KxmeeBtPDC31JDL": {
+          "outcome": "kind_only",
+          "predictedKind": "stake_deposit",
+          "amountsExact": false,
+          "participantsExact": false,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "stake-withdraw-from-three-accounts": {
+      "hash": "8056698ebf8488bf04def905beffd948050c94166a1533d45a82168da0856272",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "CuEWxg3jVDyuF4TsBi92Sd7EzTkKhtxqqAHp2fkcgn9g": {
+          "outcome": "abstained",
+          "predictedKind": "other",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-pump-amm-sell-all-and-close": {
+      "hash": "b57fd224f05ecfb6268fea07228cb081703362b3f94b30919a8a309a18bc0ee2",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": true,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-pump-amm-tiny-sol-buy": {
+      "hash": "f288da67448f3f43a3a073b67f9260c3fae788ef6d7e95494bae3206e8279815",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "FXBguGpkMB84QAwGRdcNBFdLD3MnhwaQG4n328b8WxzS": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-stable-usdc-to-usdt-two-hop-dlmm": {
+      "hash": "b3b4c0c702db195d210e47fd728c0e84cc62d283743eef62cf4197731fe0e92b",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "gainzzMWAYL1gGSvREJN83asUQyMfyz3yG6k2od1vbP": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-v0-jupiter-sol-to-token": {
+      "hash": "a688b77811f17a1d8092b2d46cfc490b805ef5882d42436a9a58fd541dbc74f7",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "EMgSdxvQqmaqjynWyNeEXcgpMDERxD7ntvBcUWr3PaEb": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-v0-jupiter-sol-to-token-with-platform-fee": {
+      "hash": "315aab76b4b2b331adcde4b69343079ffa074c57eca530ee166a05db89f08591",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "HyotTjJEuufx749H3FE2ENz3tyP47ddv5G2RhKJPNkqg": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-v0-jupiter-token-to-sol": {
+      "hash": "7c81cee5f06397a327d7588b878ff56336675093408ac8a004b4b7cb99bb75ac",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "6bAWX3qmkmmqmzqsNeWMPTA9iG5k9VfagLBssJxE3Uuh": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-v1-jupiter-circular-route-usdc-gain": {
+      "hash": "6860cfdd4d6e04f7605f96e57a31029988c9c0f375f6227e1cd924061e3f55b2",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "CGgMCsQ6kQ2J3BV5ZDh3J7BCMC75JNLbYNMrLttGEpFz": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-v1-jupiter-circular-route-with-jito-tip": {
+      "hash": "81475579905c1d92e042b93c9caa570f82cd93ad04b4eb9ad7a9453616b5e506",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "FUBVxWEmxHbm3H9TbLgEQQ6d8bvsdw4sgkNJysFeSLRG": {
+          "outcome": "kind_only",
+          "predictedKind": "swap",
+          "amountsExact": false,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-v1-jupiter-then-send-output": {
+      "hash": "bc3e2f8d9bb87b70f3be39ec4acde3915eb59e6045100662bace4c33d16d0f6b",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq": {
+          "outcome": "wrong_label",
+          "predictedKind": "airdrop",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-v1-jupiter-token-to-token": {
+      "hash": "869ff82530611f68af3d7cc6ee4f5a0fcfd3f9f7c9a6e806c7edef3f2abfec4f",
+      "pass": true,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "Fni6bHeAT9scmcuYjy95EADowAXFt21Q5YzYjkPjswxY": {
+          "outcome": "correct",
+          "predictedKind": "swap",
+          "amountsExact": true,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        }
+      }
+    },
+    "swap-v1-router-sol-to-token-with-memo": {
+      "hash": "eb99b3672533d1c84b0c58962663d1c8598b8907468826044745e1cae0502f5a",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-four-tokens-one-recipient-sweep": {
+      "hash": "c8f478d92ed82d173def53e525673320ad4942895367ec0ddc74d94cfcc2e811",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "5Z1ZGSNuwKSBcgtdHAhfV2L2NjkmYNjnvRCV4fEYYMcA": {
+          "outcome": "secondary_hit",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": {
+            "action": "actions[2] transfer #7",
+            "kind": "transfer",
+            "amountsExact": true,
+            "participantsExact": true
+          }
+        },
+        "AEp8SYrGz2kLzuP8Fktejb7s8rhbV9uuZ9WzDHi2ssFL": {
+          "outcome": "secondary_hit",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": {
+            "action": "actions[2] transfer #7",
+            "kind": "transfer",
+            "amountsExact": true,
+            "participantsExact": true
+          }
+        }
+      }
+    },
+    "transfer-sol-durable-nonce-two-signers": {
+      "hash": "55c73baba8c94b100093210e95acddbf2e46d1fac22d8266fe2e12a95ae6a37e",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "95ipm63sgxs1oHtn9rHfuvPKRRA6ZGeL7yBni8aynDW5": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-sol-dust-twenty-one-recipients": {
+      "hash": "6c87eadb754e36541c923e714843ca48b019e05aafff9a64d6dc49a01194a13a",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": false,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-sol-fee-paid-by-receiver-with-tip": {
+      "hash": "4db67870ef46c0d066e12ebfe2665cfe7e52586803b8b7f36fdcefbbcfc371d6",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "HLDiJ4M6Cg6mqdNoATB7mrSKQuWjiMYMcbpgqHrT6DWh": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "G5GFpTfMFPU31nmXzu5C7198RqXiVC49ToUA1h5pGyph": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-sol-legacy-exchange-withdrawal": {
+      "hash": "c65cd2d4d89e878c934ddf31c55e971a8eaeab38660683826143b9b744970037",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "7jADuxRvtLptVAFrd9dcKAzW96aJgVrFes5RWeo38XMd": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-sol-to-self-plus-jito-tip": {
+      "hash": "626885e4c72f8027552db368628c07ea7cbe9b6b24552a5a84db55f3899e6237",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "2dbohozjjVR1svvRbrPJZVPpyCCGytjNga9x7SnxC2MW": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-sol-v0-small": {
+      "hash": "1c99cc2931e449fc9789a80bce4c788fb50d072a905ab6b8ec35b4b88feb1ce3",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "mveQ2LeVFwW3kN9Hc7PAwB5rwdUymZm8GdzRRQDQg1u": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-sol-with-jito-tip": {
+      "hash": "8ffec2bead58923e0638d7ee8e99b0ea4ace5593724d7e82af510cee8ace0d6e",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "5tK7hs9oR81tPnNteWQj57RPrg6idJFqAoquyw4kUoi9": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-sol-with-memo-v1-program": {
+      "hash": "32c24e05392c3604e4f350dcab3b8b76767399e8de4fc2307dc8e48d06b12d95",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "2UPzAimP45QrxJbp5GvxtGYSgdQ1yxYemL6oZrTgMt4s": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "GgLn5nBCghQ8yvYxYtfQcdf75YsWLSiM4WDAC46AS9Nq": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-spl-memo-creates-ata-airdrop-memo": {
+      "hash": "dc25a8b5e39badc5b64ec734bcdd1d7bbaa87c55011d891f5a5fef7d756781fe",
+      "pass": true,
+      "disputed": true,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "7gcXnEbLpDUXbxmxwr1Q39RgCBu7rNLebti8ZdBQ3fhX": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        },
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-token2022-multi-recipient-distribution": {
+      "hash": "a58b846055fd04cec8548506093275f8a9a638fadaf378da05eb38027b4ca0e0",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": false,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": false,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-token2022-pyusd": {
+      "hash": "4d39de97b89e48ef81fd582dc275818e1d93e9c090eec3d79d662aa6ba876830",
+      "pass": true,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        },
+        "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-token2022-pyusd-with-memo": {
+      "hash": "ea79ee33b37f0625fa1895e4fda923ca59e84920b22b7cce0bcc94355a0f4290",
+      "pass": true,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "fr6yQkDmWy6R6pecbUsxXaw6EvRJznZ2HsK5frQgud8": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        },
+        "68XcwTvgrPmKJ7KdDJ4g5KViZTLuHBNuocQ7wkUwk8qk": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-token2022-sponsored-fee-then-close": {
+      "hash": "448d45da4d04caae70bc6d0fefa4674628be59caa5031f1db11a406302ba27df",
+      "pass": false,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": false,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa": {
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": false,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        },
+        "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz": {
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
+          "participantsExact": null,
+          "forbiddenViolation": false,
+          "pass": false,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-usdc-creates-receiver-ata": {
+      "hash": "5ad409923e076e386617fb2a526a2dfbcaf743c1de993d879c6b813bfa819067",
+      "pass": true,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        },
+        "9QDWnjFw2W6faTCrN8K8nGMmhGiHqxESfPnjwtokDA4p": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        }
+      }
+    },
+    "transfer-usdc-plain": {
+      "hash": "cd73fca1b6ab95a279fb285905b3481f2e3f65d4705d2c871da058ef1827c7d1",
+      "pass": true,
+      "disputed": false,
+      "feeAgrees": true,
+      "executionAgrees": true,
+      "perspectives": {
+        "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        },
+        "4FicyJD4oxzvaMEGDtpkhDKE9EHKorA7ZVVoj7pcLDJn": {
+          "outcome": "correct",
+          "predictedKind": "transfer",
+          "amountsExact": true,
+          "participantsExact": true,
+          "forbiddenViolation": false,
+          "pass": true,
+          "secondaryHit": null
+        }
+      }
+    }
+  },
+  "failing": [
+    "dca-fill-executed-by-keeper",
+    "execution-failed-jupiter-swap",
+    "execution-failed-sol-transfer",
+    "execution-jito-tip-sweep-signer-pays-fee-only",
+    "execution-tip-only-transaction",
+    "keeper-bot-executes-sell-for-user",
+    "lending-kamino-borrow-usds",
+    "lending-kamino-withdraw-usdc",
+    "lifecycle-burn-and-close-four-accounts-rent-to-sponsor",
+    "lifecycle-create-ata-only-token2022",
+    "lifecycle-pump-create-mint-and-first-buy",
+    "liquidity-add-damm-v2-by-keeper",
+    "nft-sale-buyback-for-usdc",
+    "nft-transfer-sponsored-programmable",
+    "stake-create-and-delegate",
+    "stake-withdraw-from-three-accounts",
+    "swap-pump-amm-sell-all-and-close",
+    "swap-pump-amm-tiny-sol-buy",
+    "swap-stable-usdc-to-usdt-two-hop-dlmm",
+    "swap-v0-jupiter-sol-to-token",
+    "swap-v0-jupiter-sol-to-token-with-platform-fee",
+    "swap-v0-jupiter-token-to-sol",
+    "swap-v1-jupiter-circular-route-usdc-gain",
+    "swap-v1-jupiter-circular-route-with-jito-tip",
+    "swap-v1-jupiter-then-send-output",
+    "swap-v1-router-sol-to-token-with-memo",
+    "transfer-four-tokens-one-recipient-sweep",
+    "transfer-sol-durable-nonce-two-signers",
+    "transfer-sol-dust-twenty-one-recipients",
+    "transfer-sol-fee-paid-by-receiver-with-tip",
+    "transfer-sol-legacy-exchange-withdrawal",
+    "transfer-sol-to-self-plus-jito-tip",
+    "transfer-sol-v0-small",
+    "transfer-sol-with-jito-tip",
+    "transfer-sol-with-memo-v1-program",
+    "transfer-token2022-multi-recipient-distribution",
+    "transfer-token2022-sponsored-fee-then-close"
+  ],
+  "sdkLogs": {
+    "transfer-sol-with-memo-v1-program": [
+      "Failed to decode memo: InvalidCharacterError: The string contains invalid characters."
+    ]
+  }
+}

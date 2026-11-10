@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-token2022-sponsored-fee-then-close",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "17800",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb",
+          "receiver": "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "199000000",
+              "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ],
+          "forbidden": [
+            "swap",
+            "fee_only"
+          ]
+        },
+        {
+          "kind": "account_close",
+          "primary": false,
+          "sender": "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb",
+          "receiver": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+          "amounts": [],
+          "amountsNote": "The closed account's 1,600,200 lamports go to the fee payer EBBk..., not to the owner.",
+          "instructionRefs": [
+            "#3"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb",
+          "receiver": "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "199000000",
+              "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+      "actions": [
+        {
+          "kind": "account_close",
+          "primary": true,
+          "sender": "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb",
+          "receiver": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "1600200",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#3"
+          ],
+          "forbidden": [
+            "swap"
+          ],
+          "note": "EBBk... sponsors the fee (17,800) and collects the rent of the closed account."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-sol-durable-nonce-two-signers",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "41094",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "95ipm63sgxs1oHtn9rHfuvPKRRA6ZGeL7yBni8aynDW5",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "95ipm63sgxs1oHtn9rHfuvPKRRA6ZGeL7yBni8aynDW5",
+          "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "56483000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "swap",
+            "fee_only"
+          ]
+        }
+      ]
+    },
+    {
+      "address": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+      "actions": [
+        {
+          "kind": "transfer",
+          "primary": true,
+          "sender": "95ipm63sgxs1oHtn9rHfuvPKRRA6ZGeL7yBni8aynDW5",
+          "receiver": "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9",
+          "amounts": [
+            {
+              "direction": "in",
+              "amountRaw": "56483000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

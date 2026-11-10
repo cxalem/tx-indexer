@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "caseId": "keeper-bot-executes-sell-for-user",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "1908154",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "H9Efa3q67vmrJuyefga53DxBZgDCNwn8yyoixXwWgHX1",
+      "actions": [
+        {
+          "kind": "swap",
+          "primary": true,
+          "sender": null,
+          "receiver": null,
+          "authority": "H9Efa3q67vmrJuyefga53DxBZgDCNwn8yyoixXwWgHX1",
+          "participantsNote": "Swap through three venues; sender/receiver not applicable.",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "198452020869",
+              "mint": "9VZerdNL1x6EjetDqRnh5bYcdmk1y8sLAGs1ybzGpump",
+              "decimals": 6
+            },
+            {
+              "direction": "in",
+              "amountRaw": "77886031",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#0",
+            "#0.6",
+            "#0.10",
+            "#0.16",
+            "#0.17"
+          ],
+          "forbidden": [
+            "airdrop",
+            "fee_only"
+          ],
+          "note": "Route 9VZe -> SOL (Orca, Pump AMM) -> USDC (AQU1FRd7...); the SOL leg nets to 0 for the user."
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "H9Efa3q67vmrJuyefga53DxBZgDCNwn8yyoixXwWgHX1",
+          "receiver": "R4rNJHaffSUotNmqSKNEfDcJE8A7zJUkaoM5Jkd7cYX",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "570000",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "note": "Fee-like payment; purpose not stated."
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "H9Efa3q67vmrJuyefga53DxBZgDCNwn8yyoixXwWgHX1",
+          "receiver": "kveuQG5hNwm9wyzqHJAKvdCWbWwvBEChnoXS8RS7MiD",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "380000",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "decimals": 6
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ],
+          "note": "Fee-like payment; purpose not stated."
+        }
+      ]
+    },
+    {
+      "address": "AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51",
+      "actions": [
+        {
+          "kind": "fee_only",
+          "primary": true,
+          "sender": "AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51",
+          "receiver": null,
+          "participantsNote": "Executor only.",
+          "amounts": [],
+          "amountsNote": "Pays the fee; the temporary account rent it advanced (#0.2) is repaid in #0.20.",
+          "instructionRefs": [
+            "#0"
+          ],
+          "forbidden": [
+            "swap",
+            "transfer",
+            "airdrop"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

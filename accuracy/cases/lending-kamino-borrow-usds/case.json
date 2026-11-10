@@ -1,0 +1,42 @@
+{
+  "id": "lending-kamino-borrow-usds",
+  "signature": "52whbSfD4y9cVwh3AZToFvNXYMonjZ3YDy3C3DgjKmBNRnQHcP2x59g1QCTtyjiWdfJBp8wT54Ehx68e75Y9kAAf",
+  "cluster": "mainnet-beta",
+  "endpoint": "https://api.mainnet-beta.solana.com",
+  "slot": 467880886,
+  "blockTime": 1794348053,
+  "transactionVersion": 0,
+  "capturedAt": "2026-11-10T22:01:12Z",
+  "commitment": "finalized",
+  "encoding": "json",
+  "rpc": {
+    "method": "getTransaction",
+    "params": [
+      "52whbSfD4y9cVwh3AZToFvNXYMonjZ3YDy3C3DgjKmBNRnQHcP2x59g1QCTtyjiWdfJBp8wT54Ehx68e75Y9kAAf",
+      {
+        "encoding": "json",
+        "maxSupportedTransactionVersion": 1,
+        "commitment": "finalized"
+      }
+    ]
+  },
+  "perspectives": [
+    {
+      "address": "3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb",
+      "reason": "only signer, the borrower"
+    }
+  ],
+  "categories": [
+    "adversarial"
+  ],
+  "tags": [
+    "v0",
+    "lookup-tables",
+    "lending",
+    "kamino"
+  ],
+  "rationale": "Kamino Lending (KLend2g3...). #0 ATA CreateIdempotent for the borrower's USDS account (already existed). #1-#3 refresh_reserve, #4 refresh_obligation, #5 borrow_obligation_liquidity_v2: inner #5.0 TransferChecked 1,100,000,000 raw USDS (6 decimals) from reserve supply 4aE6ow1Y... (owner 9DrvZvyW..., the lending market authority) to D4TNdZD3... (owner 3x1RsTx3...); #5.1 a Kamino Farms call. Lamports: only fee 51,222.",
+  "sources": [
+    "Anchor instruction names identified by discriminator sha256('global:<name>')[0..8] (refresh_reserve, refresh_obligation, borrow_obligation_liquidity_v2)"
+  ]
+}

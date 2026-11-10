@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "caseId": "stake-create-and-delegate",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "13735",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "HuZaQeqc2cGe1bbuooFhtjWvXZKZ9KxmeeBtPDC31JDL",
+      "actions": [
+        {
+          "kind": "stake_deposit",
+          "primary": true,
+          "sender": "HuZaQeqc2cGe1bbuooFhtjWvXZKZ9KxmeeBtPDC31JDL",
+          "receiver": "B9XMwTRfrL9mUgx98iTodphHKFfvjSZFv3RkDAXtH3rX",
+          "authority": "HuZaQeqc2cGe1bbuooFhtjWvXZKZ9KxmeeBtPDC31JDL",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "7427731966",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2",
+            "#3",
+            "#4"
+          ],
+          "forbidden": [
+            "transfer",
+            "swap",
+            "fee_only"
+          ],
+          "note": "Delegated to vote account 9QU2QSxhb24FUX3Tu2FpczXjpK3VYrvRudywSZaM29mF."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}

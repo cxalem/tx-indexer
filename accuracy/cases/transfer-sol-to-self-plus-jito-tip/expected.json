@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "caseId": "transfer-sol-to-self-plus-jito-tip",
+  "labelledAt": "2026-11-10",
+  "labelledBeforeScoring": true,
+  "fee": "5000",
+  "execution": "succeeded",
+  "disputed": false,
+  "openQuestions": [],
+  "perspectives": [
+    {
+      "address": "2dbohozjjVR1svvRbrPJZVPpyCCGytjNga9x7SnxC2MW",
+      "actions": [
+        {
+          "kind": "tip",
+          "primary": true,
+          "sender": "2dbohozjjVR1svvRbrPJZVPpyCCGytjNga9x7SnxC2MW",
+          "receiver": "ADuUkR4vqLUMWXxW9gh6D6L8pMSawimctcNZ5pGwDcEt",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "1000",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#2"
+          ],
+          "forbidden": [
+            "swap"
+          ]
+        },
+        {
+          "kind": "transfer",
+          "primary": false,
+          "sender": "2dbohozjjVR1svvRbrPJZVPpyCCGytjNga9x7SnxC2MW",
+          "receiver": "2dbohozjjVR1svvRbrPJZVPpyCCGytjNga9x7SnxC2MW",
+          "amounts": [
+            {
+              "direction": "out",
+              "amountRaw": "104",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            },
+            {
+              "direction": "in",
+              "amountRaw": "104",
+              "mint": "So11111111111111111111111111111111111111112",
+              "decimals": 9,
+              "native": true
+            }
+          ],
+          "instructionRefs": [
+            "#1"
+          ],
+          "note": "Same-owner move with no net effect."
+        }
+      ]
+    }
+  ],
+  "notes": ""
+}
