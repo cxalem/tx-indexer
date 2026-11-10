@@ -231,11 +231,43 @@ describe("round 3 regressions", () => {
     );
     const bob = legs.find((l) => l.accountId === `external:${BOB}`);
     expect(bob?.side).toBe("credit");
-    expect(bob?.amount.amountRaw).toBe("1000000000");
+    // Full lamport delta, rent-exempt reserve included; nothing is labelled rent.
+    expect(bob?.amount.amountRaw).toBe((SOL + RENT).toString());
+    expect(legs.filter((l) => l.accountId.startsWith("rent:"))).toEqual([]);
     expect(classification.primaryType).toBe("transfer");
     expect(classification.sender).toBe(ALICE);
     expect(classification.receiver).toBe(BOB);
   });
+
+  // Reduced rent (6,333 lamports/byte): a 165-byte token account's reserve is
+  // (165 + 128) * 6,333 = 1,855,569 lamports.
+  const REDUCED_RESERVE = (165n + 128n) * 6_333n;
+  for (const [label, funding] of [
+    ["synced with 183,711 lamports (post 2,039,280)", 183_711n],
+    ["funded with 1 SOL", SOL],
+  ] as const) {
+    test(`R1 reduced rent, ${label}: Bob credited the full delta, transfer Alice -> Bob`, async () => {
+      expect(REDUCED_RESERVE).toBe(1_855_569n);
+      const post = REDUCED_RESERVE + funding;
+      const { legs, classification } = await run(
+        syntheticResponse({
+          staticKeys: [ALICE, SYSTEM_PROGRAM],
+          loaded: { writable: [BOB_ATA], readonly: [] },
+          pre: [5n * SOL, 1n, 0n],
+          post: [5n * SOL - post - 5000n, 1n, post],
+          instructions: [{ programIdIndex: 1, accounts: [0, 2] }],
+          postTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: BOB, amount: funding }],
+        }),
+      );
+      const bob = legs.find((l) => l.accountId === `external:${BOB}`);
+      expect(bob?.side).toBe("credit");
+      expect(bob?.amount.amountRaw).toBe(post.toString());
+      expect(legs.filter((l) => l.accountId.startsWith("rent:"))).toEqual([]);
+      expect(classification.primaryType).toBe("transfer");
+      expect(classification.sender).toBe(ALICE);
+      expect(classification.receiver).toBe(BOB);
+    });
+  }
 
   test("R2: stake-pool redeem paying Alice SOL (with a USDC side movement) stays stake_withdraw", async () => {
     const USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";

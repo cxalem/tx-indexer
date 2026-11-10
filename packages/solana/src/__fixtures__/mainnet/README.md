@@ -19,8 +19,8 @@ Note (review round 2): every lookup-table account whose lamports change in these
 three swaps is an existing wSOL token account (pre and post native-mint entries). The
 mapper represents a wSOL account ONCE, by its actual lamport delta attributed to the
 token owner from the balance metadata; the token-amount change is not emitted. Here the
-lamport delta equals the token delta, so the amounts match the token balances exactly,
-and no rent leg appears (no account is created). The "expected SOL legs" list that
+lamport delta equals the token delta (no account is created), so the amounts match the
+token balances exactly. The "expected SOL legs" list that
 owner-attributed lamport leg. In these tests `protocol` is null, so owners are tagged
 `external:`; through the SDK (protocol = jupiter) the same leg is tagged
 `protocol:jupiter:SOL:<owner>`.

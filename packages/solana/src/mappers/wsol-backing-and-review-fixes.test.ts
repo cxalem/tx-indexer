@@ -22,6 +22,10 @@ const RENT = 2039280n;
 const fmt = (legs: TxLeg[]) =>
   legs.map((l) => `${l.accountId} ${l.side} ${l.amount.amountRaw} ${l.role}`).sort();
 
+function expectNoRentLegs(legs: TxLeg[]) {
+  expect(legs.filter((l) => l.accountId.startsWith("rent:"))).toEqual([]);
+}
+
 async function legsFor(input: Parameters<typeof syntheticResponse>[0]) {
   const { rpc } = mockRpc(() => syntheticResponse(input));
   const tx = (await fetchTransaction(rpc, SIG))!;
@@ -57,7 +61,7 @@ describe("wSOL accounts are represented once: lamport delta, owner-attributed", 
     expect(tx.reconciliation?.status).toBe("balanced");
   });
 
-  test("created in the transaction: reserve goes to rent:, wrapped amount to the owner", async () => {
+  test("created in the transaction: the owner is credited the full lamport delta (reserve included)", async () => {
     const { legs } = await legsFor({
       staticKeys: [ALICE, TOKEN_PROGRAM],
       loaded: { writable: [BOB_ATA], readonly: [] },
@@ -70,11 +74,11 @@ describe("wSOL accounts are represented once: lamport delta, owner-attributed", 
     expect(fmt(legs)).toEqual(
       [
         `external:${ALICE} debit ${SOL + RENT + 5000n} sent`,
-        `external:${BOB} credit 1000000000 received`,
-        `rent:${BOB_ATA} credit ${RENT} unknown`,
+        `external:${BOB} credit ${SOL + RENT} received`,
         `fee:network credit 5000 fee`,
       ].sort(),
     );
+    expectNoRentLegs(legs);
   });
 
   test("pre-only wSOL entry (account closed): lamport leg unchanged, as on main", async () => {
@@ -111,8 +115,8 @@ describe("wSOL accounts are represented once: lamport delta, owner-attributed", 
   });
 });
 
-describe("created wSOL accounts: only the verified standard reserve is rent", () => {
-  test("create then fund WITHOUT sync_native: reserve to rent:, all funding to the owner", async () => {
+describe("created wSOL accounts: the full lamport delta goes to the owner, no rent label", () => {
+  test("create then fund WITHOUT sync_native: the owner is credited the full delta", async () => {
     const { legs } = await legsFor({
       staticKeys: [ALICE, TOKEN_PROGRAM],
       loaded: { writable: [BOB_ATA], readonly: [] },
@@ -123,14 +127,14 @@ describe("created wSOL accounts: only the verified standard reserve is rent", ()
     expect(fmt(legs)).toEqual(
       [
         `external:${ALICE} debit ${SOL + RENT + 5000n} sent`,
-        `external:${BOB} credit 1000000000 received`,
-        `rent:${BOB_ATA} credit ${RENT} unknown`,
+        `external:${BOB} credit ${SOL + RENT} received`,
         `fee:network credit 5000 fee`,
       ].sort(),
     );
+    expectNoRentLegs(legs);
   });
 
-  test("created, funded 1 SOL, 0.4 SOL spent: reserve to rent:, 0.6 SOL to the owner", async () => {
+  test("created, funded 1 SOL, 0.4 SOL spent: the owner is credited reserve + 0.6 SOL", async () => {
     const CAROL = "Caro11111111111111111111111111111111111111";
     const { legs } = await legsFor({
       staticKeys: [ALICE, CAROL, TOKEN_PROGRAM],
@@ -139,12 +143,12 @@ describe("created wSOL accounts: only the verified standard reserve is rent", ()
       post: [4n * SOL - RENT - 5000n, 400_000_000n, 1n, RENT + 600_000_000n],
       postTokenBalances: [{ accountIndex: 3, mint: WSOL_MINT, owner: ALICE, amount: 600_000_000n }],
     });
-    expect(fmt(legs)).toContain(`rent:${ALICE_ATA} credit ${RENT} unknown`);
-    expect(fmt(legs)).toContain(`external:${ALICE} credit 600000000 received`);
+    expect(fmt(legs)).toContain(`external:${ALICE} credit ${RENT + 600_000_000n} received`);
     expect(fmt(legs)).toContain(`external:${CAROL} credit 400000000 received`);
+    expectNoRentLegs(legs);
   });
 
-  test("created with lamports below the standard reserve: no rent leg, whole delta to the owner", async () => {
+  test("created with only a few lamports: whole delta to the owner", async () => {
     const { legs } = await legsFor({
       staticKeys: [ALICE, TOKEN_PROGRAM],
       loaded: { writable: [BOB_ATA], readonly: [] },
@@ -160,6 +164,51 @@ describe("created wSOL accounts: only the verified standard reserve is rent", ()
       ].sort(),
     );
     expect(legs.every((l) => BigInt(l.amount.amountRaw) > 0n)).toBe(true);
+    expectNoRentLegs(legs);
+  });
+
+  // Reduced rent (6,333 lamports/byte): reserve of a 165-byte token account is
+  // (165 + 128) * 6,333 = 1,855,569 lamports, not 2,039,280.
+  const REDUCED_RESERVE = (165n + 128n) * 6_333n;
+
+  test("reduced rent, synced with 183,711 lamports (post 2,039,280): full delta to the owner", async () => {
+    expect(REDUCED_RESERVE).toBe(1_855_569n);
+    const post = REDUCED_RESERVE + 183_711n;
+    expect(post).toBe(2_039_280n);
+    const { legs } = await legsFor({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [BOB_ATA], readonly: [] },
+      pre: [SOL, 1n, 0n],
+      post: [SOL - post - 5000n, 1n, post],
+      postTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: BOB, amount: 183_711n }],
+    });
+    expect(fmt(legs)).toEqual(
+      [
+        `external:${ALICE} debit ${post + 5000n} sent`,
+        `external:${BOB} credit ${post} received`,
+        `fee:network credit 5000 fee`,
+      ].sort(),
+    );
+    expectNoRentLegs(legs);
+  });
+
+  test("reduced rent, funded 1 SOL: full delta to the owner", async () => {
+    const post = REDUCED_RESERVE + SOL;
+    const { legs } = await legsFor({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [BOB_ATA], readonly: [] },
+      pre: [5n * SOL, 1n, 0n],
+      post: [5n * SOL - post - 5000n, 1n, post],
+      postTokenBalances: [{ accountIndex: 2, mint: WSOL_MINT, owner: BOB, amount: SOL }],
+    });
+    expect(fmt(legs)).toEqual(
+      [
+        `external:${ALICE} debit ${post + 5000n} sent`,
+        `external:${BOB} credit 1001855569 received`,
+        `fee:network credit 5000 fee`,
+      ].sort(),
+    );
+    expectNoRentLegs(legs);
   });
 });
 

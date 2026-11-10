@@ -66,32 +66,11 @@ export function transactionToLegs(
     const native = nativeAccounts.get(change.accountIndex);
     if (native) {
       const owner = native.owner ?? change.address;
-      let ownerPart = change.change;
-      let reservePart = 0n;
-      if (native.created && change.change >= NATIVE_ACCOUNT_RENT_RESERVE) {
-        // Created in this transaction (no pre entry) and funded with at least
-        // the standard reserve: exactly NATIVE_ACCOUNT_RENT_RESERVE goes to a
-        // rent:<address> leg (role "unknown", never a counterparty); EVERY
-        // other lamport (wrapped amount, unsynced funding) is the owner's.
-        // The reserve is never inferred from "lamports beyond the token
-        // amount", which would mislabel unsynced funding as rent.
-        // Below the standard reserve, nothing is labelled rent: the whole
-        // delta goes to the owner (no negative or partial reserve legs).
-        reservePart = NATIVE_ACCOUNT_RENT_RESERVE;
-        ownerPart = change.change - reservePart;
-      }
-      if (reservePart !== 0n) {
-        legs.push({
-          accountId: buildAccountId({ type: "rent", address: change.address }),
-          side: "credit",
-          amount: {
-            token: solInfo,
-            amountRaw: reservePart.toString(),
-            amountUi: Number(reservePart) / 1e9,
-          },
-          role: "unknown",
-        });
-      }
+      // The FULL lamport delta is the owner's movement, also for accounts
+      // created in this transaction: their rent-exempt reserve cannot be told
+      // apart from funding using transaction data alone (it depends on the
+      // cluster's rent parameters), so it is included in the owner's credit.
+      const ownerPart = change.change;
       if (ownerPart !== 0n) {
         const isPositive = ownerPart > 0n;
         legs.push({
@@ -182,24 +161,9 @@ export function transactionToLegs(
   return legs;
 }
 
-/**
- * Rent-exempt minimum of a classic SPL Token account (165 bytes of data):
- * (165 + 128 bytes of account overhead) * 3480 lamports/byte-year * 2 years
- * = 2,039,280 lamports, at the cluster's default rent parameters. Legacy
- * native-mint (wSOL) accounts are always 165 bytes (the legacy Token program
- * has no extensions), so this is the reserve of every wSOL account created by
- * the legacy program. If the cluster's rent parameters ever change, the
- * labelled reserve could differ from the actual one by that amount; the
- * mapper never labels more than this constant as rent, and labels nothing
- * when the account's lamport delta is below it.
- */
-export const NATIVE_ACCOUNT_RENT_RESERVE = 2_039_280n;
-
 interface NativeTokenAccount {
   /** Token owner from the balance metadata (undefined if not reported) */
   owner?: string;
-  /** True when there is no pre entry: the account was created in this tx */
-  created: boolean;
 }
 
 /**
@@ -214,10 +178,10 @@ interface NativeTokenAccount {
  *   owner's movement. Token-amount changes are ignored, so lamports sent
  *   without sync_native still count, and a sync (token amount catching up,
  *   lamport delta zero) produces no leg at all.
- * - created (post entry only): if the lamport delta covers the standard
- *   reserve (NATIVE_ACCOUNT_RENT_RESERVE), that exact amount goes to a
- *   rent:<address> leg and the rest (wrapped or unsynced) to the owner;
- *   otherwise the whole delta goes to the owner.
+ * - created (post entry only): same as existing -> existing, the full
+ *   lamport delta goes to the owner. That credit therefore includes the
+ *   account's rent-exempt reserve, which cannot be separated from funding
+ *   using transaction data alone.
  * - closed (pre entry only): NOT included here, so the lamport change stays
  *   an ordinary external:<account> leg exactly as on main (closed-account
  *   handling is a separate, known limitation).
@@ -232,16 +196,11 @@ interface NativeTokenAccount {
  */
 function nativeTokenAccounts(tx: RawTransaction): Map<number, NativeTokenAccount> {
   const nativeMint = KNOWN_TOKENS.SOL;
-  const preIndexes = new Set<number>();
-  for (const pre of tx.preTokenBalances ?? []) {
-    if (pre.mint === nativeMint) preIndexes.add(pre.accountIndex);
-  }
   const accounts = new Map<number, NativeTokenAccount>();
   for (const post of tx.postTokenBalances ?? []) {
     if (post.mint !== nativeMint) continue;
     accounts.set(post.accountIndex, {
       owner: post.owner || tx.accountKeys?.[post.accountIndex] || undefined,
-      created: !preIndexes.has(post.accountIndex),
     });
   }
   return accounts;

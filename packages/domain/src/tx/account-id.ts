@@ -1,4 +1,4 @@
-export type AccountIdType = "wallet" | "protocol" | "external" | "fee" | "rent";
+export type AccountIdType = "wallet" | "protocol" | "external" | "fee";
 
 export interface BuildAccountIdParams {
   type: AccountIdType;
@@ -15,8 +15,6 @@ export interface BuildAccountIdParams {
  * - Protocol: `protocol:{protocol}:{token}:{address}` or `protocol:{protocol}:{address}`
  * - External: `external:{address}`
  * - Fee: `fee:network`
- * - Rent: `rent:{address}` (lamports of a wSOL token account not explained by
- *   its token balance change, e.g. its rent-exempt reserve; never a counterparty)
  * 
  * @param params - Account identifier parameters
  * @returns Formatted account ID string
@@ -42,10 +40,6 @@ export function buildAccountId(params: BuildAccountIdParams): string {
 
   if (type === "fee") {
     return "fee:network";
-  }
-
-  if (type === "rent") {
-    return `rent:${address}`;
   }
   
   throw new Error(
@@ -96,10 +90,6 @@ export function parseAccountId(accountId: string): ParsedAccountId {
 
   if (parts[0] === "external" && parts.length === 2) {
     return { type: "external", address: parts[1] };
-  }
-
-  if (parts[0] === "rent" && parts.length === 2) {
-    return { type: "rent", address: parts[1] };
   }
 
   if (parts[0] === "fee" && parts[1] === "network") {
