@@ -1,7 +1,6 @@
 {
   "extends": "../packages/typescript-config/bun.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "types": ["bun"],
     "typeRoots": ["../packages/sdk/node_modules/@types"],
     "paths": {

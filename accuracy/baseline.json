@@ -1,0 +1,580 @@
+{
+  "schemaVersion": 1,
+  "sdkVersion": "1.5.0",
+  "cases": 43,
+  "perspectives": 72,
+  "overall": {
+    "casesPassed": 6,
+    "primaryAgreement": 43,
+    "amountsExact": [
+      13,
+      43
+    ],
+    "participantsExact": [
+      26,
+      32
+    ],
+    "forbiddenViolations": 12,
+    "abstentions": 4,
+    "wrongLabels": 25,
+    "secondaryHits": 0,
+    "errors": 0,
+    "feeAgreement": [
+      43,
+      43
+    ],
+    "executionAgreement": [
+      43,
+      43
+    ],
+    "secondaryActionsExpected": 89,
+    "secondaryActionsPredicted": 0
+  },
+  "reconciliation": {
+    "balanced": 43
+  },
+  "perKind": {
+    "account_close": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": null,
+      "recall": 0
+    },
+    "account_create": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "precision": null,
+      "recall": 0
+    },
+    "airdrop": {
+      "tp": 0,
+      "fp": 2,
+      "fn": 0,
+      "precision": 0,
+      "recall": null
+    },
+    "fee_only": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "precision": null,
+      "recall": 0
+    },
+    "lending_borrow": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "lending_withdraw": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "liquidity_add": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "nft_receive": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": null,
+      "recall": 0
+    },
+    "nft_sale": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "nft_send": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "other": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1
+    },
+    "stake_deposit": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1
+    },
+    "stake_withdraw": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "swap": {
+      "tp": 10,
+      "fp": 0,
+      "fn": 4,
+      "precision": 1,
+      "recall": 0.7143
+    },
+    "tip": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "precision": null,
+      "recall": 0
+    },
+    "token_burn": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "token_mint": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": null,
+      "recall": 0
+    },
+    "transfer": {
+      "tp": 31,
+      "fp": 23,
+      "fn": 1,
+      "precision": 0.5741,
+      "recall": 0.9688
+    }
+  },
+  "perCategory": {
+    "adversarial": [
+      0,
+      16
+    ],
+    "execution": [
+      0,
+      4
+    ],
+    "lifecycle": [
+      1,
+      6
+    ],
+    "special": [
+      0,
+      4
+    ],
+    "swap": [
+      1,
+      15
+    ],
+    "transfer": [
+      5,
+      17
+    ]
+  },
+  "forbiddenViolations": [
+    "dca-fill-executed-by-keeper @5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna: airdrop",
+    "execution-jito-tip-sweep-signer-pays-fee-only @EvnRmnMrd69kFdbLMxWkTn1icZ7DCceRhvmb2SJXqDo4: transfer",
+    "keeper-bot-executes-sell-for-user @AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51: transfer",
+    "lending-kamino-borrow-usds @3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb: transfer",
+    "lending-kamino-withdraw-usdc @E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr: transfer",
+    "lifecycle-burn-and-close-four-accounts-rent-to-sponsor @J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD: transfer",
+    "lifecycle-create-ata-only-token2022 @3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a: transfer",
+    "lifecycle-create-ata-only-token2022 @EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz: transfer",
+    "lifecycle-pump-create-mint-and-first-buy @HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU: transfer",
+    "liquidity-add-damm-v2-by-keeper @2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx: transfer",
+    "nft-sale-buyback-for-usdc @BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th: transfer",
+    "swap-pump-amm-sell-all-and-close @32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt: transfer"
+  ],
+  "caseResults": {
+    "dca-fill-executed-by-keeper": {
+      "pass": false,
+      "disputed": true,
+      "perspectives": {
+        "JD38n7ynKYcgPpF7k1BhXEeREu1KqptU93fVGy3S624k": "fail:other",
+        "5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna": "fail:airdrop"
+      }
+    },
+    "execution-failed-jupiter-swap": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "7nwPXZNhBj88jcC22VNBQUYLohTsQWh5VGxWqnAAcvMf": "fail:other"
+      }
+    },
+    "execution-failed-sol-transfer": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "36WA9nUCsJaAQL5h44WYoLezDpocy8Q71NZbtrUN8DyC": "fail:other",
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": "pass:other"
+      }
+    },
+    "execution-jito-tip-sweep-signer-pays-fee-only": {
+      "pass": false,
+      "disputed": true,
+      "perspectives": {
+        "EvnRmnMrd69kFdbLMxWkTn1icZ7DCceRhvmb2SJXqDo4": "fail:transfer",
+        "DjyDQ7nwUMyLWSihdQYU6Hud6sYMxFKnbaTMXng99K8e": "fail:transfer"
+      }
+    },
+    "execution-tip-only-transaction": {
+      "pass": false,
+      "disputed": true,
+      "perspectives": {
+        "CrRj1mgjj7MSh3EVpqLjzYtAVNmiTV5zPxiv2qehNG1G": "fail:transfer"
+      }
+    },
+    "keeper-bot-executes-sell-for-user": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "H9Efa3q67vmrJuyefga53DxBZgDCNwn8yyoixXwWgHX1": "fail:swap",
+        "AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51": "fail:transfer"
+      }
+    },
+    "lending-kamino-borrow-usds": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb": "fail:transfer"
+      }
+    },
+    "lending-kamino-withdraw-usdc": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr": "fail:transfer"
+      }
+    },
+    "lifecycle-burn-and-close-four-accounts-rent-to-sponsor": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD": "fail:transfer",
+        "8dBouoL57tuCLkF5QBp7pWHALYriifcdoa7HG7PjSMfG": "fail:transfer"
+      }
+    },
+    "lifecycle-create-ata-only-token2022": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a": "fail:transfer",
+        "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz": "fail:transfer"
+      }
+    },
+    "lifecycle-pump-create-mint-and-first-buy": {
+      "pass": false,
+      "disputed": true,
+      "perspectives": {
+        "4mZuBXA2FQ6vM5My2TJycSpx9KuVupxgNpUHj9CPojng": "fail:swap",
+        "HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU": "fail:transfer"
+      }
+    },
+    "liquidity-add-damm-v2-by-keeper": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx": "fail:transfer",
+        "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF": "fail:transfer"
+      }
+    },
+    "nft-sale-buyback-for-usdc": {
+      "pass": false,
+      "disputed": true,
+      "perspectives": {
+        "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th": "fail:transfer",
+        "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3": "pass:transfer",
+        "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt": "fail:transfer"
+      }
+    },
+    "nft-transfer-sponsored-programmable": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "miDtj3vgdxVykHzRyFwyG8MXpvK8eQqamSLVdBr7WPt": "fail:transfer",
+        "BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th": "fail:transfer",
+        "GachaNgyXTU3zFogQ8Z5jR2BLXs8215X2AtEH18VxJq3": "fail:transfer"
+      }
+    },
+    "stake-create-and-delegate": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "HuZaQeqc2cGe1bbuooFhtjWvXZKZ9KxmeeBtPDC31JDL": "fail:stake_deposit"
+      }
+    },
+    "stake-withdraw-from-three-accounts": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "CuEWxg3jVDyuF4TsBi92Sd7EzTkKhtxqqAHp2fkcgn9g": "fail:other"
+      }
+    },
+    "swap-pump-amm-sell-all-and-close": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt": "fail:transfer"
+      }
+    },
+    "swap-pump-amm-tiny-sol-buy": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "FXBguGpkMB84QAwGRdcNBFdLD3MnhwaQG4n328b8WxzS": "fail:swap"
+      }
+    },
+    "swap-stable-usdc-to-usdt-two-hop-dlmm": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "gainzzMWAYL1gGSvREJN83asUQyMfyz3yG6k2od1vbP": "fail:swap"
+      }
+    },
+    "swap-v0-jupiter-sol-to-token": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "EMgSdxvQqmaqjynWyNeEXcgpMDERxD7ntvBcUWr3PaEb": "fail:swap"
+      }
+    },
+    "swap-v0-jupiter-sol-to-token-with-platform-fee": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "HyotTjJEuufx749H3FE2ENz3tyP47ddv5G2RhKJPNkqg": "fail:swap"
+      }
+    },
+    "swap-v0-jupiter-token-to-sol": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "6bAWX3qmkmmqmzqsNeWMPTA9iG5k9VfagLBssJxE3Uuh": "fail:swap"
+      }
+    },
+    "swap-v1-jupiter-circular-route-usdc-gain": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "CGgMCsQ6kQ2J3BV5ZDh3J7BCMC75JNLbYNMrLttGEpFz": "fail:swap"
+      }
+    },
+    "swap-v1-jupiter-circular-route-with-jito-tip": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "FUBVxWEmxHbm3H9TbLgEQQ6d8bvsdw4sgkNJysFeSLRG": "fail:swap"
+      }
+    },
+    "swap-v1-jupiter-then-send-output": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "H4arxkST9m8UaASkLxEKrAT7RrfvayBBWV9oYpVkXZDb": "fail:transfer",
+        "BNnNDihJZo8nMapojgyVtM5wLsjnQJBrCJAtqw5F9jGq": "fail:airdrop"
+      }
+    },
+    "swap-v1-jupiter-token-to-token": {
+      "pass": true,
+      "disputed": false,
+      "perspectives": {
+        "Fni6bHeAT9scmcuYjy95EADowAXFt21Q5YzYjkPjswxY": "pass:swap"
+      }
+    },
+    "swap-v1-router-sol-to-token-with-memo": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "Dha7rX3GixRswSnxqhFA4W1i8fH8mixNmQrJBKF4miye": "fail:transfer"
+      }
+    },
+    "transfer-four-tokens-one-recipient-sweep": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "5Z1ZGSNuwKSBcgtdHAhfV2L2NjkmYNjnvRCV4fEYYMcA": "fail:transfer",
+        "AEp8SYrGz2kLzuP8Fktejb7s8rhbV9uuZ9WzDHi2ssFL": "fail:transfer"
+      }
+    },
+    "transfer-sol-durable-nonce-two-signers": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "95ipm63sgxs1oHtn9rHfuvPKRRA6ZGeL7yBni8aynDW5": "fail:transfer",
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": "fail:transfer"
+      }
+    },
+    "transfer-sol-dust-twenty-one-recipients": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "54SRDKG1QBBzifFyTAZEyPpSvY2RqvuFFG6v79z8bunW": "fail:transfer",
+        "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD": "fail:transfer"
+      }
+    },
+    "transfer-sol-fee-paid-by-receiver-with-tip": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "HLDiJ4M6Cg6mqdNoATB7mrSKQuWjiMYMcbpgqHrT6DWh": "fail:transfer",
+        "G5GFpTfMFPU31nmXzu5C7198RqXiVC49ToUA1h5pGyph": "fail:transfer"
+      }
+    },
+    "transfer-sol-legacy-exchange-withdrawal": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS": "fail:transfer",
+        "7jADuxRvtLptVAFrd9dcKAzW96aJgVrFes5RWeo38XMd": "fail:transfer"
+      }
+    },
+    "transfer-sol-to-self-plus-jito-tip": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "2dbohozjjVR1svvRbrPJZVPpyCCGytjNga9x7SnxC2MW": "fail:transfer"
+      }
+    },
+    "transfer-sol-v0-small": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "mveQ2LeVFwW3kN9Hc7PAwB5rwdUymZm8GdzRRQDQg1u": "fail:transfer",
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": "fail:transfer"
+      }
+    },
+    "transfer-sol-with-jito-tip": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "5tK7hs9oR81tPnNteWQj57RPrg6idJFqAoquyw4kUoi9": "fail:transfer",
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": "fail:transfer"
+      }
+    },
+    "transfer-sol-with-memo-v1-program": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "2UPzAimP45QrxJbp5GvxtGYSgdQ1yxYemL6oZrTgMt4s": "fail:transfer",
+        "GgLn5nBCghQ8yvYxYtfQcdf75YsWLSiM4WDAC46AS9Nq": "fail:transfer"
+      }
+    },
+    "transfer-spl-memo-creates-ata-airdrop-memo": {
+      "pass": true,
+      "disputed": true,
+      "perspectives": {
+        "7gcXnEbLpDUXbxmxwr1Q39RgCBu7rNLebti8ZdBQ3fhX": "pass:transfer",
+        "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9": "pass:transfer"
+      }
+    },
+    "transfer-token2022-multi-recipient-distribution": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "5UdR18Qo2G1PeBJbzWKyfgxbkXzd5tL1Bausj4gn2Gqn": "fail:transfer",
+        "5VCwKtCXgCJ6kit5FybXjvriW3xELsFDhYrPSqtJNmcD": "fail:transfer"
+      }
+    },
+    "transfer-token2022-pyusd": {
+      "pass": true,
+      "disputed": false,
+      "perspectives": {
+        "3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a": "pass:transfer",
+        "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz": "pass:transfer"
+      }
+    },
+    "transfer-token2022-pyusd-with-memo": {
+      "pass": true,
+      "disputed": false,
+      "perspectives": {
+        "fr6yQkDmWy6R6pecbUsxXaw6EvRJznZ2HsK5frQgud8": "pass:transfer",
+        "68XcwTvgrPmKJ7KdDJ4g5KViZTLuHBNuocQ7wkUwk8qk": "pass:transfer"
+      }
+    },
+    "transfer-token2022-sponsored-fee-then-close": {
+      "pass": false,
+      "disputed": false,
+      "perspectives": {
+        "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb": "fail:transfer",
+        "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa": "fail:transfer",
+        "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz": "fail:transfer"
+      }
+    },
+    "transfer-usdc-creates-receiver-ata": {
+      "pass": true,
+      "disputed": false,
+      "perspectives": {
+        "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS": "pass:transfer",
+        "9QDWnjFw2W6faTCrN8K8nGMmhGiHqxESfPnjwtokDA4p": "pass:transfer"
+      }
+    },
+    "transfer-usdc-plain": {
+      "pass": true,
+      "disputed": false,
+      "perspectives": {
+        "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS": "pass:transfer",
+        "4FicyJD4oxzvaMEGDtpkhDKE9EHKorA7ZVVoj7pcLDJn": "pass:transfer"
+      }
+    }
+  },
+  "failing": [
+    "dca-fill-executed-by-keeper",
+    "execution-failed-jupiter-swap",
+    "execution-failed-sol-transfer",
+    "execution-jito-tip-sweep-signer-pays-fee-only",
+    "execution-tip-only-transaction",
+    "keeper-bot-executes-sell-for-user",
+    "lending-kamino-borrow-usds",
+    "lending-kamino-withdraw-usdc",
+    "lifecycle-burn-and-close-four-accounts-rent-to-sponsor",
+    "lifecycle-create-ata-only-token2022",
+    "lifecycle-pump-create-mint-and-first-buy",
+    "liquidity-add-damm-v2-by-keeper",
+    "nft-sale-buyback-for-usdc",
+    "nft-transfer-sponsored-programmable",
+    "stake-create-and-delegate",
+    "stake-withdraw-from-three-accounts",
+    "swap-pump-amm-sell-all-and-close",
+    "swap-pump-amm-tiny-sol-buy",
+    "swap-stable-usdc-to-usdt-two-hop-dlmm",
+    "swap-v0-jupiter-sol-to-token",
+    "swap-v0-jupiter-sol-to-token-with-platform-fee",
+    "swap-v0-jupiter-token-to-sol",
+    "swap-v1-jupiter-circular-route-usdc-gain",
+    "swap-v1-jupiter-circular-route-with-jito-tip",
+    "swap-v1-jupiter-then-send-output",
+    "swap-v1-router-sol-to-token-with-memo",
+    "transfer-four-tokens-one-recipient-sweep",
+    "transfer-sol-durable-nonce-two-signers",
+    "transfer-sol-dust-twenty-one-recipients",
+    "transfer-sol-fee-paid-by-receiver-with-tip",
+    "transfer-sol-legacy-exchange-withdrawal",
+    "transfer-sol-to-self-plus-jito-tip",
+    "transfer-sol-v0-small",
+    "transfer-sol-with-jito-tip",
+    "transfer-sol-with-memo-v1-program",
+    "transfer-token2022-multi-recipient-distribution",
+    "transfer-token2022-sponsored-fee-then-close"
+  ],
+  "sdkLogs": {
+    "transfer-sol-with-memo-v1-program": [
+      "Failed to decode memo: InvalidCharacterError: The string contains invalid characters."
+    ]
+  }
+}
