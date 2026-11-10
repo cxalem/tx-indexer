@@ -7,8 +7,8 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "accuracy": "bun test ./accuracy",
-    "accuracy:baseline": "ACCURACY_WRITE_BASELINE=1 bun test ./accuracy",
+    "accuracy": "packages/sdk/node_modules/.bin/tsc --noEmit -p accuracy && bun test ./accuracy",
+    "accuracy:baseline": "packages/sdk/node_modules/.bin/tsc --noEmit -p accuracy && ACCURACY_WRITE_BASELINE=1 bun test ./accuracy",
     "accuracy:check-types": "packages/sdk/node_modules/.bin/tsc --noEmit -p accuracy"
   },
   "devDependencies": {

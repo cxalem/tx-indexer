@@ -76,6 +76,22 @@ export const AmountSchema = z
   })
   .strict();
 
+/**
+ * A complete alternative expectation for a disputed or synonymous reading.
+ * `accepted`: an explicit synonym that counts as correct in the mandatory score.
+ * `reported`: a disputed interpretation, shown in its own report section and never scored or gated.
+ */
+export const AlternativeSchema = z
+  .object({
+    kind: ActionKindSchema,
+    scoring: z.enum(["accepted", "reported"]),
+    sender: Address.nullable(),
+    receiver: Address.nullable(),
+    amounts: z.array(AmountSchema),
+    note: z.string().min(1),
+  })
+  .strict();
+
 export const ActionSchema = z
   .object({
     kind: ActionKindSchema,
@@ -89,7 +105,7 @@ export const ActionSchema = z
     amountsNote: z.string().optional(),
     instructionRefs: z.array(z.string().regex(/^#\d+(\.\d+)?$/)).min(1),
     forbidden: z.array(ActionKindSchema).optional(),
-    acceptableKinds: z.array(ActionKindSchema).optional(),
+    alternatives: z.array(AlternativeSchema).optional(),
     note: z.string().optional(),
   })
   .strict();
@@ -113,6 +129,10 @@ export const ExpectedSchema = z
     openQuestions: z.array(z.string()),
     perspectives: z.array(PerspectiveExpectedSchema).min(1),
     notes: z.string(),
+    /** Label changes made after the first scoring run, with who asked and why. */
+    revisions: z
+      .array(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), by: z.string(), change: z.string().min(1) }).strict())
+      .optional(),
   })
   .strict();
 
@@ -159,6 +179,7 @@ export type CaseJson = z.infer<typeof CaseSchema>;
 export type ExpectedJson = z.infer<typeof ExpectedSchema>;
 export type ExpectedAction = z.infer<typeof ActionSchema>;
 export type ExpectedAmount = z.infer<typeof AmountSchema>;
+export type ExpectedAlternative = z.infer<typeof AlternativeSchema>;
 
 /** Minimal view of the recorded response used by the cross-file checks (plain JSON.parse is fine here). */
 interface RpcView {
@@ -179,6 +200,10 @@ interface RpcView {
 
 const SOL_MINT = "So11111111111111111111111111111111111111112";
 
+function forbiddenOf(p: { actions: Array<{ forbidden?: string[] }> }): Set<string> {
+  return new Set(p.actions.flatMap((a) => a.forbidden ?? []));
+}
+
 /** Cross-file checks. Returns a list of problems (empty = valid). */
 export function validateCase(dirName: string, kase: CaseJson, expected: ExpectedJson, rpcText: string): string[] {
   const problems: string[] = [];
@@ -196,6 +221,8 @@ export function validateCase(dirName: string, kase: CaseJson, expected: Expected
   const failed = r.meta.err !== null && r.meta.err !== undefined;
   if ((failed ? "failed" : "succeeded") !== expected.execution) problems.push("execution does not match meta.err");
   if (expected.disputed !== expected.openQuestions.length > 0) problems.push("disputed must be true exactly when openQuestions exist");
+  const reportedAlts = expected.perspectives.flatMap((p) => p.actions.flatMap((a) => a.alternatives ?? [])).filter((x) => x.scoring === "reported");
+  if (reportedAlts.length && !expected.disputed) problems.push("reported alternatives require a disputed case with an open question");
 
   const la = r.meta.loadedAddresses ?? { writable: [], readonly: [] };
   const tokenRows = [...(r.meta.preTokenBalances ?? []), ...(r.meta.postTokenBalances ?? [])];
@@ -228,12 +255,21 @@ export function validateCase(dirName: string, kase: CaseJson, expected: Expected
         if (m.mint !== SOL_MINT && !mints.has(m.mint)) problems.push(`${p.address}: mint ${m.mint} not in token balances`);
         if (m.mint === SOL_MINT && m.native === undefined) problems.push(`${p.address}: SOL amount must say native true/false`);
       }
-      if (a.acceptableKinds?.includes(a.kind)) problems.push(`${p.address}: acceptableKinds repeats kind`);
       if (a.forbidden?.includes(a.kind)) problems.push(`${p.address}: kind is also forbidden`);
+      for (const alt of a.alternatives ?? []) {
+        if (alt.scoring === "accepted" && alt.kind === a.kind) problems.push(`${p.address}: accepted alternative repeats kind`);
+        for (const v of [alt.sender, alt.receiver]) {
+          if (v && !known.has(v)) problems.push(`${p.address}: alternative ${alt.kind} participant ${v} not in the transaction`);
+        }
+        for (const m of alt.amounts) {
+          if (m.mint !== SOL_MINT && !mints.has(m.mint)) problems.push(`${p.address}: alternative mint ${m.mint} not in token balances`);
+        }
+        if (alt.scoring === "accepted" && forbiddenOf(p).has(alt.kind)) problems.push(`${p.address}: accepted alternative ${alt.kind} is forbidden`);
+      }
     }
-    const forbidden = new Set(p.actions.flatMap((a) => a.forbidden ?? []));
+    const forbidden = forbiddenOf(p);
     const prim = primaries[0];
-    if (prim) for (const k of [prim.kind, ...(prim.acceptableKinds ?? [])]) {
+    if (prim) for (const k of [prim.kind, ...(prim.alternatives ?? []).filter((x) => x.scoring === "accepted").map((x) => x.kind)]) {
       if (forbidden.has(k)) problems.push(`${p.address}: primary kind ${k} is forbidden by another action`);
     }
   }
