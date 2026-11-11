@@ -5,7 +5,7 @@ import type {
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isStakeProtocolById } from "../protocols/detector";
-import { getPerspectiveAddress, withoutUnmatchedClosedDebits } from "../engine/leg-helpers";
+import { getPerspectiveAddress } from "../engine/leg-helpers";
 
 function isSolDebit(leg: TxLeg): boolean {
   return (
@@ -21,10 +21,7 @@ export class StakeDepositClassifier implements Classifier {
   priority = 82;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { tx, walletAddress } = context;
-    // A debit from a token account closed in this transaction that nothing
-    // receives (e.g. burn and close) is accounting, not evidence of an action.
-    const legs = withoutUnmatchedClosedDebits(context.legs);
+    const { legs, tx, walletAddress } = context;
 
     const hasStakeProtocol = isStakeProtocolById(tx.protocol?.id);
     if (!hasStakeProtocol) {

@@ -86,11 +86,17 @@ export { type RetryConfig } from "@tx-indexer/solana/rpc/retry";
 
 // Transaction leg mapping - for custom classification pipelines
 export { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+// Both leg views for one wallet: the truthful legs and the "v1-main" compatibility input
+// that classifiers not yet migrated read (pass it as `{ legacyLegs }`).
+export { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
+export type { LegInputs, LegInputVersion } from "@tx-indexer/core/tx/leg-inputs";
 
 // Classification engine - for custom classification logic
 export {
   classifyTransaction,
+  classifyTransactionWithTrace,
   type ClassificationService,
+  type ClassifyOptions,
 } from "@tx-indexer/classification/engine/classification-service";
 
 // Protocol detection

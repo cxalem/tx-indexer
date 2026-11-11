@@ -73,6 +73,8 @@ function getNetTokenChangeByMint(legs: TxLeg[]): Map<string, bigint> {
 export class SwapClassifier implements Classifier {
   name = "swap";
   priority = 80;
+  // Migrated: reads the truthful legs (token accounts closed in the transaction included).
+  inputVersion = "v2-closed-token-accounts" as const;
 
   classify(context: ClassifierContext): TransactionClassification | null {
     const { tx, walletAddress } = context;

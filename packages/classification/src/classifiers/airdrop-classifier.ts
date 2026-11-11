@@ -4,7 +4,6 @@ import type {
 } from "../engine/classifier.interface";
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import { detectFacilitator } from "@tx-indexer/solana/constants/program-ids";
-import { withoutUnmatchedClosedDebits } from "../engine/leg-helpers";
 
 function getRawAmount(amountRaw: string): bigint {
   try {
@@ -28,10 +27,7 @@ export class AirdropClassifier implements Classifier {
   priority = 70;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { tx } = context;
-    // A debit from a token account closed in this transaction that nothing
-    // receives (e.g. burn and close) is accounting, not evidence of an action.
-    const legs = withoutUnmatchedClosedDebits(context.legs);
+    const { legs, tx } = context;
 
     const facilitator = tx.accountKeys
       ? detectFacilitator(tx.accountKeys)

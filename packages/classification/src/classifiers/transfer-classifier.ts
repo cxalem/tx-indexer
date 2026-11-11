@@ -9,15 +9,25 @@ import { findBestExternalTransferPair } from "../engine/transfer-pairing";
 export class TransferClassifier implements Classifier {
   name = "transfer";
   priority = 20;
+  // Migrated: reads the truthful legs (token accounts closed in the transaction included).
+  inputVersion = "v2-closed-token-accounts" as const;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { legs, tx } = context;
+    const { legs, tx, walletAddress } = context;
 
     const facilitator = tx.accountKeys
       ? detectFacilitator(tx.accountKeys)
       : null;
 
-    const pair = findBestExternalTransferPair(legs);
+    // With a wallet, only transfers the wallet takes part in (as sender or receiver) are
+    // eligible: another wallet's transfer in the same transaction is not this wallet's
+    // action. Without a wallet, the whole transaction is considered, as before.
+    const pair = findBestExternalTransferPair(
+      legs,
+      undefined,
+      undefined,
+      walletAddress ? { participant: walletAddress } : undefined,
+    );
     if (!pair) return null;
 
     const { senderLeg, receiverLeg } = pair;

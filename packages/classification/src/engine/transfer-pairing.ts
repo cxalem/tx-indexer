@@ -36,11 +36,23 @@ function scoreTransferPair(senderLeg: TxLeg, receiverLeg: TxLeg): number {
   return transferUi + exactAmountBonus + tinySolPenalty;
 }
 
+export interface TransferPairOptions {
+  /**
+   * Only pairs in which this address is the sender or the receiver are eligible. The
+   * constraint is applied before scoring; both counterparties' legs stay available.
+   * Omitted: every pair in the transaction is eligible (behaviour at 3111fd7).
+   */
+  participant?: string;
+}
+
 export function findBestExternalTransferPair(
   legs: TxLeg[],
   senderRoles: Array<TxLeg["role"]> = ["sent"],
   receiverRoles: Array<TxLeg["role"]> = ["received"],
+  options?: TransferPairOptions,
 ): TransferPair | null {
+  const participantId =
+    options?.participant !== undefined ? `external:${options.participant}` : null;
   const senderLegs = legs.filter(
     (leg) =>
       isExternalAccount(leg.accountId) &&
@@ -66,6 +78,13 @@ export function findBestExternalTransferPair(
     if (candidates.length === 0) continue;
 
     for (const receiverLeg of candidates) {
+      if (
+        participantId !== null &&
+        senderLeg.accountId !== participantId &&
+        receiverLeg.accountId !== participantId
+      ) {
+        continue;
+      }
       const score = scoreTransferPair(senderLeg, receiverLeg);
       if (score > bestScore) {
         bestScore = score;

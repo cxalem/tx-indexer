@@ -3,6 +3,49 @@
 Every regeneration of `baseline.json` / `BASELINE.md` adds one entry here, in the same commit:
 date, what changed, why. `bun run accuracy` fails if `baseline.json` changed without this file.
 
+## 2026-11-11: versioned leg inputs; transfer only pairs the wallet's own transfers (no case or label change)
+
+Classifiers now read a declared leg input. `swap` and `transfer` are migrated to the truthful legs
+(`v2-closed-token-accounts`); the nine others read the legs as built at 3111fd7 (`v1-main`) and return
+exactly what 3111fd7 returns (proven per classifier, see `packages/sdk/src/legacy-input.test.ts`).
+`transfer`, given a wallet, only considers pairs in which that wallet is the sender or the receiver, and
+returns nothing when there is none. No `case.json`, `rpc.json` or `expected.json` changed.
+
+Versus the previous baseline (4acdb61), 5 perspectives changed; every other outcome, component and
+predicted kind is identical. All 5 come from the transfer perspective constraint:
+- `liquidity-add-damm-v2-by-keeper` @ATdpV5tR…: `kind_only` `transfer` → `abstained` (`other`). **A
+  regression of the primary-kind count.** The keeper's expected action is the 19,442-lamport fee
+  reimbursement; its net lamport change is 0 (reimbursement minus `meta.fee`), so it has no leg of its
+  own. The `transfer` before was another wallet's 1,817,570,053 FT6b… movement 2r3X… → HLnp…: right kind
+  and sender only by coincidence (2r3X… is also the reimbursement payer), receiver wrong. With the
+  constraint no pair involves the keeper. Seeing the reimbursement needs fee-separated legs (a future
+  `v3-fee-separated` input).
+- `lifecycle-burn-and-close-four-accounts-rent-to-sponsor` @J2A8tQeQ…: `wrong_label` (forbidden `transfer`
+  of 1,513,840 lamports between two other accounts) → `abstained` (`other`). Expected `token_burn`.
+- `lifecycle-create-ata-only-token2022` @EBHdJGE7…: `wrong_label` (forbidden `transfer` of 1,605,200
+  lamports 3YyU… → 35ET…) → `abstained` (`other`). Expected `account_create`.
+- `transfer-sol-dust-twenty-one-recipients` @5VCwKtCX…: still `kind_only`; the receiver is now the wallet
+  itself instead of another recipient (participants exact false → true).
+- `transfer-token2022-multi-recipient-distribution` @5VCwKtCX…: same, participants exact false → true.
+
+Predictions that changed without an outcome change: `transfer-token2022-sponsored-fee-then-close`
+@EBBkGATp… is `transfer` of its own incoming rent, 1,600,200 lamports GCEX… → EBBk… (as at 3111fd7;
+still `wrong_label`, expected `account_close`), no longer another wallet's PYUSD transfer.
+`keeper-bot-executes-sell-for-user` @AgmLJBMD… is `transfer` of 1,908,154 lamports AgmL… → AwtZ… (its
+own SOL movement) instead of another wallet's 198,452,020,869 9VZe… transfer (still forbidden
+`wrong_label`, expected `fee_only`).
+
+Versus 3111fd7's baseline: the 5 changes above, plus the closed-account changes of the earlier entry
+(`swap-pump-amm-sell-all-and-close` @32kt… `wrong_label` → `kind_only` swap; both perspectives of
+`transfer-token2022-sponsored-fee-then-close` 35y6…/Hg9d… `kind_only` → `correct`). The only perspective
+worse than at 3111fd7 is the keeper above.
+
+Before → after (versus 4acdb61): primary action correct 15 → 15 of 72; kind_only 28 → 27; abstained
+4 → 7; wrong_label 23 → 21; secondary_hit 2, disputed_alternative 0, error 0 unchanged; primary kind
+right 43 → 42; forbidden-label violations 10 → 8; amounts exact 15/43 → 15/42; participants exact
+26/31 → 28/30; cases passed 6/43 unchanged; `transfer` TP 30 → 29, FP 21 → 19, FN 3 → 4 (precision
+58.8% → 60.4%, recall 90.9% → 87.9%).
+
 ## 2026-11-11: SDK fix, token accounts closed in the transaction (no case or label change)
 
 The SDK now builds token balance changes from the union of `preTokenBalances` and
@@ -11,14 +54,10 @@ produces a debit of its full pre amount, attributed to its pre owner. Before, on
 were read and the closed account's token was lost. Native wSOL accounts and fees are unchanged.
 No `case.json`, `rpc.json` or `expected.json` changed (case hashes identical).
 
-Later commits on the same branch add one classifier rule: the debit of an account the transaction
-closed (marked by the new optional `TxLeg.closedTokenAccount`, set only when the account has a pre
-entry, no post entry and zero lamports after) whose mint has no credit on any leg (burn and close) is
-accounting only, never the evidence for a simple NFT send, a swap input, a Privacy Cash deposit, or
-"another token sent" (airdrop, stake sponsored deposit); bridge and NFT marketplace handling do not
-apply it. A marketplace sale whose seller's NFT account closes names the buyer as receiver again.
-None of this changes a score, outcome, component or case hash in this set (`bun run accuracy` passes
-against the baseline unchanged), so the baseline was not regenerated for it.
+Later commits on the same branch first applied a burn-and-close rule in several classifiers; that was
+replaced by versioned leg inputs (see the entry above): only `swap` and `transfer` read the legs with
+closed-account debits, `swap` ignores closed-account debits of a mint that is not conserved in the legs,
+and every other classifier reads the 3111fd7 legs. The scores in this entry are unaffected.
 
 Score records that changed: 3 of 72. Predictions that changed: 4 of 72 (the fourth is a
 `wrong_label` before and after, so no score moved). Every other perspective, outcome, component and

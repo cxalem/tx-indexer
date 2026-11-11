@@ -10,6 +10,11 @@ export const ClassifierDecisionTraceSchema = z.object({
   relevant: z.boolean(),
   reason: z.string(),
   elapsedMs: z.number().nonnegative().optional(),
+  /**
+   * Which leg input the classifier was given (see LegInputVersion). "supplied" when the
+   * caller passed a single legs array, which every classifier then reads.
+   */
+  legInput: z.enum(["v1-main", "v2-closed-token-accounts", "supplied"]).optional(),
 });
 
 export const ClassificationDebugTraceSchema = z.object({

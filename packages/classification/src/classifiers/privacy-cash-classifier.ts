@@ -27,7 +27,6 @@ import {
   PRIVACY_CASH_SPL_POOL,
   PRIVACY_CASH_FEE_RECIPIENT,
 } from "@tx-indexer/solana/constants/program-ids";
-import { withoutUnmatchedClosedDebits } from "../engine/leg-helpers";
 
 /**
  * Known Privacy Cash supported token mints for metadata enrichment
@@ -89,10 +88,7 @@ export class PrivacyCashClassifier implements Classifier {
   priority = 86;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { tx } = context;
-    // A debit from a token account closed in this transaction that nothing
-    // receives (e.g. burn and close) is accounting, not evidence of an action.
-    const legs = withoutUnmatchedClosedDebits(context.legs);
+    const { legs, tx } = context;
 
     // Detect Privacy Cash transactions by:
     // 1. Protocol ID match (shield/deposit transactions)

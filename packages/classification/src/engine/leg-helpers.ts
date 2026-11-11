@@ -102,30 +102,46 @@ export function getPerspectiveAddress(
   return walletAddress ?? accountKeys?.[0] ?? null;
 }
 
-/** True when some leg (any account) credits the leg's mint. */
-export function hasSameMintCredit(leg: TxLeg, legs: readonly TxLeg[]): boolean {
-  const mint = leg.amount.token.mint;
-  return legs.some((l) => l.side === "credit" && l.amount.token.mint === mint);
-}
-
 /**
- * Debits from a token account this transaction closed that nothing in the
- * transaction receives (e.g. burn and close): debit legs carrying
- * `closedTokenAccount` (set by the SDK mapper only for a proven closure) whose
- * mint has no credit on any leg. Accounting keeps these legs; classifiers must
- * not use them as evidence for an action (not a send, a swap input, a privacy
- * deposit, or "another token sent").
+ * Debits from token accounts this transaction closed that the transaction does not account
+ * for (e.g. burn and close). A closed account's debit is "matched" only when the mint's
+ * supply is conserved in the legs: the credits of that mint on all legs add up to at
+ * least its debits. Otherwise some of the mint left circulation (burned) and every
+ * closed-account debit of that mint (legs carrying `closedTokenAccount`, set by the SDK
+ * mapper only for a proven closure) is returned: none of them is evidence for an action.
  *
- * Decided from the legs alone. Legs without `closedTokenAccount` (hand-built
- * legs, legs from older mappers, any account that was not closed) are never
- * selected.
+ * Why conservation and not "any credit of the mint": an unrelated credit of the same mint
+ * (a mint to someone else) must not let a burned debit through, and a closed sibling burned
+ * beside a real sale must not change the sale's amount. Excluding closed-account debits
+ * only moves the input back towards what classifiers saw before those debits were visible.
+ * A sale whose credits fall short of the debit (e.g. a Token-2022 transfer fee withheld, or
+ * a counterparty account missing from the snapshots) is excluded too; documented limitation.
+ *
+ * Decided from the legs alone. Legs without `closedTokenAccount` (hand-built legs, any
+ * account that was not closed) are never returned.
  */
 export function unmatchedClosedAccountDebits(legs: readonly TxLeg[]): Set<TxLeg> {
   const out = new Set<TxLeg>();
-  for (const leg of legs) {
-    if (leg.side !== "debit" || leg.closedTokenAccount === undefined) continue;
-    if (hasSameMintCredit(leg, legs)) continue;
-    out.add(leg);
+  const closedMints = new Set(
+    legs
+      .filter((l) => l.side === "debit" && l.closedTokenAccount !== undefined)
+      .map((l) => l.amount.token.mint),
+  );
+  for (const mint of closedMints) {
+    let credits = 0n;
+    let debits = 0n;
+    for (const l of legs) {
+      if (l.amount.token.mint !== mint) continue;
+      const raw = BigInt(l.amount.amountRaw);
+      if (l.side === "credit") credits += raw;
+      else debits += raw;
+    }
+    if (credits >= debits) continue;
+    for (const l of legs) {
+      if (l.side === "debit" && l.closedTokenAccount !== undefined && l.amount.token.mint === mint) {
+        out.add(l);
+      }
+    }
   }
   return out;
 }

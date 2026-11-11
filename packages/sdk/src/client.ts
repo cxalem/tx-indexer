@@ -21,6 +21,7 @@ import type {
 
 export type { FetchTransactionsConfig } from "@tx-indexer/solana/fetcher/transactions";
 import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import {
@@ -532,6 +533,23 @@ export interface GetTransactionsBySignaturesOptions {
   onTransactionSkipped?: (skipped: SkippedTransaction) => void;
 }
 
+/**
+ * Builds both leg views for this wallet and classifies with them: migrated classifiers
+ * read the truthful legs, the others the legs they were calibrated on ("v1-main").
+ * The truthful legs are what callers receive.
+ */
+function classifyWithLegInputs(
+  tx: RawTransaction,
+  walletAddress: string | undefined,
+): { legs: ReturnType<typeof transactionToLegs>; classification: TransactionClassification } {
+  const inputs = transactionToLegInputs(tx, walletAddress);
+  const legs = inputs["v2-closed-token-accounts"];
+  const classification = classifyTransaction(legs, tx, walletAddress, {
+    legacyLegs: inputs["v1-main"],
+  });
+  return { legs, classification };
+}
+
 export interface ClassifiedTransaction {
   tx: RawTransaction;
   classification: TransactionClassification;
@@ -880,12 +898,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       ): ClassifiedTransaction[] {
         return transactions.map((tx) => {
           tx.protocol = detectProtocol(tx.programIds);
-          const legs = transactionToLegs(tx, walletAddressStr);
-          const classification = classifyTransaction(
-            legs,
-            tx,
-            walletAddressStr,
-          );
+          const { legs, classification } = classifyWithLegInputs(tx, walletAddressStr);
           return { tx, classification, legs };
         });
       }
@@ -1096,8 +1109,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         ? normalizeAddress(walletAddress).toString()
         : undefined;
 
-      const legs = transactionToLegs(tx, walletAddressStr);
-      const classification = classifyTransaction(legs, tx, walletAddressStr);
+      const { legs, classification } = classifyWithLegInputs(tx, walletAddressStr);
 
       let classified: ClassifiedTransaction = { tx, classification, legs };
 
@@ -1364,12 +1376,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
 
         for (const tx of rawTxs) {
           tx.protocol = detectProtocol(tx.programIds);
-          const legs = transactionToLegs(tx, walletAddressStr);
-          const classification = classifyTransaction(
-            legs,
-            tx,
-            walletAddressStr,
-          );
+          const { legs, classification } = classifyWithLegInputs(tx, walletAddressStr);
           let classified: ClassifiedTransaction = { tx, classification, legs };
 
           // Enrich token metadata

@@ -11,7 +11,7 @@ import {
   fetchWalletSignatures,
   fetchTransactionsBatch,
 } from "@tx-indexer/solana/fetcher/transactions";
-import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import { filterSpamTransactions } from "@tx-indexer/core/tx/spam-filter";
@@ -206,8 +206,12 @@ transactions.get("/:address/transactions", async (c) => {
 
     const classifiedTransactions = rawTransactions.map((tx) => {
       tx.protocol = detectProtocol(tx.programIds);
-      const legs = transactionToLegs(tx, validAddress);
-      const classification = classifyTransaction(legs, tx, validAddress);
+      // Truthful legs for the response; legacy classifiers read the "v1-main" view.
+      const legInputs = transactionToLegInputs(tx, validAddress);
+      const legs = legInputs["v2-closed-token-accounts"];
+      const classification = classifyTransaction(legs, tx, validAddress, {
+        legacyLegs: legInputs["v1-main"],
+      });
       return { tx, classification, legs };
     });
 

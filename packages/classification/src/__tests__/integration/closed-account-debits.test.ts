@@ -1,14 +1,14 @@
 /**
- * A debit from a token account closed in the transaction, with no credit of the
- * same mint anywhere (burn and close), is accounting only. It must not become
- * the evidence for an action and must not change an answer that was right
- * before closed-account debits became visible.
+ * Closed-account debits through the routed pipeline (truthful legs for swap and transfer,
+ * the "v1-main" legs for every other classifier). Legacy classifiers must answer as at
+ * 3111fd7 (proven case by case in packages/sdk/src/legacy-input.test.ts); swap must not
+ * use a burned-and-closed debit as evidence; transfer only pairs the wallet's own transfers.
  */
 import { describe, test, expect } from "bun:test";
 import type { Signature } from "@solana/kit";
 import type { RawTransaction } from "@tx-indexer/core/tx/tx.types";
 import { fetchTransaction } from "@tx-indexer/solana/fetcher/transactions";
-import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
 import {
   JUPITER_V6_PROGRAM_ID,
   PRIVACY_CASH_PROGRAM_ID,
@@ -69,8 +69,11 @@ async function classify(input: SyntheticTxInput, walletAddress: string, protocol
   const { rpc } = mockRpc(() => syntheticResponse(input));
   const tx = (await fetchTransaction(rpc, SIG))!;
   tx.protocol = protocol;
-  const legs = transactionToLegs(tx, walletAddress);
-  return { tx, legs, c: classifyTransaction(legs, tx, walletAddress) };
+  // The routed pipeline, as the SDK runs it: truthful legs for migrated classifiers,
+  // the "v1-main" view for the others.
+  const inputs = transactionToLegInputs(tx, walletAddress);
+  const legs = inputs["v2-closed-token-accounts"];
+  return { tx, legs, c: classifyTransaction(legs, tx, walletAddress, { legacyLegs: inputs["v1-main"] }) };
 }
 
 /** Alice sends 10 USDC to Bob and burns and closes a zero-decimal position token. */
@@ -147,15 +150,15 @@ describe("NFT transfer: a burned/closed zero-decimal debit with no same-mint cre
     postTokenBalances: [tb(2, POS, BOB, 1n, 0)],
   };
 
-  test("a genuine NFT send whose sender account is closed is still nft_send / nft_receive", async () => {
-    const sender = await classify(genuineSend, ALICE);
-    expect(sender.c.primaryType).toBe("nft_send");
-    expect(sender.c.sender).toBe(ALICE);
-    expect(sender.c.receiver).toBe(BOB);
-    const receiver = await classify(genuineSend, BOB);
-    expect(receiver.c.primaryType).toBe("nft_receive");
-    expect(receiver.c.sender).toBe(ALICE);
-    expect(receiver.c.receiver).toBe(BOB);
+  test("a genuine NFT send whose sender account is closed: nft-transfer is not migrated, so the answer is 3111fd7's", async () => {
+    // At 3111fd7 the closed sender account's debit is invisible: both wallets see an
+    // nft_receive with no sender. The legacy classifier keeps that until it is migrated.
+    for (const wallet of [ALICE, BOB]) {
+      const { c } = await classify(genuineSend, wallet);
+      expect(c.primaryType).toBe("nft_receive");
+      expect(c.sender).toBeNull();
+      expect(c.receiver).toBe(BOB);
+    }
   });
 
   test("an unrelated recipient is unaffected when someone else's NFT account is closed", async () => {
@@ -408,5 +411,94 @@ describe("marketplace sale where the seller's NFT account closes", () => {
     const { c } = await classify(sale, BOB, ME);
     expect(c.primaryType).toBe("nft_purchase");
     expect(c.receiver).toBe(BOB);
+  });
+});
+
+describe("swap risks with closed-account debits (migrated classifier)", () => {
+  const C_JUNK = "CaroJunk11111111111111111111111111111111111";
+  const VAULT_W = "Poo1VaultW11111111111111111111111111111111";
+
+  test("an unrelated credit of the same mint does not let a burned debit become a swap input", async () => {
+    // Bob sends Alice 10 USDC; Alice burns and closes 1,000 JUNK; Carol is minted 5 JUNK.
+    const { legs, c } = await classify(
+      {
+        staticKeys: [BOB, ALICE, B_USDC, A_USDC, A_JUNK, C_JUNK, TOKEN_PROGRAM],
+        pre: [SOL, SOL, RENT, RENT, RENT, RENT, 1n],
+        post: [SOL - 5000n, SOL + RENT, RENT, RENT, 0n, RENT, 1n],
+        instructions: [{ programIdIndex: 6, accounts: [2, 3, 0] }],
+        preTokenBalances: [tb(2, USDC, BOB, 50_000_000n, 6), tb(3, USDC, ALICE, 0n, 6), tb(4, JUNK, ALICE, 1_000_000_000n, 6), tb(5, JUNK, CAROL, 0n, 6)],
+        postTokenBalances: [tb(2, USDC, BOB, 40_000_000n, 6), tb(3, USDC, ALICE, 10_000_000n, 6), tb(5, JUNK, CAROL, 5_000_000n, 6)],
+      },
+      ALICE,
+    );
+    expect([...unmatchedClosedAccountDebits(legs)].map((l) => l.closedTokenAccount)).toEqual([A_JUNK]);
+    // 3111fd7: transfer of 10 USDC Bob -> Alice
+    expect(c.primaryType).toBe("transfer");
+    expect(c.primaryAmount?.amountRaw).toBe("10000000");
+    expect(c.sender).toBe(BOB);
+    expect(c.receiver).toBe(ALICE);
+  });
+
+  test("a burned closed sibling larger than the sale does not change the swap amount", async () => {
+    // Alice sells 10 W from open A to the vault for 5 USDC and burns and closes sibling B (30 W).
+    const { c } = await classify(
+      {
+        staticKeys: [ALICE, A_W, B_W, VAULT_W, A_USDC, POOL_USDC, JUPITER_V6_PROGRAM_ID],
+        pre: [SOL, RENT, RENT, RENT, RENT, RENT, 1n],
+        post: [SOL - 5000n + RENT, RENT, 0n, RENT, RENT, RENT, 1n],
+        instructions: [{ programIdIndex: 6, accounts: [1, 2, 3, 4, 5, 0] }],
+        preTokenBalances: [
+          tb(1, W, ALICE, 1_000_000_000n, 8),
+          tb(2, W, ALICE, 3_000_000_000n, 8),
+          tb(3, W, POOL_OWNER, 0n, 8),
+          tb(4, USDC, ALICE, 0n, 6),
+          tb(5, USDC, POOL_OWNER, 50_000_000n, 6),
+        ],
+        postTokenBalances: [tb(1, W, ALICE, 0n, 8), tb(3, W, POOL_OWNER, 1_000_000_000n, 8), tb(4, USDC, ALICE, 5_000_000n, 6), tb(5, USDC, POOL_OWNER, 45_000_000n, 6)],
+      },
+      ALICE,
+    );
+    // 3111fd7: swap 10 W -> 5 USDC
+    expect(c.primaryType).toBe("swap");
+    expect(c.primaryAmount?.token.mint).toBe(W);
+    expect(c.primaryAmount?.amountRaw).toBe("1000000000");
+    expect(c.secondaryAmount?.amountRaw).toBe("5000000");
+  });
+
+  test("a sell whose closed account's whole balance reaches the vault is still a swap of that amount", async () => {
+    const { legs, c } = await classify(
+      {
+        staticKeys: [ALICE, VAULT, A_JUNK, JUPITER_V6_PROGRAM_ID],
+        pre: [10n * SOL, 50n * SOL, RENT, 1n],
+        post: [11n * SOL + RENT - 5000n, 49n * SOL, 0n, 1n],
+        instructions: [{ programIdIndex: 3, accounts: [1, 2, 0] }],
+        preTokenBalances: [tb(1, JUNK, POOL_OWNER, 0n, 6), tb(2, JUNK, ALICE, 1_000_000_000n, 6)],
+        postTokenBalances: [tb(1, JUNK, POOL_OWNER, 1_000_000_000n, 6)],
+      },
+      ALICE,
+    );
+    expect(unmatchedClosedAccountDebits(legs).size).toBe(0);
+    expect(c.primaryType).toBe("swap");
+    expect(c.primaryAmount?.amountRaw).toBe("1000000000");
+  });
+});
+
+describe("transfer: the wallet's own transfer only", () => {
+  test("a wallet that only receives rent is not given another wallet's token transfer", async () => {
+    const DAVE_CLOSED = "DaveC1osed111111111111111111111111111111111";
+    const input: SyntheticTxInput = {
+      staticKeys: [DAVE, ALICE, D_USDC, C_USDC, DAVE_CLOSED, TOKEN_PROGRAM],
+      pre: [SOL, SOL, RENT, RENT, RENT, 1n],
+      post: [SOL - 5000n, SOL + RENT, RENT, RENT, 0n, 1n],
+      instructions: [{ programIdIndex: 5, accounts: [2, 3, 0] }],
+      preTokenBalances: [tb(2, USDC, DAVE, 9_000_000n, 6), tb(3, USDC, CAROL, 0n, 6)],
+      postTokenBalances: [tb(2, USDC, DAVE, 4_000_000n, 6), tb(3, USDC, CAROL, 5_000_000n, 6)],
+    };
+    const alice = await classify(input, ALICE);
+    expect(alice.c.primaryType).toBe("transfer");
+    expect(alice.c.receiver).toBe(ALICE);
+    expect(alice.c.primaryAmount?.amountRaw).toBe(RENT.toString());
+    const carol = await classify(input, CAROL);
+    expect([carol.c.sender, carol.c.receiver, carol.c.primaryAmount?.amountRaw]).toEqual([DAVE, CAROL, "5000000"]);
   });
 });
