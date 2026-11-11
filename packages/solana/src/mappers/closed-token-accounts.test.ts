@@ -180,6 +180,41 @@ describe("same account index, different owner or mint: two separate movements", 
   });
 });
 
+describe("negative cases: nothing is invented", () => {
+  test("an owner missing on one side only is not an authority change: one net change, owner kept", async () => {
+    for (const side of ["preTokenBalances", "postTokenBalances"] as const) {
+      const { tx, legs } = await fetchWith(
+        {
+          staticKeys: [ALICE, TOKEN_PROGRAM],
+          loaded: { writable: [ALICE_ATA], readonly: [] },
+          pre: [SOL, 1n, RENT],
+          post: [SOL - 5000n, 1n, RENT],
+          preTokenBalances: [{ accountIndex: 2, mint: MINT_A, owner: ALICE, amount: 900n, decimals: 6 }],
+          postTokenBalances: [{ accountIndex: 2, mint: MINT_A, owner: ALICE, amount: 400n, decimals: 6 }],
+        },
+        (r) => {
+          delete (r.meta[side] as Array<{ owner?: string }>)[0]!.owner;
+        },
+      );
+      expect(extractTokenBalanceChanges(tx).map((c) => [c.owner, c.change.raw])).toEqual([[ALICE, "-500"]]);
+      expect(fmt(legs.filter((l) => l.amount.token.mint === MINT_A))).toEqual([`external:${ALICE} debit 500 MintA sent`]);
+    }
+  });
+
+  test("closing an empty token account is no movement: no token change, no token leg", async () => {
+    const { tx, legs } = await fetchWith({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [ALICE_ATA], readonly: [] },
+      pre: [SOL, 1n, RENT],
+      post: [SOL + RENT - 5000n, 1n, 0n],
+      preTokenBalances: [{ accountIndex: 2, mint: MINT_A, owner: ALICE, amount: 0n, decimals: 6 }],
+      postTokenBalances: [],
+    });
+    expect(extractTokenBalanceChanges(tx)).toEqual([]);
+    expect(legs.some((l) => l.amount.token.mint === MINT_A)).toBe(false);
+  });
+});
+
 describe("debit vs credit comes from raw integer amounts", () => {
   test("a credit whose UI amount string reads 0 is still a credit of the exact raw amount", async () => {
     const { legs } = await fetchWith(

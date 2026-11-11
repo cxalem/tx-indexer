@@ -11,7 +11,9 @@ import { join } from "node:path";
 import {
   ACCURACY_DIR,
   aggregate,
+  amountsMatch,
   compareToBaseline,
+  componentExactness,
   createStrictRpc,
   loadCases,
   predictAll,
@@ -442,6 +444,31 @@ describe("regression gate (synthetic predictions)", () => {
     expect(b.secondaryPerKind.reward).toBeUndefined();
     expect(b.secondaryPerKind.transfer![0]).toBe(r.perspectives.filter((x) => x.outcome === "secondary_hit").length);
     expect(b.overall.secondaryRecall[0]).toBe(b.secondaryPerKind.transfer![0]);
+  });
+
+  test("KNOWN LIMITATION: amount matching is greedy, so duplicate-mint legs with mixed direction can be misassigned", () => {
+    // Expected: 5 of M out and 5 of M in. Predicted: one leg without direction (matches either), then one `out` leg.
+    // A valid assignment exists (undirected -> in, out -> out), but the greedy matcher gives the first predicted leg
+    // the first expected leg (out) and then finds no `out` left for the second. Documented, not fixed here:
+    // a deterministic maximum matching is tracked as a follow-up.
+    const M = "So11111111111111111111111111111111111111112";
+    const expected = [
+      { mint: M, amountRaw: "5", decimals: 9, direction: "out" as const },
+      { mint: M, amountRaw: "5", decimals: 9, direction: "in" as const },
+    ];
+    const reordered = [
+      { mint: M, amountRaw: "5", decimals: 9 },
+      { mint: M, amountRaw: "5", decimals: 9, direction: "out" as const },
+    ];
+    expect(amountsMatch(expected as never, reordered)).toBe(false);
+    // The same legs in the other order match.
+    expect(amountsMatch(expected as never, [reordered[1]!, reordered[0]!])).toBe(true);
+    // Component exactness follows expected-leg order and has the same greedy behaviour: the `in` leg is
+    // reported inexact although the prediction could cover it.
+    expect(componentExactness({ label: "actions[0]", sender: null, receiver: null, amounts: expected as never }, { sender: null, receiver: null, amounts: reordered })).toEqual({
+      [`actions[0] amount out ${M}`]: true,
+      [`actions[0] amount in ${M}`]: false,
+    });
   });
 
   test("outcome classes always sum to the number of perspectives", () => {

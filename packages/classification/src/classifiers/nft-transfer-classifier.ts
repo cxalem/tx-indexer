@@ -9,6 +9,7 @@ import {
   isDexProtocolById,
   isNftMarketplaceProtocolById,
 } from "../protocols/detector";
+import { unmatchedClosedAccountDebits } from "../engine/leg-helpers";
 
 function isNftLeg(leg: TxLeg): boolean {
   return (
@@ -293,17 +294,27 @@ export class NftTransferClassifier implements Classifier {
 
     // === SIMPLE NFT TRANSFERS (no marketplace) ===
 
+    // A debit from an NFT account closed in this transaction with no credit of
+    // the same mint anywhere (burn and close) is not a send: it can neither
+    // become a unilateral `nft_send` nor pair with an unrelated credit. Other
+    // debits keep today's handling.
+    const unmatchedClosed = unmatchedClosedAccountDebits(legs, tx);
+    const sendDebits = nftDebits.filter((d) => !unmatchedClosed.has(d));
+    if (nftCredits.length === 0 && sendDebits.length === 0) {
+      return null;
+    }
+
     // When we have both credits and debits (full transfer with both parties visible),
     // determine direction based on walletAddress or default to receive perspective
-    if (nftCredits.length > 0 && nftDebits.length > 0) {
+    if (nftCredits.length > 0 && sendDebits.length > 0) {
       const creditAccount = nftCredits[0]!.accountId.replace("external:", "");
-      const debitAccount = nftDebits[0]!.accountId.replace("external:", "");
+      const debitAccount = sendDebits[0]!.accountId.replace("external:", "");
 
       // Determine if this is a send or receive based on wallet perspective
       const isSending = walletAddress === debitAccount;
 
       if (isSending) {
-        const primaryNft = nftDebits[0]!;
+        const primaryNft = sendDebits[0]!;
         return {
           primaryType: "nft_send",
           primaryAmount: primaryNft.amount,
@@ -320,7 +331,7 @@ export class NftTransferClassifier implements Classifier {
           metadata: {
             nft_mint: primaryNft.amount.token.mint,
             nft_name: primaryNft.amount.token.name,
-            quantity: nftDebits.length,
+            quantity: sendDebits.length,
           },
         };
       } else {
@@ -349,7 +360,7 @@ export class NftTransferClassifier implements Classifier {
     }
 
     // NFT Receive: got NFT without visible sender
-    if (nftCredits.length > 0 && nftDebits.length === 0) {
+    if (nftCredits.length > 0 && sendDebits.length === 0) {
       const primaryNft = nftCredits[0]!;
       const receiver = primaryNft.accountId.replace("external:", "");
 
@@ -371,8 +382,8 @@ export class NftTransferClassifier implements Classifier {
     }
 
     // NFT Send: sent NFT without visible receiver
-    if (nftDebits.length > 0 && nftCredits.length === 0) {
-      const primaryNft = nftDebits[0]!;
+    if (sendDebits.length > 0 && nftCredits.length === 0) {
+      const primaryNft = sendDebits[0]!;
       const sender = primaryNft.accountId.replace("external:", "");
 
       return {
@@ -387,7 +398,7 @@ export class NftTransferClassifier implements Classifier {
         metadata: {
           nft_mint: primaryNft.amount.token.mint,
           nft_name: primaryNft.amount.token.name,
-          quantity: nftDebits.length,
+          quantity: sendDebits.length,
         },
       };
     }

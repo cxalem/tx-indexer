@@ -8,22 +8,37 @@ date, what changed, why. `bun run accuracy` fails if `baseline.json` changed wit
 The SDK now builds token balance changes from the union of `preTokenBalances` and
 `postTokenBalances`: a non-native token account closed in the transaction (pre entry only)
 produces a debit of its full pre amount, attributed to its pre owner. Before, only post entries
-were read and the closed account's token was lost. Native wSOL accounts, fees and classifiers are
-unchanged. No `case.json`, `rpc.json` or `expected.json` changed (case hashes identical).
+were read and the closed account's token was lost. Native wSOL accounts and fees are unchanged.
+No `case.json`, `rpc.json` or `expected.json` changed (case hashes identical).
 
-Perspectives that changed (3 of 72; every other perspective, outcome and component is identical):
+A second commit on the same branch adds one classifier rule: a debit from an account closed in the
+transaction with no credit of the same mint anywhere (burn and close) is accounting only, never the
+evidence for an NFT send, swap input, bridge or privacy deposit, or "another token sent" (airdrop,
+stake sponsored deposit). It changes no score, outcome, component or prediction in this set, so the
+baseline was not regenerated for it.
+
+Score records that changed: 3 of 72. Predictions that changed: 4 of 72 (the fourth is a
+`wrong_label` before and after, so no score moved). Every other perspective, outcome, component and
+prediction is identical:
 - `swap-pump-amm-sell-all-and-close` @32ktkabA…: `wrong_label` `transfer` (forbidden) → `kind_only`
   `swap`. The wallet sells all of 2uQw…pump and closes the account (index 7). The 365,053,940 token
   debit now exists, so the swap classifier pairs it with the SOL credit. Token-out leg exact; the SOL
-  in is 9,746,453 versus the expected 8,247,613 (+1,498,840: the closed account's rent refund, 1,513,840
-  lamports, still folds into the SOL side; rent handling is out of scope for this change).
+  in is 9,746,453 versus the expected 8,247,613. The difference, 1,498,840, is the closed account's
+  1,513,840-lamport rent refund minus the 15,000-lamport network fee, both still folded into the SOL
+  side; rent and fee handling are out of scope for this change.
 - `transfer-token2022-sponsored-fee-then-close` @35y6MEFo…: `kind_only` → `correct`. The sender's
   2b1k… account is emptied and closed; its 199,000,000 debit now exists, so the transfer pairs it with
   the receiver's credit (amount, sender and receiver exact) instead of the 1,600,200-lamport rent
   movement between the fee payer and the rent receiver.
 - `transfer-token2022-sponsored-fee-then-close` @Hg9dpcEm…: `kind_only` → `correct`, same reason.
-  (The case still fails: the third perspective, EBBk…, is still a `transfer` where `account_close`
-  is expected.)
+- `transfer-token2022-sponsored-fee-then-close` @EBBkGATp…: still `wrong_label` `transfer` (no score
+  change; expected `account_close`), but the prediction got worse for this wallet. Before: `transfer`
+  of 1,600,200 SOL lamports GCEX… → EBBk… (its own incoming rent). After: `transfer` of 199,000,000
+  PYUSD 35y6… → Hg9d…, another wallet's transfer. Cause: transfer pairing picks the best pair over the
+  whole transaction and ignores the requested perspective
+  (`packages/classification/src/engine/transfer-pairing.ts`, `findBestExternalTransferPair`). Tracked
+  for the next slice. The gate cannot see it, because no component is measured for `wrong_label`
+  predictions (also tracked). The case still fails on this perspective.
 
 Before → after: primary action correct 13 → 15 of 72; kind_only 29 → 28; wrong_label 24 → 23;
 secondary_hit 2, abstained 4, disputed_alternative 0, error 0 unchanged; primary kind right 42 → 43;
