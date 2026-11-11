@@ -6,7 +6,6 @@ import type { TransactionClassification } from "@tx-indexer/core/tx/classificati
 import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isDexProtocolById } from "../protocols/detector";
 import { isTinySolMovement } from "../engine/transfer-pairing";
-import { withoutUnmatchedClosedDebits } from "../engine/leg-helpers";
 
 /**
  * Finds the best swap pair from the lists of tokens going out and coming in.
@@ -73,14 +72,9 @@ function getNetTokenChangeByMint(legs: TxLeg[]): Map<string, bigint> {
 export class SwapClassifier implements Classifier {
   name = "swap";
   priority = 80;
-  // Migrated: reads the truthful legs (token accounts closed in the transaction included).
-  inputVersion = "v2-closed-token-accounts" as const;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { tx, walletAddress } = context;
-    // A debit from a token account closed in this transaction that nothing
-    // receives (e.g. burn and close) is accounting, not evidence of an action.
-    const legs = withoutUnmatchedClosedDebits(context.legs);
+    const { legs, tx, walletAddress } = context;
 
     const initiator = walletAddress ?? tx.accountKeys?.[0] ?? null;
 

@@ -1,8 +1,7 @@
 /**
- * Closed-account debits through the routed pipeline (truthful legs for swap, the "v1-main"
- * legs for every other classifier, transfer included). Legacy classifiers must answer as at
- * 3111fd7 (proven case by case in packages/sdk/src/legacy-input.test.ts); swap must not
- * use a burned-and-closed debit as evidence.
+ * Closed-account debits through the routed pipeline (truthful public legs; every classifier
+ * reads the "v1-main" legs). Every answer must equal 3111fd7's (proven case by case in
+ * packages/sdk/src/legacy-input.test.ts); the closed debits only show in the returned legs.
  */
 import { describe, test, expect } from "bun:test";
 import type { Signature } from "@solana/kit";
@@ -18,7 +17,7 @@ import {
   MAGIC_EDEN_V2_PROGRAM_ID,
 } from "@tx-indexer/solana/constants/program-ids";
 import { classifyTransaction } from "../../engine/classification-service";
-import { unmatchedClosedAccountDebits } from "../../engine/leg-helpers";
+
 import {
   SOL,
   mockRpc,
@@ -101,7 +100,6 @@ describe("NFT transfer: a burned/closed zero-decimal debit with no same-mint cre
     const { legs, tx, c } = await classify(usdcPlusBurnedPosition("alice"), BOB);
     // the accounting debit is kept
     expect(legs.some((l) => l.side === "debit" && l.amount.token.mint === POS && l.accountId === `external:${ALICE}`)).toBe(true);
-    expect([...unmatchedClosedAccountDebits(legs)].map((l) => l.amount.token.mint)).toEqual([POS]);
     expect(c.primaryType).toBe("transfer");
     expect(c.primaryAmount?.amountRaw).toBe("10000000");
     expect(c.primaryAmount?.token.mint).toBe(USDC);
@@ -180,7 +178,7 @@ describe("NFT transfer: a burned/closed zero-decimal debit with no same-mint cre
   });
 });
 
-describe("sibling classifiers ignore unmatched closed-account debits", () => {
+describe("closed-account debits change no classification (every classifier reads v1-main)", () => {
   test("swap: receiving 10 USDC while burning and closing 1,000 JUNK stays a transfer, not a JUNK -> USDC swap", async () => {
     const { c } = await classify(
       {
@@ -267,8 +265,8 @@ describe("sibling classifiers ignore unmatched closed-account debits", () => {
     expect(c.primaryAmount?.token.mint).toBe(X);
   });
 
-  test("a sell that closes the account is still a swap: the pool vault is credited the same mint", async () => {
-    const { tx, legs, c } = await classify(
+  test("a sell that closes the account: the public legs carry the sold debit; the label stays 3111fd7's (known limitation)", async () => {
+    const { legs, c } = await classify(
       {
         staticKeys: [ALICE, VAULT, A_JUNK, JUPITER_V6_PROGRAM_ID],
         pre: [10n * SOL, 50n * SOL, RENT, 1n],
@@ -280,14 +278,15 @@ describe("sibling classifiers ignore unmatched closed-account debits", () => {
       ALICE,
       { id: "jupiter", name: "Jupiter" },
     );
-    expect(unmatchedClosedAccountDebits(legs).size).toBe(0);
-    expect(c.primaryType).toBe("swap");
-    expect(c.primaryAmount?.token.mint).toBe(JUNK);
-    expect(c.primaryAmount?.amountRaw).toBe("1000000000");
+    expect(legs.find((l) => l.closedTokenAccount === A_JUNK)?.amount.amountRaw).toBe("1000000000");
+    // swap reads v1-main, where the closed account's debit does not exist: as at 3111fd7 this
+    // is the SOL proceeds as a transfer from the vault. Recognising it needs an instruction-backed
+    // swap recognizer (the balance rule is on branch feat/swap-closed-accounts).
+    expect([c.primaryType, c.primaryAmount?.amountRaw, c.sender, c.receiver]).toEqual(["transfer", "1000000000", VAULT, ALICE]);
   });
 });
 
-describe("only a proven closure is excluded, identified by its own token account", () => {
+describe("only a proven closure is flagged, identified by its own token account", () => {
   /** Alice burns 10 W through Wormhole from A (stays open, zero balance) and closes B of W; B's rent goes to a sponsor. */
   const wormhole = (bPre: bigint): SyntheticTxInput => ({
     staticKeys: [SPONSOR, ALICE, A_W, B_W, WORMHOLE_TOKEN_BRIDGE_ID],
@@ -300,7 +299,6 @@ describe("only a proven closure is excluded, identified by its own token account
 
   test("Wormhole burn from an open account beside a closed EMPTY sibling: bridge_out of the 10 tokens, as before", async () => {
     const { legs, c } = await classify(wormhole(0n), ALICE, { id: "wormhole-token-bridge", name: "Wormhole Token Bridge" });
-    expect(unmatchedClosedAccountDebits(legs).size).toBe(0);
     expect(c.primaryType).toBe("bridge_out");
     expect(c.primaryAmount?.token.mint).toBe(W);
     expect(c.primaryAmount?.amountRaw).toBe("1000000000");
@@ -310,7 +308,6 @@ describe("only a proven closure is excluded, identified by its own token account
   test("same, with the closed sibling holding tokens: still bridge_out of the 10 tokens from Alice", async () => {
     const { legs, c } = await classify(wormhole(500_000_000n), ALICE, { id: "wormhole-token-bridge", name: "Wormhole Token Bridge" });
     // only the closed sibling's debit is an unmatched closed-account debit
-    expect([...unmatchedClosedAccountDebits(legs)].map((l) => [l.closedTokenAccount, l.amount.amountRaw])).toEqual([[B_W, "500000000"]]);
     expect(c.primaryType).toBe("bridge_out");
     expect(c.primaryAmount?.token.mint).toBe(W);
     expect(c.primaryAmount?.amountRaw).toBe("1000000000");
@@ -335,7 +332,6 @@ describe("only a proven closure is excluded, identified by its own token account
       ALICE,
       { id: "jupiter", name: "Jupiter" },
     );
-    expect([...unmatchedClosedAccountDebits(legs)].map((l) => l.closedTokenAccount)).toEqual([B_W]);
     expect(c.primaryType).toBe("swap");
     expect(c.primaryAmount?.token.mint).toBe(W);
     expect(c.primaryAmount?.amountRaw).toBe("1000000000");
@@ -372,7 +368,6 @@ describe("only a proven closure is excluded, identified by its own token account
       ALICE,
     );
     expect(legs.some((l) => l.side === "debit" && l.amount.token.mint === JUNK)).toBe(true);
-    expect(unmatchedClosedAccountDebits(legs).size).toBe(0);
   });
 
   test("hand-built legs without provenance are never excluded", () => {
@@ -382,8 +377,6 @@ describe("only a proven closure is excluded, identified by its own token account
       role: "sent" as const,
       amount: { token: { mint: JUNK, symbol: "JUNK", decimals: 6 }, amountRaw: "1", amountUi: 0.000001 },
     };
-    expect(unmatchedClosedAccountDebits([leg]).size).toBe(0);
-    expect(unmatchedClosedAccountDebits([{ ...leg, closedTokenAccount: A_JUNK }]).size).toBe(1);
   });
 });
 
@@ -414,7 +407,7 @@ describe("marketplace sale where the seller's NFT account closes", () => {
   });
 });
 
-describe("swap risks with closed-account debits (migrated classifier)", () => {
+describe("swap risks with closed-account debits: answers equal 3111fd7", () => {
   const C_JUNK = "CaroJunk11111111111111111111111111111111111";
   const VAULT_W = "Poo1VaultW11111111111111111111111111111111";
 
@@ -431,7 +424,6 @@ describe("swap risks with closed-account debits (migrated classifier)", () => {
       },
       ALICE,
     );
-    expect([...unmatchedClosedAccountDebits(legs)].map((l) => l.closedTokenAccount)).toEqual([A_JUNK]);
     // 3111fd7: transfer of 10 USDC Bob -> Alice
     expect(c.primaryType).toBe("transfer");
     expect(c.primaryAmount?.amountRaw).toBe("10000000");
@@ -465,22 +457,6 @@ describe("swap risks with closed-account debits (migrated classifier)", () => {
     expect(c.secondaryAmount?.amountRaw).toBe("5000000");
   });
 
-  test("a sell whose closed account's whole balance reaches the vault is still a swap of that amount", async () => {
-    const { legs, c } = await classify(
-      {
-        staticKeys: [ALICE, VAULT, A_JUNK, JUPITER_V6_PROGRAM_ID],
-        pre: [10n * SOL, 50n * SOL, RENT, 1n],
-        post: [11n * SOL + RENT - 5000n, 49n * SOL, 0n, 1n],
-        instructions: [{ programIdIndex: 3, accounts: [1, 2, 0] }],
-        preTokenBalances: [tb(1, JUNK, POOL_OWNER, 0n, 6), tb(2, JUNK, ALICE, 1_000_000_000n, 6)],
-        postTokenBalances: [tb(1, JUNK, POOL_OWNER, 1_000_000_000n, 6)],
-      },
-      ALICE,
-    );
-    expect(unmatchedClosedAccountDebits(legs).size).toBe(0);
-    expect(c.primaryType).toBe("swap");
-    expect(c.primaryAmount?.amountRaw).toBe("1000000000");
-  });
 });
 
 describe("transfer keeps 3111fd7's behaviour (v1-main) in this slice", () => {

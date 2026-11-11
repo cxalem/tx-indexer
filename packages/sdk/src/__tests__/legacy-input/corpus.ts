@@ -485,7 +485,7 @@ export const SYNTHETIC: SyntheticItem[] = [
     perspectives: [ALICE],
   },
 
-  // --- migrated classifiers (swap, transfer): reported, not required equal -----------
+  // --- swap and transfer around closed accounts: must equal 3111fd7 -------------------
   {
     id: "swap-receive-usdc-plus-burned-junk",
     kind: "synthetic",
@@ -628,6 +628,158 @@ export const SYNTHETIC: SyntheticItem[] = [
   },
 ];
 
+/**
+ * A genuine swap: Alice sells 10 W from open account A_W to the pool vault for 5 USDC
+ * (Jupiter), plus `extra` accounts appended before the program id.
+ */
+const genuineSwapPlus = (extra: {
+  keys: string[];
+  pre: bigint[];
+  post: bigint[];
+  preTokenBalances: ReturnType<typeof tb>[];
+  postTokenBalances: ReturnType<typeof tb>[];
+  alicePostDelta?: bigint;
+}): SyntheticTxInput => {
+  const n = 5 + extra.keys.length;
+  return {
+    staticKeys: [ALICE, A_W, VAULT_W, A_USDC, POOL_USDC, ...extra.keys, JUPITER_V6_PROGRAM_ID],
+    pre: [SOL, RENT, RENT, RENT, RENT, ...extra.pre, 1n],
+    post: [SOL - 5000n + (extra.alicePostDelta ?? 0n), RENT, RENT, RENT, RENT, ...extra.post, 1n],
+    instructions: [{ programIdIndex: n, accounts: [1, 2, 3, 4, 0] }],
+    preTokenBalances: [
+      tb(1, W, ALICE, 1_000_000_000n, 8),
+      tb(2, W, POOL_OWNER, 0n, 8),
+      tb(3, USDC, ALICE, 0n, 6),
+      tb(4, USDC, POOL_OWNER, 50_000_000n, 6),
+      ...extra.preTokenBalances,
+    ],
+    postTokenBalances: [
+      tb(1, W, ALICE, 0n, 8),
+      tb(2, W, POOL_OWNER, 1_000_000_000n, 8),
+      tb(3, USDC, ALICE, 5_000_000n, 6),
+      tb(4, USDC, POOL_OWNER, 45_000_000n, 6),
+      ...extra.postTokenBalances,
+    ],
+  };
+};
+const C_W = "CaroW111111111111111111111111111111111111111";
+const A_USDC2 = "A1iceUSDCB111111111111111111111111111111111";
+const POOL_X = "Poo1X11111111111111111111111111111111111111";
+
+/**
+ * Review round 6 counterexamples for balance-based swap evidence on closed accounts. Every
+ * classifier reads "v1-main", so each must equal 3111fd7 (negatives for a future
+ * instruction-backed recognizer).
+ */
+export const SWAP_NEGATIVES: SyntheticItem[] = [
+  {
+    id: "neg-burn-plus-independent-mint-plus-usdc-receive",
+    kind: "synthetic",
+    // Bob sends Alice 10 USDC; Alice burns and closes 1,000 JUNK; Carol is minted 1,000 JUNK.
+    input: {
+      staticKeys: [BOB, ALICE, B_USDC, A_USDC, A_JUNK, C_JUNK, TOKEN_PROGRAM],
+      pre: [SOL, SOL, RENT, RENT, RENT, RENT, 1n],
+      post: [SOL - 5000n, SOL + RENT, RENT, RENT, 0n, RENT, 1n],
+      instructions: [{ programIdIndex: 6, accounts: [2, 3, 0] }],
+      preTokenBalances: [
+        tb(2, USDC, BOB, 50_000_000n, 6),
+        tb(3, USDC, ALICE, 0n, 6),
+        tb(4, JUNK, ALICE, 1_000_000_000n, 6),
+        tb(5, JUNK, CAROL, 0n, 6),
+      ],
+      postTokenBalances: [tb(2, USDC, BOB, 40_000_000n, 6), tb(3, USDC, ALICE, 10_000_000n, 6), tb(5, JUNK, CAROL, 1_000_000_000n, 6)],
+    },
+    perspectives: [ALICE, BOB, CAROL],
+  },
+  {
+    id: "neg-burn-plus-independent-mint-beside-pool-airdrop",
+    kind: "synthetic",
+    // Alice receives 5 X from a pool on a DEX program; burns and closes 1,000 JUNK; Carol is minted 1,000 JUNK.
+    input: {
+      staticKeys: [ALICE, POOL_X, A_X, A_JUNK, C_JUNK, JUPITER_V6_PROGRAM_ID],
+      pre: [SOL, RENT, RENT, RENT, RENT, 1n],
+      post: [SOL + RENT - 5000n, RENT, RENT, 0n, RENT, 1n],
+      instructions: [{ programIdIndex: 5, accounts: [1, 2, 0] }],
+      preTokenBalances: [
+        tb(1, X, POOL_OWNER, 50_000_000n, 6),
+        tb(2, X, ALICE, 0n, 6),
+        tb(3, JUNK, ALICE, 1_000_000_000n, 6),
+        tb(4, JUNK, CAROL, 0n, 6),
+      ],
+      postTokenBalances: [tb(1, X, POOL_OWNER, 45_000_000n, 6), tb(2, X, ALICE, 5_000_000n, 6), tb(4, JUNK, CAROL, 1_000_000_000n, 6)],
+    },
+    perspectives: [ALICE],
+  },
+  {
+    id: "neg-swap-plus-closed-sibling-sends-30w-to-carol",
+    kind: "synthetic",
+    input: genuineSwapPlus({
+      keys: [B_W, C_W],
+      pre: [RENT, RENT],
+      post: [0n, RENT],
+      alicePostDelta: RENT,
+      preTokenBalances: [tb(5, W, ALICE, 3_000_000_000n, 8), tb(6, W, CAROL, 0n, 8)],
+      postTokenBalances: [tb(6, W, CAROL, 3_000_000_000n, 8)],
+    }),
+    perspectives: [ALICE, CAROL],
+  },
+  {
+    id: "neg-swap-plus-sibling-authority-change",
+    kind: "synthetic",
+    input: genuineSwapPlus({
+      keys: [B_W],
+      pre: [RENT],
+      post: [RENT],
+      preTokenBalances: [tb(5, W, ALICE, 3_000_000_000n, 8)],
+      postTokenBalances: [tb(5, W, CAROL, 3_000_000_000n, 8)],
+    }),
+    perspectives: [ALICE, CAROL],
+  },
+  {
+    id: "neg-swap-plus-burn-reinitialise-mint",
+    kind: "synthetic",
+    // B held 3,000 JUNK, burned and reinitialised for X, then 3,000 X minted into it.
+    input: genuineSwapPlus({
+      keys: [A_JUNK],
+      pre: [RENT],
+      post: [RENT],
+      preTokenBalances: [tb(5, JUNK, ALICE, 3_000_000_000n, 6)],
+      postTokenBalances: [tb(5, X, ALICE, 3_000_000_000n, 6)],
+    }),
+    perspectives: [ALICE],
+  },
+  {
+    id: "neg-swap-plus-closed-account-usdc-send-rent-to-sponsor",
+    kind: "synthetic",
+    // Alice also sends 10 USDC to Carol from a second USDC account she closes; rent to a sponsor.
+    input: genuineSwapPlus({
+      keys: [A_USDC2, C_USDC, SPONSOR],
+      pre: [RENT, RENT, SOL],
+      post: [0n, RENT, SOL + RENT],
+      preTokenBalances: [tb(5, USDC, ALICE, 10_000_000n, 6), tb(6, USDC, CAROL, 0n, 6)],
+      postTokenBalances: [tb(6, USDC, CAROL, 10_000_000n, 6)],
+    }),
+    perspectives: [ALICE, CAROL],
+  },
+  {
+    id: "neg-buy-missing-pre-snapshot",
+    kind: "synthetic",
+    // Alice buys 150 USDC for 1 SOL; meta.preTokenBalances is absent.
+    input: {
+      staticKeys: [ALICE, VAULT, A_USDC, POOL_USDC, JUPITER_V6_PROGRAM_ID],
+      pre: [10n * SOL, 50n * SOL, RENT, RENT, 1n],
+      post: [9n * SOL - 5000n, 51n * SOL, RENT, RENT, 1n],
+      instructions: [{ programIdIndex: 4, accounts: [1, 2, 3, 0] }],
+      preTokenBalances: [tb(2, USDC, ALICE, 0n, 6), tb(3, USDC, POOL_OWNER, 1_000_000_000n, 6)],
+      postTokenBalances: [tb(2, USDC, ALICE, 150_000_000n, 6), tb(3, USDC, POOL_OWNER, 850_000_000n, 6)],
+    },
+    mutate: (r) => {
+      delete r.meta.preTokenBalances;
+    },
+    perspectives: [ALICE],
+  },
+];
+
 /** Recorded mainnet fixtures (packages/solana/src/__fixtures__/mainnet). */
 export function mainnetFixtureItems(): BodyItem[] {
   const dir = join(REPO, "packages/solana/src/__fixtures__/mainnet");
@@ -674,10 +826,10 @@ export function accuracyItems(): BodyItem[] {
 }
 
 export function corpus(): CorpusItem[] {
-  return [...mainnetFixtureItems(), ...accuracyItems(), ...SYNTHETIC];
+  return [...mainnetFixtureItems(), ...accuracyItems(), ...SYNTHETIC, ...SWAP_NEGATIVES];
 }
 
-/** The ten classifiers that read "v1-main" and must equal 3111fd7 one by one. */
+/** Every registered classifier: all read "v1-main" and must equal 3111fd7 one by one. */
 export const LEGACY_CLASSIFIERS = [
   ["solana-pay", "solana-pay-classifier", "SolanaPayClassifier"],
   ["privacy-cash", "privacy-cash-classifier", "PrivacyCashClassifier"],
@@ -689,4 +841,5 @@ export const LEGACY_CLASSIFIERS = [
   ["airdrop", "airdrop-classifier", "AirdropClassifier"],
   ["fee-only", "fee-only-classifier", "FeeOnlyClassifier"],
   ["transfer", "transfer-classifier", "TransferClassifier"],
+  ["swap", "swap-classifier", "SwapClassifier"],
 ] as const;

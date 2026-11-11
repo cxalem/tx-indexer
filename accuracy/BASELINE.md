@@ -23,18 +23,18 @@ Overall
   perspectives with the primary action correct (kind, amounts
     and non-null participants all match): outcome correct       13/72 (18.1%) *
   perspectives with the primary kind right (correct + kind_only;
-    = per-kind TP)                                              43/72 (59.7%) *
+    = per-kind TP)                                              42/72 (58.3%) *
   Outcomes (one per perspective; they sum to 72)
     correct                                                     13
-    kind_only (kind right, amounts or participants wrong)       30
+    kind_only (kind right, amounts or participants wrong)       29
     secondary_hit (a secondary action exactly, not the primary) 2
     disputed_alternative (a reported reading exactly; a miss)   0
     abstained (other, or fee_only where an action was expected) 4
-    wrong_label (false positives)                               23
+    wrong_label (false positives)                               24
     error (replay errors)                                       0
-  forbidden-label violations                                    10
+  forbidden-label violations                                    11
   amounts exact, over perspectives with the kind right and the
-    amounts known (mint, raw, decimals; direction where exposed) 13/43 (30.2%)
+    amounts known (mint, raw, decimals; direction where exposed) 13/42 (31.0%)
   participants exact, over perspectives with the kind right and
     a non-null expected sender or receiver                      24/31 (77.4%)
   fee agreement (fee leg = meta.fee), per case                  43/43 (100.0%)
@@ -61,11 +61,11 @@ outcome, FP = wrong_label for the predicted kind)
   other               1   0   0     100.0%  100.0%
   stake_deposit       1   0   0     100.0%  100.0%
   stake_withdraw      0   0   1       n/a    0.0%
-  swap               11   0   3     100.0%   78.6%
+  swap               10   0   4     100.0%   71.4%
   tip                 0   0   3       n/a    0.0%
   token_burn          0   0   1       n/a    0.0%
   token_mint          0   0   1       n/a    0.0%
-  transfer           30  21   3      58.8%   90.9%
+  transfer           30  22   3      57.7%   90.9%
 
 Secondary actions per kind (found / expected)
   account_close     0/13
@@ -95,6 +95,7 @@ Forbidden-label violations
   lifecycle-create-ata-only-token2022 @EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz: transfer
   lifecycle-pump-create-mint-and-first-buy @HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU: transfer
   nft-sale-buyback-for-usdc @BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th: transfer
+  swap-pump-amm-sell-all-and-close @32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt: transfer
 
 Disputed interpretations (reported only: not part of the mandatory score; matching one is a miss for the primary)
   dca-fill-executed-by-keeper @5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna: disputed reading swap; SDK says airdrop
@@ -122,7 +123,7 @@ Failing cases (37); [d] = disputed case
   nft-transfer-sponsored-programmable :: miDt..7WPt: predicted transfer, expected nft_send | BTq5..s1th: predicted transfer, expected nft_receive | Gach..xJq3: predicted transfer, expected account_create
   stake-create-and-delegate :: HuZa..1JDL: kind only (stake_deposit); amounts got [out 7427745701 So11] want [out 7427731966 So11]; participants got HuZa..1JDL->null want HuZa..1JDL->B9XM..H3rX
   stake-withdraw-from-three-accounts :: CuEW..gn9g: predicted other, expected stake_withdraw
-  swap-pump-amm-sell-all-and-close :: 32kt..yCyt: kind only (swap); amounts got [out 365053940 2uQw, in 9746453 So11] want [out 365053940 2uQw, in 8247613 So11]
+  swap-pump-amm-sell-all-and-close :: 32kt..yCyt: FORBIDDEN transfer; predicted transfer, expected swap
   swap-pump-amm-tiny-sol-buy :: FXBg..WxzS: kind only (swap); amounts got [out 198714 So11, in 102337683 wGoX] want [out 193714 So11, in 102337683 wGoX]
   swap-stable-usdc-to-usdt-two-hop-dlmm :: gain..1vbP: kind only (swap); amounts got [out 1106941 EPjF, in 1107247 Es9v] want [out 1106941 EPjF, in 1106950 gain]
   swap-v0-jupiter-sol-to-token :: EMgS..PaEb: kind only (swap); amounts got [out 4147883 So11, in 1994890919495 FUSE] want [out 4142844 So11, in 1994890919495 FUSE]

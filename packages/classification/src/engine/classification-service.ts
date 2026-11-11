@@ -211,9 +211,10 @@ export const classificationService = new ClassificationService();
  * @param tx - Raw transaction data for additional context (protocol, memo, etc.)
  * @param walletAddress - Optional wallet address for perspective-aware classification (e.g., swap direction)
  * @param options - `{ legacyLegs }`: the `"v1-main"` legs of the same transaction and wallet
- *   (from `transactionToLegInputs`). Classifiers not yet migrated read them; migrated ones
- *   (swap, transfer) read `legs`. With three arguments every classifier reads `legs`, so
- *   exact per-classifier compatibility with 3111fd7 needs the explicit legacy view.
+ *   (from `transactionToLegInputs`). Classifiers that declare `"v1-main"` (today: all of
+ *   them) read `legacyLegs`; a classifier that declares `"v2-closed-token-accounts"` reads
+ *   `legs`. With three arguments every classifier reads `legs`, so results equal to the SDK
+ *   pipeline (and to 3111fd7) need the explicit legacy view.
  * @returns Classification result with type, amounts, sender, receiver, and confidence
  */
 export function classifyTransaction(

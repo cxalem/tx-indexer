@@ -25,7 +25,7 @@ import { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import {
-  filterSpamTransactions,
+  isSpamTransaction,
   type SpamFilterConfig,
 } from "@tx-indexer/core/tx/spam-filter";
 import type { WalletBalance } from "@tx-indexer/solana/fetcher/balances";
@@ -547,7 +547,39 @@ function classifyWithLegInputs(
   const classification = classifyTransaction(legs, tx, walletAddress, {
     legacyLegs: inputs["v1-main"],
   });
+  spamFilterLegs.set(tx, inputs["v1-main"]);
   return { legs, classification };
+}
+
+/**
+ * The spam filter reads the "v1-main" legs (the input its dust and wallet-involvement rules
+ * were calibrated on) until it is explicitly migrated; callers still receive the truthful
+ * legs. Keyed by the RawTransaction object, which enrichment keeps.
+ */
+const spamFilterLegs = new WeakMap<RawTransaction, TxLeg[]>();
+
+/** The "v1-main" legs with the token info enrichment gave the returned legs (same mint). */
+function legsForSpamFilter(classified: ClassifiedTransaction): TxLeg[] {
+  const legacy = spamFilterLegs.get(classified.tx);
+  if (!legacy) return classified.legs;
+  const tokens = new Map<string, TxLeg["amount"]["token"]>();
+  for (const leg of classified.legs) tokens.set(leg.amount.token.mint, leg.amount.token);
+  return legacy.map((leg) => {
+    const token = tokens.get(leg.amount.token.mint);
+    if (!token || token.symbol === leg.amount.token.symbol) return leg;
+    return { ...leg, amount: { ...leg.amount, token: { ...token, decimals: leg.amount.token.decimals } } };
+  });
+}
+
+/** As `filterSpamTransactions`, with the filter's own leg input; returns the callers' objects. */
+function filterSpamOnFilterLegs(
+  transactions: ClassifiedTransaction[],
+  config: SpamFilterConfig | undefined,
+  walletAddress: string | undefined,
+): ClassifiedTransaction[] {
+  return transactions.filter(
+    (t) => !isSpamTransaction(t.tx, t.classification, config, legsForSpamFilter(t), walletAddress),
+  );
 }
 
 export interface ClassifiedTransaction {
@@ -1069,7 +1101,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
           if (newSigs.length > 0) {
             const classified = await fetchAndClassify(newSigs);
             const nonSpam = filterSpam
-              ? filterSpamTransactions(classified, spamConfig, walletAddressStr)
+              ? filterSpamOnFilterLegs(classified, spamConfig, walletAddressStr)
               : classified;
             accumulated.push(...nonSpam);
           }
@@ -1399,7 +1431,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       // Apply spam filter
       let finalResults = results;
       if (filterSpam) {
-        finalResults = filterSpamTransactions(
+        finalResults = filterSpamOnFilterLegs(
           results,
           spamConfig,
           walletAddressStr,

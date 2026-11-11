@@ -1,7 +1,8 @@
 /**
  * Routing of versioned leg inputs in the ONE classification engine: each classifier
- * receives the input version it declares (swap: "v2-closed-token-accounts"; all others,
- * transfer included: "v1-main"), chosen immediately before it runs; priorities, the
+ * receives the input version it declares (today every built-in classifier declares
+ * "v1-main"; a test classifier declares "v2-closed-token-accounts" to exercise the other
+ * route), chosen immediately before it runs; priorities, the
  * registration-order tie-break and the isRelevant arbitration are unchanged.
  */
 import { describe, expect, test } from "bun:test";
@@ -20,7 +21,7 @@ import {
 const ALICE = "A1ice11111111111111111111111111111111111111";
 const BOB = "Bob1111111111111111111111111111111111111111";
 const CAROL = "Caro1111111111111111111111111111111111111111";
-const MIGRATED = new Set(["swap"]);
+const MIGRATED = new Set<string>();
 
 type Registered = Array<{ classifier: Classifier; order: number }>;
 
@@ -50,7 +51,7 @@ const semantic = (trace: { decisions: Array<Record<string, unknown>> }) =>
 const fee = createMockLeg({ accountId: "fee:network", side: "credit", role: "fee", amount: createSolAmount(0.000005) });
 
 describe("each classifier receives the input version it declares", () => {
-  test("declared versions: swap migrated, every other classifier (transfer included) v1-main", () => {
+  test("declared versions: every registered classifier reads v1-main", () => {
     const service = new ClassificationService();
     const versions = Object.fromEntries(
       (service as unknown as { classifiers: Registered }).classifiers.map(({ classifier }) => [
@@ -66,7 +67,7 @@ describe("each classifier receives the input version it declares", () => {
       "nft-transfer": "v1-main",
       "stake-deposit": "v1-main",
       "stake-withdraw": "v1-main",
-      swap: "v2-closed-token-accounts",
+      swap: "v1-main",
       airdrop: "v1-main",
       "fee-only": "v1-main",
       transfer: "v1-main",
@@ -136,7 +137,7 @@ describe("arbitration is unchanged", () => {
     ]);
   });
 
-  test("equal priority: a legacy nft-transfer match on v1 wins over a swap match on v2", () => {
+  test("routed: the v1 array decides; swap-shaped v2 legs are not read by any built-in classifier", () => {
     const v1 = [
       createMockLeg({ accountId: `external:${ALICE}`, side: "credit", role: "received", amount: createNftAmount("Cat") }),
       createMockLeg({ accountId: `external:${BOB}`, side: "debit", role: "sent", amount: createNftAmount("Cat") }),
@@ -149,7 +150,7 @@ describe("arbitration is unchanged", () => {
     const routed = service.classifyWithTrace(v2, createMockTransaction({ accountKeys: [ALICE] }), ALICE, { legacyLegs: v1 });
     expect(routed.classification.primaryType).toBe("nft_receive");
     expect(routed.debugTrace.selectedClassifier).toBe("nft-transfer");
-    // and the swap alone would have matched v2
+    // the same v2 array passed as the only array (three arguments) would have been a swap
     expect(service.classify(v2, createMockTransaction({ accountKeys: [ALICE] }), ALICE).primaryType).toBe("swap");
   });
 
@@ -187,7 +188,7 @@ describe("arbitration is unchanged", () => {
     expect(noPair.debugTrace.selectedClassifier).toBe("fee-only");
   });
 
-  test("swap gains a match only visible in v2, and loses one only visible in v1", () => {
+  test("swap reads v1-main: a sell visible only in v2 is not a swap; visible in v1 it is", () => {
     const service = new ClassificationService();
     const tx = createMockTransaction({ accountKeys: [ALICE] });
     const sell = [
@@ -195,10 +196,31 @@ describe("arbitration is unchanged", () => {
       createMockLeg({ accountId: `external:${ALICE}`, side: "credit", role: "received", amount: createSolAmount(2) }),
     ];
     const solOnly = [sell[1]!];
-    const gained = service.classifyWithTrace(sell, tx, ALICE, { legacyLegs: solOnly });
-    expect(gained.debugTrace.selectedClassifier).toBe("swap");
-    const lost = service.classifyWithTrace(solOnly, tx, ALICE, { legacyLegs: sell });
-    expect(lost.debugTrace.decisions.find((d) => d.classifier === "swap")!.matched).toBe(false);
+    const onlyV2 = service.classifyWithTrace(sell, tx, ALICE, { legacyLegs: solOnly });
+    expect(onlyV2.debugTrace.decisions.find((d) => d.classifier === "swap")).toMatchObject({ matched: false, legInput: "v1-main" });
+    const inV1 = service.classifyWithTrace(solOnly, tx, ALICE, { legacyLegs: sell });
+    expect(inV1.debugTrace.selectedClassifier).toBe("swap");
+  });
+
+  test("a classifier that declares v2 reads the truthful array; built-ins keep the legacy array", () => {
+    const service = new ClassificationService();
+    const seen: Record<string, TxLeg[]> = {};
+    const probe: Classifier = {
+      name: "probe-v2",
+      priority: 1000,
+      inputVersion: "v2-closed-token-accounts",
+      classify: (c: ClassifierContext) => {
+        seen.probe = c.legs;
+        return null;
+      },
+    };
+    service.registerClassifier(probe);
+    const v2: TxLeg[] = [];
+    const v1: TxLeg[] = [];
+    const trace = service.classifyWithTrace(v2, createMockTransaction(), ALICE, { legacyLegs: v1 }).debugTrace;
+    expect(seen.probe).toBe(v2);
+    expect(trace.decisions[0]).toMatchObject({ classifier: "probe-v2", legInput: "v2-closed-token-accounts" });
+    expect(trace.decisions.slice(1).every((d) => d.legInput === "v1-main")).toBe(true);
   });
 
   test("semantic trace (timing removed) records order, outcomes and inputs", () => {
@@ -218,7 +240,7 @@ describe("arbitration is unchanged", () => {
       ["stake-deposit", false, "v1-main"],
       ["stake-withdraw", false, "v1-main"],
       ["nft-transfer", false, "v1-main"],
-      ["swap", false, "v2-closed-token-accounts"],
+      ["swap", false, "v1-main"],
       ["airdrop", false, "v1-main"],
       ["fee-only", false, "v1-main"],
       ["transfer", false, "v1-main"],

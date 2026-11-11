@@ -64,6 +64,18 @@ are off.
   test is shown as skipped with `UNAVAILABLE: <reason>` in its name, never as passed.
 - The vocabulary check (the literal kind list in `src/schema.ts` must equal `TxPrimaryType`)
   is a compile-time check. `bun run accuracy` runs `tsc` first, so it cannot drift silently.
+- **Migrating a classifier to the truthful legs (or changing any file of the legacy path) is
+  deliberate.** Every classifier, its helpers, the protocol detector and the frozen `"v1-main"`
+  mapper are pinned twice: `packages/classification/src/__tests__/legacy-input/source-identity.test.ts`
+  (`git diff 3111fd7` must be empty) and `packages/sdk/src/legacy-digests.test.ts` (committed
+  sha256 digests, no git needed; it fails on any mismatch or new runtime import). The oracle test
+  (`packages/sdk/src/legacy-input.test.ts`) requires the final result of every corpus entry to equal
+  3111fd7. To migrate: change the classifier's `inputVersion`, regenerate the digests with
+  `bun packages/sdk/src/__tests__/legacy-input/generate-digests.ts --allow-changed <path>` for each
+  file you intend to change (the JSON records them under `changedFromBase`, and the digest test's
+  "no file changed" assertion must be updated in the same commit), update the source-identity list
+  and the oracle expectations with a reason per changed entry, and regenerate the baseline with an
+  `accuracy/CHANGES.md` entry in the same commit.
 - Known failures do not fail the gate: they are the baseline.
 - `other` is better than a wrong label. An abstention (`other`, or `fee_only` where a real
   action was expected) counts as a miss. A wrong label counts as a false positive, which

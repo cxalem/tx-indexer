@@ -7,17 +7,17 @@
   "overall": {
     "casesPassed": 6,
     "primaryCorrect": 13,
-    "kindOnly": 30,
-    "primaryKindRight": 43,
-    "wrongLabels": 23,
+    "kindOnly": 29,
+    "primaryKindRight": 42,
+    "wrongLabels": 24,
     "abstentions": 4,
     "secondaryHits": 2,
     "disputedAlternatives": 0,
     "errors": 0,
-    "forbiddenViolations": 10,
+    "forbiddenViolations": 11,
     "amountsExact": [
       13,
-      43
+      42
     ],
     "participantsExact": [
       24,
@@ -132,11 +132,11 @@
       "recall": 0
     },
     "swap": {
-      "tp": 11,
+      "tp": 10,
       "fp": 0,
-      "fn": 3,
+      "fn": 4,
       "precision": 1,
-      "recall": 0.7857
+      "recall": 0.7143
     },
     "tip": {
       "tp": 0,
@@ -161,9 +161,9 @@
     },
     "transfer": {
       "tp": 30,
-      "fp": 21,
+      "fp": 22,
       "fn": 3,
-      "precision": 0.5882,
+      "precision": 0.5769,
       "recall": 0.9091
     }
   },
@@ -233,7 +233,8 @@
     "lifecycle-create-ata-only-token2022 @3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a: transfer",
     "lifecycle-create-ata-only-token2022 @EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz: transfer",
     "lifecycle-pump-create-mint-and-first-buy @HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU: transfer",
-    "nft-sale-buyback-for-usdc @BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th: transfer"
+    "nft-sale-buyback-for-usdc @BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th: transfer",
+    "swap-pump-amm-sell-all-and-close @32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt: transfer"
   ],
   "reportedAlternatives": [
     "dca-fill-executed-by-keeper @5wQULuzRkYe4KAttSD1L1fuxavjepcMn1PycNMmPchna: disputed reading swap; SDK says airdrop",
@@ -692,15 +693,12 @@
       "executionAgrees": true,
       "perspectives": {
         "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt": {
-          "outcome": "kind_only",
-          "predictedKind": "swap",
-          "amountsExact": false,
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
+          "amountsExact": null,
           "participantsExact": null,
-          "components": {
-            "actions[0] amount out 2uQw2gvnhYYQ5T5jJf3MvLPyUquQ54VFHbMHBTtCpump": true,
-            "actions[0] amount in So11111111111111111111111111111111111111112": false
-          },
-          "forbiddenViolation": false,
+          "components": {},
+          "forbiddenViolation": true,
           "pass": false,
           "secondaryHit": null
         }

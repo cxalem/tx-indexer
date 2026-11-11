@@ -292,6 +292,17 @@ import {
 import type { ClassifiedTransaction, TxLeg } from "tx-indexer/types";
 ```
 
+> **Warning: call `classifyTransaction` with four arguments.** The legs the SDK returns are the truthful ones (closed token accounts included), but every classifier is calibrated on, and reads, the `"v1-main"` legs (as built at 3111fd7). Passing only the returned legs (three arguments) makes every classifier read them, which gives results that can differ from `getTransaction` / `getTransactions`. Build both views and pass the legacy one:
+>
+> ```typescript
+> import { classifyTransaction, transactionToLegInputs } from "tx-indexer/advanced";
+>
+> const views = transactionToLegInputs(tx, wallet); // same wallet for both views
+> const classification = classifyTransaction(views["v2-closed-token-accounts"], tx, wallet, {
+>   legacyLegs: views["v1-main"],
+> });
+> ```
+
 See [STABILITY.md](./STABILITY.md) for API stability guarantees.
 
 ## Error Handling

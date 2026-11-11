@@ -1,6 +1,6 @@
 /**
  * Generates oracle.3111fd7.json: for every corpus item and perspective, the ORDERED legs,
- * the ten legacy classifiers' outputs and the final classification, as the 3111fd7 tree
+ * all eleven classifiers' outputs and the final classification, as the 3111fd7 tree
  * produces them. The test then requires this tree's "v1-main" legs and legacy classifier
  * outputs to be identical.
  *
