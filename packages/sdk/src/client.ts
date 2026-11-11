@@ -21,12 +21,11 @@ import type {
 
 export type { FetchTransactionsConfig } from "@tx-indexer/solana/fetcher/transactions";
 import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
-import { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
-import { transactionToLegs as transactionToLegsV1Main } from "@tx-indexer/solana/mappers/legacy-v1-main/transaction-to-legs";
+import { transactionToCompleteLegs } from "@tx-indexer/solana/mappers/complete-legs/transaction-to-legs";
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import {
-  isSpamTransaction,
+  filterSpamTransactions,
   type SpamFilterConfig,
 } from "@tx-indexer/core/tx/spam-filter";
 import type { WalletBalance } from "@tx-indexer/solana/fetcher/balances";
@@ -205,6 +204,11 @@ async function enrichTokenMetadata(
     tx: classified.tx,
     legs: enrichedLegs,
     classification: enrichedClassification,
+    // Additive: the same token-info replacement on the complete legs, from the map fetched
+    // above (no extra lookup). A mint present only in `completeLegs` keeps its fallback info.
+    ...(classified.completeLegs
+      ? { completeLegs: classified.completeLegs.map(enrichLeg) }
+      : {}),
   };
 }
 
@@ -534,69 +538,40 @@ export interface GetTransactionsBySignaturesOptions {
   onTransactionSkipped?: (skipped: SkippedTransaction) => void;
 }
 
-/**
- * Builds both leg views for this wallet and classifies with them: migrated classifiers
- * read the truthful legs, the others the legs they were calibrated on ("v1-main").
- * The truthful legs are what callers receive.
- */
-function classifyWithLegInputs(
-  tx: RawTransaction,
-  walletAddress: string | undefined,
-): { legs: ReturnType<typeof transactionToLegs>; classification: TransactionClassification } {
-  const inputs = transactionToLegInputs(tx, walletAddress);
-  const legs = inputs["v2-closed-token-accounts"];
-  const classification = classifyTransaction(legs, tx, walletAddress, {
-    legacyLegs: inputs["v1-main"],
-  });
-  return { legs, classification };
-}
-
-/**
- * The list spam filter reads the "v1-main" legs (the input its dust and wallet-involvement
- * rules were calibrated on) until it is explicitly migrated; callers still receive the
- * truthful legs. The filter legs are always rebuilt from `tx` for the queried wallet with the
- * frozen 3111fd7 mapper and the same protocol detection as a fresh fetch, so a cached,
- * cloned or deserialised transaction is filtered exactly like a freshly fetched one.
- */
-function legacyFilterLegs(tx: RawTransaction, walletAddress: string | undefined): TxLeg[] {
-  return transactionToLegsV1Main({ ...tx, protocol: detectProtocol(tx.programIds) }, walletAddress);
-}
-
-/**
- * As `filterSpamTransactions`, on the filter's own leg input; returns the callers' objects.
- * With token enrichment on, the filter legs are enriched from their own mints exactly as
- * 1.6.x enriched its legs (token info replaced when the symbol differs, decimals kept).
- */
-async function filterSpamOnFilterLegs(
-  transactions: ClassifiedTransaction[],
-  config: SpamFilterConfig | undefined,
-  walletAddress: string | undefined,
-  tokenFetcher: TokenFetcher | null,
-): Promise<ClassifiedTransaction[]> {
-  let filterLegs = transactions.map((t) => legacyFilterLegs(t.tx, walletAddress));
-  if (tokenFetcher) {
-    const mints = new Set<string>();
-    for (const legs of filterLegs) for (const leg of legs) mints.add(leg.amount.token.mint);
-    if (mints.size > 0) {
-      const info = await tokenFetcher.getTokens(Array.from(mints), 9);
-      filterLegs = filterLegs.map((legs) =>
-        legs.map((leg) => {
-          const token = info.get(leg.amount.token.mint);
-          if (!token || token.symbol === leg.amount.token.symbol) return leg;
-          return { ...leg, amount: { ...leg.amount, token: { ...token, decimals: leg.amount.token.decimals } } };
-        }),
-      );
-    }
-  }
-  return transactions.filter(
-    (t, i) => !isSpamTransaction(t.tx, t.classification, config, filterLegs[i], walletAddress),
-  );
-}
-
 export interface ClassifiedTransaction {
   tx: RawTransaction;
   classification: TransactionClassification;
   legs: ReturnType<typeof transactionToLegs>;
+  /**
+   * Optional, additive (input contract "v2-closed-token-accounts"): all balance movements,
+   * including token accounts closed in the transaction (their debit carries
+   * `closedTokenAccount` on proven closures); no token movement when a snapshot is
+   * unavailable (`tx.tokenBalanceStatus`). Not yet used by any classifier or by the list
+   * filter. Set on freshly classified transactions; absent on objects from older caches, and
+   * nothing in the SDK depends on its presence.
+   */
+  completeLegs?: TxLeg[];
+}
+
+/**
+ * The complete legs of a freshly classified transaction. Never allowed to change the
+ * result or error behaviour of the 1.6.x pipeline: a failure leaves the field absent.
+ */
+function completeLegsOf(tx: RawTransaction, walletAddress: string | undefined): TxLeg[] | undefined {
+  try {
+    return transactionToCompleteLegs(tx, walletAddress);
+  } catch {
+    return undefined;
+  }
+}
+
+/** Attaches `completeLegs` when available (additive; the other fields are untouched). */
+function withCompleteLegs(
+  classified: ClassifiedTransaction,
+  walletAddress: string | undefined,
+): ClassifiedTransaction {
+  const completeLegs = completeLegsOf(classified.tx, walletAddress);
+  return completeLegs ? { ...classified, completeLegs } : classified;
 }
 
 /**
@@ -941,8 +916,13 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       ): ClassifiedTransaction[] {
         return transactions.map((tx) => {
           tx.protocol = detectProtocol(tx.programIds);
-          const { legs, classification } = classifyWithLegInputs(tx, walletAddressStr);
-          return { tx, classification, legs };
+          const legs = transactionToLegs(tx, walletAddressStr);
+          const classification = classifyTransaction(
+            legs,
+            tx,
+            walletAddressStr,
+          );
+          return withCompleteLegs({ tx, classification, legs }, walletAddressStr);
         });
       }
 
@@ -1112,7 +1092,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
           if (newSigs.length > 0) {
             const classified = await fetchAndClassify(newSigs);
             const nonSpam = filterSpam
-              ? await filterSpamOnFilterLegs(classified, spamConfig, walletAddressStr, enrichTokens ? tokenFetcher : null)
+              ? filterSpamTransactions(classified, spamConfig, walletAddressStr)
               : classified;
             accumulated.push(...nonSpam);
           }
@@ -1152,9 +1132,13 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
         ? normalizeAddress(walletAddress).toString()
         : undefined;
 
-      const { legs, classification } = classifyWithLegInputs(tx, walletAddressStr);
+      const legs = transactionToLegs(tx, walletAddressStr);
+      const classification = classifyTransaction(legs, tx, walletAddressStr);
 
-      let classified: ClassifiedTransaction = { tx, classification, legs };
+      let classified: ClassifiedTransaction = withCompleteLegs(
+        { tx, classification, legs },
+        walletAddressStr,
+      );
 
       if (enrichTokens) {
         classified = await enrichTokenMetadata(tokenFetcher, classified);
@@ -1419,8 +1403,16 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
 
         for (const tx of rawTxs) {
           tx.protocol = detectProtocol(tx.programIds);
-          const { legs, classification } = classifyWithLegInputs(tx, walletAddressStr);
-          let classified: ClassifiedTransaction = { tx, classification, legs };
+          const legs = transactionToLegs(tx, walletAddressStr);
+          const classification = classifyTransaction(
+            legs,
+            tx,
+            walletAddressStr,
+          );
+          let classified: ClassifiedTransaction = withCompleteLegs(
+            { tx, classification, legs },
+            walletAddressStr,
+          );
 
           // Enrich token metadata
           if (enrichTokens) {
@@ -1442,11 +1434,10 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       // Apply spam filter
       let finalResults = results;
       if (filterSpam) {
-        finalResults = await filterSpamOnFilterLegs(
+        finalResults = filterSpamTransactions(
           results,
           spamConfig,
           walletAddressStr,
-          enrichTokens ? tokenFetcher : null,
         );
       }
 

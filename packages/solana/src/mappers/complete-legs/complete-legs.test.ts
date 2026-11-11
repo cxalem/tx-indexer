@@ -1,13 +1,13 @@
 import { afterEach, describe, test, expect } from "bun:test";
 import type { Address, Signature } from "@solana/kit";
 import type { RawTransaction, TxLeg } from "@tx-indexer/core/tx/tx.types";
-import { fetchTransaction } from "../fetcher/transactions";
-import { fetchTransactionsBatched } from "../rpc/batch";
-import { transactionToLegs } from "./transaction-to-legs";
+import { fetchTransaction } from "../../fetcher/transactions";
+import { fetchTransactionsBatched } from "../../rpc/batch";
+import { transactionToCompleteLegs as transactionToLegs } from "./transaction-to-legs";
 import {
   extractTokenBalanceChanges,
-  getWalletSolChange,
-  getWalletTokenChanges,
+  getWalletSolChangeExact as getWalletSolChange,
+  getWalletTokenChangesExact as getWalletTokenChanges,
 } from "./balance-parser";
 import {
   SOL,
@@ -15,7 +15,7 @@ import {
   syntheticResponse,
   WSOL_MINT,
   TOKEN_PROGRAM,
-} from "../__fixtures__/synthetic";
+} from "../../__fixtures__/synthetic";
 
 const SIG = "C1osedAccounts111111111111111111111111111111111111111111111111111111111111111111111111" as Signature;
 const ALICE = "A1ice11111111111111111111111111111111111111";
@@ -239,7 +239,8 @@ describe("unavailable token balance snapshots are not read as zeros", () => {
       const { tx, legs } = await fetchWith(closeInput(), (r) => {
         delete r.meta[missing];
       });
-      expect(tx[missing]).toBeUndefined();
+      // the fetch paths keep 1.6.x behaviour (missing array -> []); the status records it
+      expect(tx[missing]).toEqual([]);
       expect(tx.tokenBalanceStatus?.status).toBe("unavailable");
       expect(tx.tokenBalanceStatus?.reason).toContain(missing);
       expect(extractTokenBalanceChanges(tx)).toEqual([]);
@@ -282,7 +283,7 @@ describe("unavailable token balance snapshots are not read as zeros", () => {
       const { tx: kitTx } = await fetchWith(closeInput());
       expect(fmt(transactionToLegs(ok!))).toEqual(fmt(transactionToLegs(kitTx)));
       expect(ok!.tokenBalanceStatus).toEqual({ status: "available" });
-      expect(noPre!.preTokenBalances).toBeUndefined();
+      expect(noPre!.preTokenBalances).toEqual([]);
       expect(noPre!.tokenBalanceStatus?.status).toBe("unavailable");
       expect(extractTokenBalanceChanges(noPre!)).toEqual([]);
     });

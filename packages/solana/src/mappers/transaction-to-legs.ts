@@ -130,49 +130,31 @@ export function transactionToLegs(
     }
   }
 
-  // Token changes come from the union of pre and post token balances, so a
-  // token account closed in this transaction contributes the debit of its pre
-  // amount, attributed to its pre owner (see extractTokenBalanceChanges).
   const tokenChanges = extractTokenBalanceChanges(tx);
   for (const change of tokenChanges) {
-    // Debit vs credit from the exact raw delta, never from UI amounts.
-    const delta = BigInt(change.change.raw);
-    if (delta === 0n) continue;
+    if (change.change.raw === "0") continue;
     // wSOL accounts are represented by their lamport delta (see above); the
     // token-amount change is not emitted, so a sync_native (token amount
     // catching up with lamports already held) never appears as a movement.
-    if (change.mint === KNOWN_TOKENS.SOL && nativeAccounts.has(change.accountIndex)) continue;
+    if (nativeAccounts.has(change.accountIndex)) continue;
 
-    // Without an owner, the token ACCOUNT address is the identity, never the mint.
-    const owner = tokenChangeOwner(change, tx);
     const accountId = ownerAccountId(
-      owner,
+      change.owner || change.tokenInfo.mint,
       change.tokenInfo.symbol,
       tx,
       feePayer,
       walletAddress,
     );
 
-    const isPositive = delta > 0n;
     legs.push({
       accountId,
-      side: isPositive ? "credit" : "debit",
+      side: change.change.ui > 0 ? "credit" : "debit",
       amount: {
         token: change.tokenInfo,
-        amountRaw: (isPositive ? delta : -delta).toString(),
+        amountRaw: change.change.raw.replace("-", ""),
         amountUi: Math.abs(change.change.ui),
       },
-      role: ownerRole(owner, isPositive, tx, feePayer, walletAddress),
-      // Provenance for classifiers: only a proven closure (see
-      // TokenBalanceChange.accountClosed) marks its debit.
-      ...(change.accountClosed && !isPositive
-        ? {
-            closedTokenAccount:
-              change.tokenAccount ??
-              tx.accountKeys?.[change.accountIndex] ??
-              `account-index-${change.accountIndex}`,
-          }
-        : {}),
+      role: determineTokenRole(change, tx, feePayer, walletAddress),
     });
   }
 
@@ -201,9 +183,8 @@ interface NativeTokenAccount {
  *   account's rent-exempt reserve, which cannot be separated from funding
  *   using transaction data alone.
  * - closed (pre entry only): NOT included here, so the lamport change stays
- *   an ordinary external:<account> leg and no token leg is emitted (known
- *   limitation for wSOL; closed NON-native token accounts do get a token
- *   debit, see extractTokenBalanceChanges).
+ *   an ordinary external:<account> leg exactly as on main (closed-account
+ *   handling is a separate, known limitation).
  *
  * When the balance metadata has no owner, the account's own address
  * (accountKeys[accountIndex]) is used as the identity, never the mint.
@@ -319,17 +300,11 @@ function ownerRole(
   return isPositive ? "received" : "sent";
 }
 
-/**
- * Identity a token movement is attributed to: the change's owner (pre owner
- * for a closed account's debit, post owner otherwise); when the balance
- * metadata reports no owner, the token account address
- * (`accountKeys[accountIndex]`). Never the mint.
- */
-function tokenChangeOwner(change: TokenBalanceChange, tx: RawTransaction): string {
-  return (
-    change.owner ||
-    change.tokenAccount ||
-    tx.accountKeys?.[change.accountIndex] ||
-    `account-index-${change.accountIndex}`
-  );
+function determineTokenRole(
+  change: TokenBalanceChange,
+  tx: RawTransaction,
+  feePayer?: string,
+  walletAddress?: string,
+): TxLegRole {
+  return ownerRole(change.owner, change.change.ui > 0, tx, feePayer, walletAddress);
 }

@@ -13,7 +13,7 @@ import {
   normalizeLoadedAddresses,
 } from "../mappers/account-keys";
 import { reconcileLamports } from "../mappers/lamport-reconciliation";
-import { tokenBalanceStatusOf } from "../mappers/balance-parser";
+import { tokenBalanceStatusOf } from "../mappers/complete-legs/balance-parser";
 import {
   MAX_SUPPORTED_TRANSACTION_VERSION,
   UNSUPPORTED_TRANSACTION_VERSION_RPC_CODE,
@@ -199,8 +199,7 @@ function responseToRawTransaction(
     loadedAddresses,
   );
 
-  // A missing array stays undefined (unavailable), never an empty snapshot.
-  const preTokenBalances = resp.meta?.preTokenBalances?.map((bal) => ({
+  const preTokenBalances = (resp.meta?.preTokenBalances ?? []).map((bal) => ({
     accountIndex: bal.accountIndex,
     mint: bal.mint,
     owner: bal.owner,
@@ -212,8 +211,7 @@ function responseToRawTransaction(
     },
   }));
 
-  // A missing array stays undefined (unavailable), never an empty snapshot.
-  const postTokenBalances = resp.meta?.postTokenBalances?.map((bal) => ({
+  const postTokenBalances = (resp.meta?.postTokenBalances ?? []).map((bal) => ({
     accountIndex: bal.accountIndex,
     mint: bal.mint,
     owner: bal.owner,
@@ -249,7 +247,9 @@ function responseToRawTransaction(
   rawTx.reconciliation = reconcileLamports(rawTx, {
     rewards: resp.meta?.rewards,
   });
-  rawTx.tokenBalanceStatus = tokenBalanceStatusOf(rawTx);
+  // Additive metadata for the complete legs: whether the RPC returned the token snapshots
+  // (the arrays above keep defaulting to [] as in 1.6.x).
+  rawTx.tokenBalanceStatus = tokenBalanceStatusOf(resp.meta ?? {});
 
   return rawTx;
 }

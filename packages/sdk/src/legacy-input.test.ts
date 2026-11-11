@@ -1,14 +1,15 @@
 /**
- * "v1-main" compatibility input: fidelity to 3111fd7.
+ * `legs` ("v1-main"), classification and the additive `completeLegs`: fidelity to 3111fd7.
  *
  * __tests__/legacy-input/oracle.3111fd7.json was produced by generate-oracle.ts running the
  * 3111fd7 tree on the corpus (recorded mainnet fixtures, all accuracy cases x perspectives,
  * synthetic cases). For every entry this tree must produce:
- * 1. the identical ORDERED "v1-main" leg array;
+ * 1. the identical ORDERED `legs` array (transactionToLegs, unchanged from 3111fd7);
  * 2. for each of the eleven classifiers (all read "v1-main"), the identical output (null,
  *    amounts, participants, relevance, confidence, metadata) on those legs;
- * 3. the identical FINAL classification and selecting classifier through the routed pipeline
- *    (truthful legs + `{ legacyLegs }`, as the SDK runs it). No exceptions.
+ * 3. the identical FINAL classification and selecting classifier, both as the SDK runs it
+ *    (classifyTransaction(legs, tx, wallet)) and with the optional `{ completeLegs }` engine
+ *    context. No exceptions.
  */
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
@@ -51,6 +52,8 @@ describe("v1-main legs, every classifier and the final result equal 3111fd7 (ora
         }
         expect(got.final).toEqual(want.final);
         expect(got.finalClassifier).toBe(want.finalClassifier!);
+        expect(got.finalWithComplete).toEqual(want.final);
+        expect(got.finalWithCompleteClassifier).toBe(want.finalClassifier!);
       });
     }
   }

@@ -13,8 +13,9 @@
     "packages/classification/src/classifiers/airdrop-classifier.ts",
     "packages/classification/src/classifiers/nft-mint-classifier.ts",
     "packages/classification/src/protocols/detector.ts",
-    "packages/solana/src/mappers/legacy-v1-main/balance-parser.ts",
-    "packages/solana/src/mappers/legacy-v1-main/transaction-to-legs.ts"
+    "packages/solana/src/mappers/balance-parser.ts",
+    "packages/solana/src/mappers/transaction-to-legs.ts",
+    "packages/domain/src/tx/spam-filter.ts"
   ],
   "changedFromBase": [],
   "files": {
@@ -34,10 +35,11 @@
     "packages/classification/src/protocols/detector.ts": "4e58962bcbd6ef7b30bff0b28d3c23ba936255198c568114328193b0b5993c91",
     "packages/domain/src/money/token-registry.ts": "26039881cab61d4471cc1cd312fbcc9bbaa25d7832162749b594ffd230e0cbfa",
     "packages/domain/src/tx/account-id.ts": "f4f3bf0fa8b2fb77dbb06855e92248d5d3adc9eac805255e769ebc056cee31a7",
+    "packages/domain/src/tx/spam-filter.ts": "c79956abcf21779b50301ca2c3c5bb88bafb2d104e954c84548b7654b1193b68",
     "packages/solana/src/constants/program-ids.ts": "ea211754843462369ee9e056904402a78528a9a4ce068aeab5ae8e1ececa5a04",
     "packages/solana/src/constants/protocol-constants.ts": "adb1c32b680f58f3fccb8bd9d7ebbbf10503892be80f1291c5fb2354794e05ee",
-    "packages/solana/src/mappers/legacy-v1-main/balance-parser.ts": "f6c83af4baad88df621d5cad9a6bab4ab6b4d678f3807f02ae7011a195d5b6b0",
-    "packages/solana/src/mappers/legacy-v1-main/transaction-to-legs.ts": "84e095f4330ed675f63cdea49539a0026f000c2e2f0b9ed10826985462e22403",
-    "packages/solana/src/mappers/memo-parser.ts": "ded01157834c386bfa3d3867e710b8f71998f5abc227e1d038c4e8f4504750c3"
+    "packages/solana/src/mappers/balance-parser.ts": "30b7910ce132b083d098c65555f94e112ed33374b77fb2ec52ef46be005a1fc1",
+    "packages/solana/src/mappers/memo-parser.ts": "ded01157834c386bfa3d3867e710b8f71998f5abc227e1d038c4e8f4504750c3",
+    "packages/solana/src/mappers/transaction-to-legs.ts": "2558203d138066606c4fa4f5dc1913ad8f3e6f85a71a8ac33699234629531935"
   }
 }

@@ -204,6 +204,8 @@ export interface JsonClassifiedTransaction {
   tx: JsonRawTransaction;
   classification: JsonTransactionClassification;
   legs: JsonTxLeg[];
+  /** Complete legs (optional, see ClassifiedTransaction.completeLegs) */
+  completeLegs?: JsonTxLeg[];
 }
 
 // =============================================================================
@@ -353,6 +355,7 @@ export function toJsonClassifiedTransaction(
     tx: toJsonRawTransaction(tx.tx),
     classification: toJsonTransactionClassification(tx.classification),
     legs: tx.legs.map(toJsonTxLeg),
+    ...(tx.completeLegs ? { completeLegs: tx.completeLegs.map(toJsonTxLeg) } : {}),
   };
 }
 

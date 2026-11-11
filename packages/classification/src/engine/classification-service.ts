@@ -7,16 +7,14 @@ import type {
 import type { Classifier, ClassifierContext } from "./classifier.interface";
 
 /**
- * Options for routing versioned leg inputs (see LegInputVersion).
- *
- * `legacyLegs` is the `"v1-main"` view of the SAME transaction and wallet (from
- * `transactionToLegInputs`). When given, classifiers that declare `inputVersion:
- * "v2-closed-token-accounts"` read the `legs` argument and every other classifier reads
- * `legacyLegs`. Without it, every classifier reads `legs`. Never derive `legacyLegs` by
- * filtering a legs array: build it with the mapper.
+ * Optional context for classification. `completeLegs` is the "v2-closed-token-accounts"
+ * input of the same transaction and wallet (all balance movements, including token accounts
+ * closed in it). It is read ONLY by classifiers that declare `inputVersion:
+ * "v2-closed-token-accounts"`; today none does, so passing it changes nothing but the trace.
+ * The `legs` argument is the "v1-main" input and keeps its 1.6.x meaning.
  */
 export interface ClassifyOptions {
-  legacyLegs?: TxLeg[];
+  completeLegs?: TxLeg[];
 }
 import { TransferClassifier } from "../classifiers/transfer-classifier";
 import { SwapClassifier } from "../classifiers/swap-classifier";
@@ -76,20 +74,21 @@ export class ClassificationService {
     classification: TransactionClassification;
     debugTrace: ClassificationDebugTrace;
   } {
-    const currentContext: ClassifierContext = { legs, tx, walletAddress };
-    const legacyLegs = options?.legacyLegs;
-    const legacyContext: ClassifierContext | null = legacyLegs
-      ? { legs: legacyLegs, tx, walletAddress }
+    const context: ClassifierContext = { legs, tx, walletAddress };
+    const completeLegs = options?.completeLegs;
+    const completeContext: ClassifierContext | null = completeLegs
+      ? { legs: completeLegs, tx, walletAddress }
       : null;
-    // The input each classifier reads, chosen immediately before calling it.
+    // Without options nothing below differs from 1.6.x: every classifier reads `legs` and
+    // the trace has no `legInput`.
     const inputFor = (
       classifier: Classifier,
-    ): { context: ClassifierContext; legInput: ClassifierDecisionTrace["legInput"] } => {
-      if (!legacyContext) return { context: currentContext, legInput: "supplied" };
-      if (classifier.inputVersion === "v2-closed-token-accounts") {
-        return { context: currentContext, legInput: "v2-closed-token-accounts" };
+    ): { context: ClassifierContext; trace: Pick<ClassifierDecisionTrace, "legInput"> } => {
+      if (!options) return { context, trace: {} };
+      if (completeContext && classifier.inputVersion === "v2-closed-token-accounts") {
+        return { context: completeContext, trace: { legInput: "v2-closed-token-accounts" } };
       }
-      return { context: legacyContext, legInput: "v1-main" };
+      return { context, trace: { legInput: "v1-main" } };
     };
     const decisions: ClassifierDecisionTrace[] = [];
     let firstNonRelevant: TransactionClassification | null = null;
@@ -111,9 +110,9 @@ export class ClassificationService {
         continue;
       }
 
-      const { context, legInput } = inputFor(classifier);
+      const input = inputFor(classifier);
       const startedAt = Date.now();
-      const result = classifier.classify(context);
+      const result = classifier.classify(input.context);
       const elapsedMs = Date.now() - startedAt;
 
       if (!result) {
@@ -124,7 +123,7 @@ export class ClassificationService {
           relevant: false,
           reason: "No match",
           elapsedMs,
-          legInput,
+          ...input.trace,
         });
         continue;
       }
@@ -142,7 +141,7 @@ export class ClassificationService {
           relevant: true,
           reason: `Matched ${result.primaryType}`,
           elapsedMs,
-          legInput,
+          ...input.trace,
         });
         continue;
       }
@@ -154,7 +153,7 @@ export class ClassificationService {
         relevant: false,
         reason: `Matched non-relevant ${result.primaryType}`,
         elapsedMs,
-        legInput,
+        ...input.trace,
       });
 
       if (!firstNonRelevant) {
@@ -210,11 +209,8 @@ export const classificationService = new ClassificationService();
  * @param legs - Transaction legs representing all balance movements
  * @param tx - Raw transaction data for additional context (protocol, memo, etc.)
  * @param walletAddress - Optional wallet address for perspective-aware classification (e.g., swap direction)
- * @param options - `{ legacyLegs }`: the `"v1-main"` legs of the same transaction and wallet
- *   (from `transactionToLegInputs`). Classifiers that declare `"v1-main"` (today: all of
- *   them) read `legacyLegs`; a classifier that declares `"v2-closed-token-accounts"` reads
- *   `legs`. With three arguments every classifier reads `legs`, so results equal to the SDK
- *   pipeline (and to 3111fd7) need the explicit legacy view.
+ * @param options - Optional `{ completeLegs }` ("v2-closed-token-accounts" input), read only by
+ *   classifiers that declare it (none today). `legs` keeps its 1.6.x meaning.
  * @returns Classification result with type, amounts, sender, receiver, and confidence
  */
 export function classifyTransaction(
@@ -226,7 +222,6 @@ export function classifyTransaction(
   return classificationService.classify(legs, tx, walletAddress, options);
 }
 
-/** As `classifyTransaction`, also returning the per-classifier trace (incl. `legInput`). */
 export function classifyTransactionWithTrace(
   legs: TxLeg[],
   tx: RawTransaction,

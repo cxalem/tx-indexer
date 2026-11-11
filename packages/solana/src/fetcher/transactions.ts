@@ -16,7 +16,7 @@ import {
   normalizeLoadedAddresses,
 } from "@tx-indexer/solana/mappers/account-keys";
 import { reconcileLamports } from "@tx-indexer/solana/mappers/lamport-reconciliation";
-import { tokenBalanceStatusOf } from "@tx-indexer/solana/mappers/balance-parser";
+import { tokenBalanceStatusOf } from "@tx-indexer/solana/mappers/complete-legs/balance-parser";
 import {
   isUnsupportedTransactionVersionRpcError,
   UnsupportedTransactionVersionError,
@@ -335,8 +335,7 @@ export async function fetchTransaction(
     err: meta?.err ?? null,
     programIds: extractProgramIds(response.transaction),
     protocol: null,
-    // A missing array stays undefined (unavailable), never an empty snapshot.
-    preTokenBalances: meta?.preTokenBalances?.map((bal) => ({
+    preTokenBalances: (meta?.preTokenBalances ?? []).map((bal) => ({
       accountIndex: bal.accountIndex,
       mint: bal.mint.toString(),
       owner: bal.owner?.toString(),
@@ -347,8 +346,7 @@ export async function fetchTransaction(
         uiAmountString: bal.uiTokenAmount.uiAmountString.toString(),
       },
     })),
-    // A missing array stays undefined (unavailable), never an empty snapshot.
-    postTokenBalances: meta?.postTokenBalances?.map((bal) => ({
+    postTokenBalances: (meta?.postTokenBalances ?? []).map((bal) => ({
       accountIndex: bal.accountIndex,
       mint: bal.mint.toString(),
       owner: bal.owner?.toString(),
@@ -367,7 +365,9 @@ export async function fetchTransaction(
     memo,
   };
   rawTx.reconciliation = reconcileLamports(rawTx, { rewards: meta?.rewards });
-  rawTx.tokenBalanceStatus = tokenBalanceStatusOf(rawTx);
+  // Additive metadata for the complete legs: whether the RPC returned the token snapshots
+  // (the arrays above keep defaulting to [] as in 1.6.x).
+  rawTx.tokenBalanceStatus = tokenBalanceStatusOf(meta ?? {});
 
   return rawTx;
 }

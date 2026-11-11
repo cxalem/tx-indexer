@@ -3,22 +3,33 @@
 Every regeneration of `baseline.json` / `BASELINE.md` adds one entry here, in the same commit:
 date, what changed, why. `bun run accuracy` fails if `baseline.json` changed without this file.
 
-## 2026-11-11: versioned leg inputs; every classifier reads the 3111fd7 legs (no classification change)
+## 2026-11-11: complete legs as an additive field; `legs` and classification unchanged (no prediction change)
 
 `baseline.json` equals 3111fd7's apart from the scorer-v4 fields (`schemaVersion` and the per-component
 exactness records); `BASELINE.md` is byte-identical to 3111fd7's. Every one of the 72 perspectives has
 the same prediction as 3111fd7 (kind, amounts, participants, selecting classifier); the oracle test
-(`packages/sdk/src/legacy-input.test.ts`) checks this with no exception. No `case.json`, `rpc.json` or
-`expected.json` changed.
+(`packages/sdk/src/legacy-input.test.ts`) checks this, plus the ordered `legs` and the output of each
+classifier, on 162 corpus entries with no exception. No `case.json`, `rpc.json` or `expected.json` changed.
 
-What this slice ships: truthful public legs (token accounts closed in the transaction, with
-`closedTokenAccount` provenance), and versioned classifier inputs. All eleven classifiers declare
-`v1-main`, the legs as built at 3111fd7 (frozen mapper), and their source is byte-identical to 3111fd7
-(git check plus committed sha256 digests). The SDK list spam filter also reads `v1-main` (rebuilt from `tx` for the queried wallet, enriched from its own
-mints), so list decisions are unchanged too, including for cached and deserialised transactions.
+What this slice ships: `legs`, every classifier, the protocol detector and the list spam filter are
+byte-identical to 3111fd7 (git check plus committed sha256 digests of their runtime closure). The
+accounting with token accounts closed in the transaction ships as a new optional field, `completeLegs`
+(input contract `v2-closed-token-accounts`, closed-account debits flagged with `closedTokenAccount`),
+not yet read by any classifier or by the list filter.
+
+Publishing that accounting as `legs` itself was tried first, over six review rounds on this branch
+(preserved as `wip/legs-v2-public`), and replaced by the additive field. `legs` is not only returned
+data: the list spam filter, token enrichment, `getCached` objects and `getTransactions` pagination all
+read it. Keeping classification identical meant routing every classifier to a frozen copy of the old
+legs; keeping list decisions identical meant rebuilding and re-enriching those legs inside the filter,
+and each review still found a path where they differed (a cached object filtered by the state it was
+written with, a page filtered with enriched legs ending pagination one page early, a cached read that
+threw when the token lookup failed). With an additive field nothing that reads `legs` changes, by
+construction rather than by compensation, and an SDK-boundary test compares all those paths with a
+3111fd7 checkout.
 
 What was built, measured and deliberately not shipped:
-- `swap` on the truthful legs (branch `feat/swap-closed-accounts`). On this set it turned
+- `swap` on the complete legs (branch `feat/swap-closed-accounts`). On this set it turned
   `swap-pump-amm-sell-all-and-close` @32ktkabA… from a forbidden `transfer` into `kind_only` `swap`; on the
   8,280-transaction traffic sample, 52 `transfer` → `swap` changes (47 of them Pump sell-and-close). Rejected
   because balances cannot tell a sale from a transfer-and-close or a burn plus an unrelated mint: review
@@ -30,6 +41,7 @@ What was built, measured and deliberately not shipped:
 - `transfer` restricted to the wallet's own pairs (branch `feat/transfer-perspective`): 934 changed
   predictions on the traffic sample, 494 list-filter decisions changed, and the keeper perspective
   `liquidity-add-damm-v2-by-keeper` @ATdpV5tR… lost its (coincidental) `transfer` kind.
+- complete legs published as `legs` (branch `wip/legs-v2-public`), see above.
 
 Earlier versions of this entry (commits 51d0792 and 7b7a018 on this branch) recorded those migrations'
 score changes; this version replaces them and all of those changes are reverted.
@@ -43,9 +55,9 @@ were read and the closed account's token was lost. Native wSOL accounts and fees
 No `case.json`, `rpc.json` or `expected.json` changed (case hashes identical).
 
 Later commits on the same branch first applied a burn-and-close rule in several classifiers, then
-versioned leg inputs; in the end every classifier reads the 3111fd7 legs (see the entry above), so all
-score and prediction changes listed in this entry are reverted. The leg-level fix (the closed account's
-debit in the returned legs) stays.
+versioned leg inputs; in the end `legs` and every classifier are as at 3111fd7 (see the entry above), so
+all score and prediction changes listed in this entry are reverted. The leg-level fix (the closed
+account's debit) ships in the additive `completeLegs` field, not in `legs`.
 
 Score records that changed: 3 of 72. Predictions that changed: 4 of 72 (the fourth is a
 `wrong_label` before and after, so no score moved). Every other perspective, outcome, component and

@@ -1,8 +1,9 @@
 /**
- * The list spam filter reads the "v1-main" legs (its calibrated input), rebuilt from `tx` for
- * the queried wallet, never the returned truthful legs and never a per-object cache. Its
- * decisions must equal 3111fd7's on fresh, cached, cloned and deserialised transactions, and
- * with token enrichment on.
+ * The list spam filter reads `legs` exactly as at 3111fd7 (the filter and every path into it
+ * are unchanged); the additive `completeLegs` is never read by it. Its decisions must equal
+ * 3111fd7's on fresh, cached, cloned and deserialised transactions, and with token enrichment
+ * on. The broader matrix (pagination, cache combinations, rejecting getTokens) is
+ * sdk-boundary.test.ts.
  */
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { createIndexer, type ClassifiedTransaction } from "./client";
@@ -113,10 +114,12 @@ describe("dust refund beside another wallet's transfer: Alice is filtered on eve
     });
   }
 
-  test("the returned legs show Alice's JUNK debit; fed those legs the filter would keep it", async () => {
+  test("completeLegs show Alice's JUNK debit (legs do not); fed those legs the filter would keep it", async () => {
     const t = await fetchOnce(ALICE);
-    expect(t.legs.some((l) => l.closedTokenAccount === A_JUNK && l.accountId === `external:${ALICE}`)).toBe(true);
-    expect(isSpamTransaction(t.tx, t.classification, {}, t.legs, ALICE)).toBe(false);
+    expect(t.completeLegs!.some((l) => l.closedTokenAccount === A_JUNK && l.accountId === `external:${ALICE}`)).toBe(true);
+    expect(t.legs.some((l) => l.amount.token.mint === JUNK)).toBe(false);
+    expect(isSpamTransaction(t.tx, t.classification, {}, t.completeLegs, ALICE)).toBe(false);
+    expect(isSpamTransaction(t.tx, t.classification, {}, t.legs, ALICE)).toBe(true);
   });
 
   test("Carol (the real recipient) still sees it, fresh and from a JSON cache", async () => {
@@ -137,15 +140,18 @@ describe("dust refund beside another wallet's transfer: Alice is filtered on eve
   });
 });
 
-describe("legacy-only mint: the filter legs are enriched from their own mints (as 3111fd7)", () => {
+describe("mint only in `legs` (pre snapshot missing): enrichment and filter as 3111fd7", () => {
   test("Alice's 0.005 JUNK credit, configured with symbol SOL, keeps the transaction listed", async () => {
     const listed = await indexerFor(() => withoutPre(LEGACY_ONLY_MINT), JUNK_AS_SOL).getTransactionsBySignatures([SIG], ALICE, {
       enrichNftMetadata: false,
       enrichTokenMetadata: true,
     });
     expect(listed).toHaveLength(1);
-    // the public legs have no JUNK leg (snapshot unavailable), so only the filter legs carry it
-    expect(listed[0]!.legs.some((l) => l.amount.token.mint === JUNK)).toBe(false);
+    // `legs` carry the JUNK credit (1.6.x reads a missing snapshot as zero) and it was
+    // enriched; completeLegs have no token movement (snapshot unavailable)
+    expect(listed[0]!.legs.some((l) => l.amount.token.mint === JUNK && l.amount.token.symbol === "SOL")).toBe(true);
+    expect(listed[0]!.completeLegs!.some((l) => l.amount.token.mint === JUNK)).toBe(false);
+    expect(listed[0]!.tx.tokenBalanceStatus).toMatchObject({ status: "unavailable" });
   });
 
   test("without enrichment the fallback symbol applies and it is filtered, as 3111fd7", async () => {

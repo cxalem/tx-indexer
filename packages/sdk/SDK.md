@@ -194,29 +194,20 @@ interface GetTransactionOptions {
 
 ### Classification Engine
 
-- `classifyTransaction(legs: TxLeg[], tx: RawTransaction, walletAddress?: string, options?: { legacyLegs?: TxLeg[] }): TransactionClassification` (also `classifyTransactionWithTrace`)
-- `transactionToLegs(tx: RawTransaction, walletAddress?: string): TxLeg[]`
-- `transactionToLegInputs(tx: RawTransaction, walletAddress?: string): { "v2-closed-token-accounts": TxLeg[]; "v1-main": TxLeg[] }`
+- `classifyTransaction(legs: TxLeg[], tx: RawTransaction, walletAddress?: string, options?: { completeLegs?: TxLeg[] }): TransactionClassification` (also `classifyTransactionWithTrace`)
+- `transactionToLegs(tx: RawTransaction, walletAddress?: string): TxLeg[]` (the `legs`, unchanged from 1.6)
+- `transactionToCompleteLegs(tx: RawTransaction, walletAddress?: string): TxLeg[]` (the `completeLegs`, see below)
+- `getWalletTokenChangesExact`, `getWalletSolChangeExact`: the balance helpers with exact (case-sensitive) address comparison; `getWalletTokenChanges` / `getWalletSolChange` keep the 1.6 case-insensitive comparison (known limitation, to be fixed in 3.0)
 
-**Versioned leg inputs.** The legs you receive are the truthful ones (`"v2-closed-token-accounts"`: token accounts closed in the transaction included, owner and mint changes split, raw-amount signs, `closedTokenAccount` provenance). Each classifier declares which leg input it was calibrated on and reads that one; a classifier moves to the truthful legs only when it is migrated on evidence. Today **no classifier is migrated**: all eleven (Solana Pay, Privacy Cash, bridge, NFT mint, NFT transfer and marketplace, stake deposit and withdraw, swap, airdrop, fee-only, transfer) read `"v1-main"`, the legs as built at commit 3111fd7 (an internal compatibility input from a frozen copy of that mapper), and their source is identical to 3111fd7 (checked with git and with committed sha256 digests). The list spam filter (`filterSpam` in `getTransactions` / `getTransactionsBySignatures`) also reads `"v1-main"`. The debug trace records the input each classifier read (`decisions[].legInput`).
+**Leg inputs.** Classification reads `legs` exactly as in 1.6 (input contract `"v1-main"`): every built-in classifier, the code that builds `legs`, the protocol detector and the list spam filter are byte-identical to commit 3111fd7 (checked with git and with committed sha256 digests of their runtime closure). The optional fourth argument passes `completeLegs` (contract `"v2-closed-token-accounts"`) as context: only a classifier that declares `inputVersion: "v2-closed-token-accounts"` reads it, and none of the built-in ones does, so the result is the same with or without it; with the argument, the debug trace also records the input each classifier read (`decisions[].legInput`). Without it the engine behaves exactly as in 1.6. The SDK methods do not pass it.
 
-So classification (kind, amounts, participants, relevance, confidence, metadata, selecting classifier) and list filtering through the SDK methods are identical to 3111fd7; evaluated debug-trace decisions now also carry `legInput`. The repository's oracle test checks every corpus entry (legs, each classifier, final result) with no exception, and an SDK-boundary test checks representative entries through the SDK methods with a serialising cache and token enrichment. What changes for you is the returned legs.
-
-> **Warning: custom pipelines must call `classifyTransaction` with four arguments.** `getTransaction` and friends do this for you. If you call it yourself, build both views with `transactionToLegInputs(tx, wallet)` (same wallet for both; never cache by signature alone) and pass `{ legacyLegs: views["v1-main"] }`. With only three arguments every classifier reads the array you pass, so passing the returned (truthful) legs gives results that differ from the SDK pipeline. Do not build a "legacy" array by filtering legs.
->
-> ```typescript
-> const views = transactionToLegInputs(tx, wallet);
-> const classification = classifyTransaction(views["v2-closed-token-accounts"], tx, wallet, {
->   legacyLegs: views["v1-main"],
-> });
-> ```
 - `detectProtocol(programIds: string[]): ProtocolInfo | null`
 
 ### Spam Filtering
 
 - `isSpamTransaction(tx: ClassifiedTransaction, config?: SpamFilterConfig): boolean`
 - `filterSpamTransactions(txs: ClassifiedTransaction[], config?: SpamFilterConfig, walletAddress?: string): ClassifiedTransaction[]`
-- Leg input: the SDK's list filter (`getTransactions`, `getTransactionsBySignatures`) feeds the dust / wallet-involvement rules the `"v1-main"` legs, like the classifiers, not the returned legs. It rebuilds them from `tx` for the queried wallet on every call (also for transactions returned by `getCached`, whether the original object, a clone or a deserialised copy) and, with token enrichment on, enriches them from their own mints. The standalone `isSpamTransaction` / `filterSpamTransactions` read whatever legs you pass: to get the SDK's decisions, pass `transactionToLegInputs(tx, wallet)["v1-main"]`.
+- Leg input: the list filter reads `legs` (as in 1.6), never `completeLegs`.
 
 ### Leg Utilities
 
@@ -254,8 +245,9 @@ So classification (kind, amounts, participants, relevance, confidence, metadata,
 ```typescript
 interface ClassifiedTransaction {
   tx: RawTransaction; // Raw on-chain data
-  legs: TxLeg[]; // Balance changes as accounting entries
+  legs: TxLeg[]; // Balance changes as accounting entries (unchanged from 1.6)
   classification: TransactionClassification; // Human-readable interpretation
+  completeLegs?: TxLeg[]; // Optional, additive: all balance movements incl. token accounts closed in the transaction; not read by classification or the list filter
 }
 ```
 
@@ -278,7 +270,7 @@ interface RawTransaction {
   loadedAddresses?: { writable: string[]; readonly: string[] }; // lookup-table accounts (v0)
   memo?: string | null;
   reconciliation?: LamportReconciliation; // see Known Limitations: Lamport Reconciliation
-  tokenBalanceStatus?: { status: "available" | "unavailable"; reason?: string }; // token snapshots present?
+  tokenBalanceStatus?: { status: "available" | "unavailable"; reason?: string }; // did the RPC return the token snapshots? (read by completeLegs)
 }
 
 interface LamportReconciliation {
@@ -299,6 +291,7 @@ interface TxLeg {
   side: "debit" | "credit"; // Decrease or increase
   amount: MoneyAmount;
   role: TxLegRole; // "sent" | "received" | "fee" | "reward" | "protocol_deposit" | "protocol_withdraw" | "principal" | "interest" | "unknown"
+  closedTokenAccount?: string; // completeLegs only: on the debit of a token account this transaction closed
 }
 ```
 
@@ -501,18 +494,20 @@ The set is deliberately weighted towards hard cases, so these are not population
 
 - The `fee:network` leg is the fee the runtime charged (`meta.fee`), not a computed residual. A hand-built `RawTransaction` without `fee` gets no fee leg.
 - Lamport balances from the fetch path are `bigint`.
-- A wSOL (native-mint) token account is represented once: by its actual **lamport** delta, attributed to the token owner (or to the account's own address when the balance metadata has no owner); the native token-amount change is not emitted, so a `sync_native` alone produces no leg. The full lamport delta goes to the owner, also when the wSOL account is created in the transaction: in that case the owner's credit includes the account's rent-exempt reserve (from a few thousand to about 2 million lamports, depending on the cluster's rent parameters), because the reserve cannot be told apart from funding using transaction data alone. Only the legacy native mint (`So11111111111111111111111111111111111111112`) is recognised; Token-2022's native mint (`9pan9bMn5HatX4EJdBwg9VgCa7Uz5HL8N1m5D3NdXejP`) is not handled and keeps ordinary lamport and token legs.
-- **Closed wSOL accounts (known limitation):** a wSOL account closed in the transaction (pre-only native entry) keeps an ordinary lamport leg on the token account's own address, not on its owner, and gets no token leg.
-- **Closed token accounts (non-native):** an account closed in the transaction (pre-only entry) produces a debit of its full pre amount attributed to its pre owner; an owner or mint change on the same account index is reported as two separate movements, never netted. The rent refund of a close stays an ordinary lamport movement. Debit vs credit comes from raw integer amounts. The debit of an account the transaction **closed** carries `leg.closedTokenAccount` (the token account address). It is set only when the account has a pre entry and no post entry and ends the transaction with zero lamports; it is not set for an owner change, a mint change on the same index, or a pre-only entry whose account still holds lamports (or whose post lamport balance is unknown), which keep an ordinary debit.
-- **Closed-account debits do not reach classification yet.** Every classifier reads the 3111fd7 legs, where a closed account's debit does not exist. Selling a whole balance and closing the account (PumpSwap, Pump.fun) is therefore still labelled as on 3111fd7 (often `transfer` of the SOL proceeds) until an instruction-backed swap recognizer exists. Balance evidence alone cannot tell a sale from a transfer-and-close or a burn plus an unrelated mint, so no balance rule is used for it.
+- A wSOL (native-mint) token account is represented once: by its actual **lamport** delta, attributed to the token owner (or to the account's own address when the balance metadata has no owner); the native token-amount change is not emitted, so a `sync_native` alone produces no leg. The full lamport delta goes to the owner, also when the wSOL account is created in the transaction: in that case the owner's credit includes the account's rent-exempt reserve (from a few thousand to about 2 million lamports, depending on the cluster's rent parameters), because the reserve cannot be told apart from funding using transaction data alone. Only the legacy native mint (`So11111111111111111111111111111111111111112`) is recognised; Token-2022's native mint (`9pan9bMn5HatX4EJdBwg9VgCa7Uz5HL8N1m5D3NdXejP`) is not handled and keeps ordinary lamport and token legs. Accounts closed in the transaction (pre-only token entry) are unchanged in `legs`: their token balance does not appear (see `completeLegs` below).
+- **`completeLegs` (new in 2.0, additive).** Freshly classified transactions also carry `completeLegs`: the same accounting with token accounts closed in the transaction included. It is not read by any classifier or by the list filter yet; objects from older caches do not have it. Token-metadata enrichment applies the token info already looked up for `legs` to it (no extra lookup); a mint found only in `completeLegs` keeps the mapper's token info (built-in registry entry, otherwise a fallback from the mint address and the balance's decimals). Differences from `legs`:
+- **Closed wSOL accounts (known limitation, both):** a wSOL account closed in the transaction (pre-only native entry) keeps an ordinary lamport leg on the token account's own address, not on its owner, and gets no token leg.
+- **Closed token accounts (non-native, `completeLegs`):** an account closed in the transaction (pre-only entry) produces a debit of its full pre amount attributed to its pre owner; an owner or mint change on the same account index is reported as two separate movements, never netted. The rent refund of a close stays an ordinary lamport movement. Debit vs credit comes from raw integer amounts. The debit of an account the transaction **closed** carries `leg.closedTokenAccount` (the token account address). It is set only when the account has a pre entry and no post entry and ends the transaction with zero lamports; it is not set for an owner change, a mint change on the same index, or a pre-only entry whose account still holds lamports (or whose post lamport balance is unknown), which keep an ordinary debit.
+- **Closed-account debits do not reach classification yet.** Every classifier reads `legs`, where a closed account's debit does not exist. Selling a whole balance and closing the account (PumpSwap, Pump.fun) is therefore still labelled as on 3111fd7 (often `transfer` of the SOL proceeds) until an instruction-backed swap recognizer exists. Balance evidence alone cannot tell a sale from a transfer-and-close or a burn plus an unrelated mint, so no balance rule is used for it.
 - **Known limitation, transfer perspective (unchanged from 1.6.x):** `transfer` picks the best pair over the whole transaction, so a wallet can be shown another wallet's transfer in the same transaction (for example a wallet that only receives rent).
 - **Known limitation, swap rent refund (unchanged from 1.6.x):** when a swap's SOL credit includes a closed account's rent refund, the refund is counted in the swap's SOL side.
-- **Missing token snapshots:** when `meta.preTokenBalances` or `meta.postTokenBalances` is absent, no token balance change is derived and `tx.tokenBalanceStatus.status` is `"unavailable"` (an empty array is a valid, empty snapshot).
+- **Missing token snapshots:** when `meta.preTokenBalances` or `meta.postTokenBalances` is absent, `tx.tokenBalanceStatus.status` is `"unavailable"` and `completeLegs` has no token movement. `legs` and `tx.preTokenBalances` / `postTokenBalances` keep the 1.6 behaviour (a missing array is read as empty).
+- **Address comparison:** `completeLegs` compares addresses exactly; `legs` keeps the 1.6 case-insensitive comparison (known limitation).
 - Nonzero transaction-level rewards (historical rent collection) make the reconciliation `unavailable` with an explicit reason.
 - Stake withdraw/deposit direction follows the target wallet (fallback: fee payer); a sponsored deposit is attributed to its funder. See CHANGELOG "Unreleased" for migration notes.
 - **Sponsored-deposit inference:** when the wallet pays no SOL but receives a non-SOL token on a stake protocol (and has no net SOL credit and sends no other token), the deposit's funder is inferred as the **largest external SOL debit**. The SDK does not verify that the credited mint is the pool's token, nor that the funder's SOL actually reached the pool.
 - **Follow-up (not fixed):** with lookup tables resolved, lamport legs of third-party accounts (pool vaults, custody, program-owned accounts) become visible, and the transfer, Solana Pay, bridge, Privacy Cash, NFT mint and NFT marketplace classifiers can pick them as sender, receiver or price, exactly as they already do on earlier versions when those accounts are static keys. Fixing this needs payment-specific evidence (instruction or program context), not wallet membership.
-- `tx.reconciliation` reports whether `sum(preBalances) - sum(postBalances)` equals the fee over the full account list: `balanced`, `unbalanced` (with `residualLamports`) or `unavailable` (metadata missing, arrays not matching the account list, imprecise numbers, or nonzero transaction-level rewards). It is computed from raw balances and is **independent** of the legs: `validateLegsBalance` checks the legs separately, and the two can disagree. They measure different things: token supply can change without a counterparty (burns, mints, Token-2022 transfer fees withheld in the destination account), so token legs need not balance per mint while lamports still reconcile. In particular, a burn followed by closing the account now produces a debit of the burned amount with no matching credit, so `validateLegsBalance` reports that mint as unbalanced (supply destroyed, no counterparty); this is expected.
+- `tx.reconciliation` reports whether `sum(preBalances) - sum(postBalances)` equals the fee over the full account list: `balanced`, `unbalanced` (with `residualLamports`) or `unavailable` (metadata missing, arrays not matching the account list, imprecise numbers, or nonzero transaction-level rewards). It is computed from raw balances and is **independent** of the legs: `validateLegsBalance` checks the legs separately, and the two can disagree (for example, `legs` omit pre-only token balances of closed accounts). They measure different things: token supply can change without a counterparty (burns, mints, Token-2022 transfer fees withheld in the destination account), so token legs need not balance per mint while lamports still reconcile. In `completeLegs`, a burn followed by closing the account produces a debit of the burned amount with no matching credit, so `validateLegsBalance(completeLegs)` reports that mint as unbalanced (supply destroyed, no counterparty); this is expected.
 
 ### 12. Experimental APIs
 

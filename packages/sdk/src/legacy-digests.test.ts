@@ -1,9 +1,9 @@
 /**
- * Git-independent protection of the legacy ("v1-main") classification path: every source
- * file it loads at runtime must hash to the digest recorded in
+ * Git-independent protection of the runtime closure of `legs` + classify + list filter: every
+ * source file it loads at runtime must hash to the digest recorded in
  * __tests__/legacy-input/legacy-digests.3111fd7.json (generated, and verified against
  * `git show 3111fd7`, by generate-digests.ts). Fails on any mismatch, any missing file and
- * any new runtime import, with or without git. To change a legacy file on purpose, see the
+ * any new runtime import, with or without git. To change one of these files on purpose, see the
  * header of generate-digests.ts (an accuracy/CHANGES.md entry is required in the same commit).
  */
 import { describe, expect, test } from "bun:test";

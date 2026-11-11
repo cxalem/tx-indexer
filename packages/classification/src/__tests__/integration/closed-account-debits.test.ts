@@ -1,13 +1,14 @@
 /**
- * Closed-account debits through the routed pipeline (truthful public legs; every classifier
- * reads the "v1-main" legs). Every answer must equal 3111fd7's (proven case by case in
- * packages/sdk/src/legacy-input.test.ts); the closed debits only show in the returned legs.
+ * Closed-account debits: they appear in the complete legs (`completeLegs`); every classifier
+ * reads the 1.6.x `legs`, so every answer must equal 3111fd7's (proven case by case in
+ * packages/sdk/src/legacy-input.test.ts).
  */
 import { describe, test, expect } from "bun:test";
 import type { Signature } from "@solana/kit";
 import type { RawTransaction } from "@tx-indexer/core/tx/tx.types";
 import { fetchTransaction } from "@tx-indexer/solana/fetcher/transactions";
-import { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
+import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { transactionToCompleteLegs } from "@tx-indexer/solana/mappers/complete-legs/transaction-to-legs";
 import {
   JUPITER_V6_PROGRAM_ID,
   PRIVACY_CASH_PROGRAM_ID,
@@ -68,11 +69,10 @@ async function classify(input: SyntheticTxInput, walletAddress: string, protocol
   const { rpc } = mockRpc(() => syntheticResponse(input));
   const tx = (await fetchTransaction(rpc, SIG))!;
   tx.protocol = protocol;
-  // The routed pipeline, as the SDK runs it: truthful legs for migrated classifiers,
-  // the "v1-main" view for the others.
-  const inputs = transactionToLegInputs(tx, walletAddress);
-  const legs = inputs["v2-closed-token-accounts"];
-  return { tx, legs, c: classifyTransaction(legs, tx, walletAddress, { legacyLegs: inputs["v1-main"] }) };
+  // As the SDK runs it: classifiers read the 1.6.x `legs`; the complete legs are passed as
+  // optional context (no classifier reads them) and returned as `legs` here for the leg checks.
+  const legs = transactionToCompleteLegs(tx, walletAddress);
+  return { tx, legs, c: classifyTransaction(transactionToLegs(tx, walletAddress), tx, walletAddress, { completeLegs: legs }) };
 }
 
 /** Alice sends 10 USDC to Bob and burns and closes a zero-decimal position token. */

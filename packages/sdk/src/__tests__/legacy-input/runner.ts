@@ -3,8 +3,9 @@
  * code drives the 3111fd7 tree (generate-oracle.ts) and this tree (legacy-input.test.ts).
  *
  * mode "base":   legs = transactionToLegs (the 3111fd7 builder); final = classifyTransaction.
- * mode "routed": legs = transactionToLegInputs()["v1-main"]; final = classifyTransaction with
- *                the truthful legs and `{ legacyLegs }` (the SDK path).
+ * mode "routed": the same `legs` and final, plus `finalWithComplete`: classifyTransaction
+ *                with the additive `{ completeLegs }` option (transactionToCompleteLegs), which
+ *                must not change the result either.
  * Per-classifier outputs are all eleven classifiers called directly on `legs`.
  */
 import { join } from "node:path";
@@ -24,6 +25,8 @@ export interface OracleEntry {
   perClassifier?: Record<string, unknown>;
   final?: unknown;
   finalClassifier?: string | null;
+  finalWithComplete?: unknown;
+  finalWithCompleteClassifier?: string | null;
 }
 
 /** JSON-normal form: what a JSON round-trip keeps (bigints as strings). */
@@ -46,13 +49,13 @@ export async function loadTree(root: string) {
     const mod = await imp(`packages/classification/src/classifiers/${file}`);
     classifiers.push([name, new mod[cls]()]);
   }
-  let legInputs: { transactionToLegInputs: (tx: unknown, w?: string) => Record<string, unknown[]> } | null = null;
+  let complete: { transactionToCompleteLegs: (tx: unknown, w?: string) => unknown[] } | null = null;
   try {
-    legInputs = await imp("packages/solana/src/mappers/leg-inputs");
+    complete = await imp("packages/solana/src/mappers/complete-legs/transaction-to-legs");
   } catch {
-    legInputs = null; // the 3111fd7 tree has no leg inputs
+    complete = null; // the 3111fd7 tree has no complete legs
   }
-  return { fetcher, fixtureRpc, synthetic, detector, legs, engine, classifiers, legInputs };
+  return { fetcher, fixtureRpc, synthetic, detector, legs, engine, classifiers, complete };
 }
 
 type Tree = Awaited<ReturnType<typeof loadTree>>;
@@ -78,17 +81,15 @@ export async function runItem(
     const tx = await fetchTx(tree, item);
     if (!tx) return { ...entry, error: "null-result" };
     tx.protocol = tree.detector.detectProtocol(tx.programIds);
-    let legs: unknown[];
-    let final: { debugTrace?: { selectedClassifier: string | null } } & Record<string, unknown>;
-    if (mode === "base") {
-      legs = tree.legs.transactionToLegs(tx, wallet);
-      final = tree.engine.classifyTransaction(legs, tx, wallet);
-    } else {
-      const inputs = tree.legInputs!.transactionToLegInputs(tx, wallet);
-      legs = inputs["v1-main"]!;
-      final = tree.engine.classifyTransaction(inputs["v2-closed-token-accounts"], tx, wallet, {
-        legacyLegs: legs,
-      });
+    type Final = { debugTrace?: { selectedClassifier: string | null } } & Record<string, unknown>;
+    const legs: unknown[] = tree.legs.transactionToLegs(tx, wallet);
+    const final: Final = tree.engine.classifyTransaction(legs, tx, wallet);
+    let extra: Partial<OracleEntry> = {};
+    if (mode === "routed") {
+      const completeLegs = tree.complete!.transactionToCompleteLegs(tx, wallet);
+      const withComplete: Final = tree.engine.classifyTransaction(legs, tx, wallet, { completeLegs });
+      const { debugTrace: t, ...rest } = withComplete;
+      extra = { finalWithComplete: normal(rest), finalWithCompleteClassifier: t?.selectedClassifier ?? null };
     }
     const perClassifier: Record<string, unknown> = {};
     for (const [name, c] of tree.classifiers) {
@@ -101,6 +102,7 @@ export async function runItem(
       perClassifier,
       final: normal(finalWithoutTrace),
       finalClassifier: debugTrace?.selectedClassifier ?? null,
+      ...extra,
     };
   } catch (e) {
     return { ...entry, error: `${(e as Error)?.constructor?.name}: ${(e as Error)?.message}` };

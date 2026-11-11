@@ -239,8 +239,8 @@ describe("SDK replay of recorded v1 transactions", () => {
   });
 });
 
-describe("closed token account provenance survives JSON", () => {
-  test("closedTokenAccount is on the closed account's debit leg only, after JSON round-trip", async () => {
+describe("closed token account provenance survives JSON (completeLegs)", () => {
+  test("closedTokenAccount is on the closed account's complete debit leg only, after JSON round-trip; legs carry none", async () => {
     const { SOL, TOKEN_PROGRAM, mockRpc, syntheticResponse } = await import(
       "@tx-indexer/solana/__fixtures__/synthetic"
     );
@@ -269,7 +269,8 @@ describe("closed token account provenance survives JSON", () => {
       { walletAddress: ALICE as never, enrichNftMetadata: false, enrichTokenMetadata: false },
     );
     const json = JSON.parse(JSON.stringify(toJsonClassifiedTransaction(result!)));
-    const flagged = json.legs.filter((l: { closedTokenAccount?: string }) => "closedTokenAccount" in l);
+    expect(json.legs.some((l: { closedTokenAccount?: string }) => "closedTokenAccount" in l)).toBe(false);
+    const flagged = json.completeLegs.filter((l: { closedTokenAccount?: string }) => "closedTokenAccount" in l);
     expect(flagged).toHaveLength(1);
     expect(flagged[0].closedTokenAccount).toBe(ALICE_ATA);
     expect(flagged[0].side).toBe("debit");

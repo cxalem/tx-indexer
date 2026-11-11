@@ -7,7 +7,7 @@ import {
   parseSignature,
 } from "@tx-indexer/solana/rpc/client";
 import { fetchTransaction } from "@tx-indexer/solana/fetcher/transactions";
-import { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
+import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import { validateLegsBalance } from "@tx-indexer/core/tx/leg-validation";
@@ -165,14 +165,11 @@ transaction.get("/:signature", async (c) => {
     }
 
     tx.protocol = detectProtocol(tx.programIds);
-    // Truthful legs for the response; legacy classifiers read the "v1-main" view.
-    const legInputs = transactionToLegInputs(tx, tx.accountKeys?.[0] || "");
-    const legs = legInputs["v2-closed-token-accounts"];
+    const legs = transactionToLegs(tx, tx.accountKeys?.[0] || "");
     const classification = classifyTransaction(
       legs,
       tx,
       tx.accountKeys?.[0] || "",
-      { legacyLegs: legInputs["v1-main"] },
     );
     const validation = validateLegsBalance(legs);
 

@@ -60,7 +60,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "ecd01229ce741e83bd76681c43a38c010a894aa82c7e7837d529d87f0ce28065",
+    "bySignatures": "ecd01229ce741e83bd76681c43a38c010a894aa82c7e7837d529d87f0ce28065",
+    "fresh": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+     },
+     "selected": [
+      [
+       "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+     },
+     "selected": [
+      [
+       "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    }
+   }
   },
   {
    "id": "accuracy:liquidity-add-damm-v2-by-keeper",
@@ -121,7 +245,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "ecd01229ce741e83bd76681c43a38c010a894aa82c7e7837d529d87f0ce28065",
+    "bySignatures": "ecd01229ce741e83bd76681c43a38c010a894aa82c7e7837d529d87f0ce28065",
+    "fresh": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+     },
+     "selected": [
+      [
+       "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+     },
+     "selected": [
+      [
+       "2d2rHZfzE6QxkGFRTTbi6K18Gwf7afTH7nMJfEbtryyNqUuxCnQQ73cWKfpFSJG4s5NJd1yGn7bm2rzT6a71puNb",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "715f50c100c38f8628f5ccb62655dbbefd57f3b1b15e3cd7e715ef5c358a04c5"
+    }
+   }
   },
   {
    "id": "accuracy:swap-pump-amm-sell-all-and-close",
@@ -184,7 +432,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "bc396af62d7c947adcd38051f9dd54faac53d55cc06a956a2a1e73a9bb3de234",
+    "bySignatures": "bc396af62d7c947adcd38051f9dd54faac53d55cc06a956a2a1e73a9bb3de234",
+    "fresh": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "3GZxMYaUL7DGY1Edtak5R3nFT6L39g4rLrXB1bpTLDaLt5MCivDHv6f6C8FCEwZsyutWW1oShL3BNehCC1Dt72yU"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+     },
+     "selected": [
+      [
+       "3GZxMYaUL7DGY1Edtak5R3nFT6L39g4rLrXB1bpTLDaLt5MCivDHv6f6C8FCEwZsyutWW1oShL3BNehCC1Dt72yU",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "3GZxMYaUL7DGY1Edtak5R3nFT6L39g4rLrXB1bpTLDaLt5MCivDHv6f6C8FCEwZsyutWW1oShL3BNehCC1Dt72yU"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+     },
+     "selected": [
+      [
+       "3GZxMYaUL7DGY1Edtak5R3nFT6L39g4rLrXB1bpTLDaLt5MCivDHv6f6C8FCEwZsyutWW1oShL3BNehCC1Dt72yU",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "533d2176366aad519e4c1df2d51a0134923b8153bc360f1fdb63f9cd9467cd84"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "533d2176366aad519e4c1df2d51a0134923b8153bc360f1fdb63f9cd9467cd84"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "533d2176366aad519e4c1df2d51a0134923b8153bc360f1fdb63f9cd9467cd84"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "533d2176366aad519e4c1df2d51a0134923b8153bc360f1fdb63f9cd9467cd84"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "533d2176366aad519e4c1df2d51a0134923b8153bc360f1fdb63f9cd9467cd84"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "533d2176366aad519e4c1df2d51a0134923b8153bc360f1fdb63f9cd9467cd84"
+    }
+   }
   },
   {
    "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
@@ -247,7 +619,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f",
+    "bySignatures": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f",
+    "fresh": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     },
+     "selected": [
+      [
+       "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     },
+     "selected": [
+      [
+       "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    }
+   }
   },
   {
    "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
@@ -310,7 +806,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f",
+    "bySignatures": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f",
+    "fresh": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     },
+     "selected": [
+      [
+       "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     },
+     "selected": [
+      [
+       "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    }
+   }
   },
   {
    "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
@@ -373,7 +993,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f",
+    "bySignatures": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f",
+    "fresh": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     },
+     "selected": [
+      [
+       "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     },
+     "selected": [
+      [
+       "2ZEGEVUkhQnWtDz7yb6ZDhvCEG75QX4ZFxZ5ugR7fpjJpRkfiuPgaGseNwhpAUbUh9mCyNdx9bJUZYPTcukgFGNe",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "9a992e0aea1fe8f245d3e9e365cf912a0bc683570913908607749740fd90b849"
+    }
+   }
   },
   {
    "id": "close-sell",
@@ -436,7 +1180,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "00a9e8c960bcb8531e1d9fda5c008f667e6027204ba090b096da85a5a2a556f9",
+    "bySignatures": "00a9e8c960bcb8531e1d9fda5c008f667e6027204ba090b096da85a5a2a556f9",
+    "fresh": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    }
+   }
   },
   {
    "id": "close-sell",
@@ -499,7 +1367,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "00a9e8c960bcb8531e1d9fda5c008f667e6027204ba090b096da85a5a2a556f9",
+    "bySignatures": "00a9e8c960bcb8531e1d9fda5c008f667e6027204ba090b096da85a5a2a556f9",
+    "fresh": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "599355b1d9996990a4421fb2e23925ed87b8071aa08eb5591fc6fc3d06d2ed6f"
+    }
+   }
   },
   {
    "id": "airdrop-on-dex-plus-burned-junk",
@@ -566,7 +1558,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "1897fce4cf8ed9dd9b928234655ccc001a716acbeb6b2e0d1bc6f7b1d073298e",
+    "bySignatures": "1897fce4cf8ed9dd9b928234655ccc001a716acbeb6b2e0d1bc6f7b1d073298e",
+    "fresh": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "airdrop"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "airdrop"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "56b6ef3ea901c4f476854c9cfb039b678b8a981911fdaa2d73a0525d317bae3d"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "56b6ef3ea901c4f476854c9cfb039b678b8a981911fdaa2d73a0525d317bae3d"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "56b6ef3ea901c4f476854c9cfb039b678b8a981911fdaa2d73a0525d317bae3d"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "56b6ef3ea901c4f476854c9cfb039b678b8a981911fdaa2d73a0525d317bae3d"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "56b6ef3ea901c4f476854c9cfb039b678b8a981911fdaa2d73a0525d317bae3d"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "56b6ef3ea901c4f476854c9cfb039b678b8a981911fdaa2d73a0525d317bae3d"
+    }
+   }
   },
   {
    "id": "transfer-other-wallets-token-beside-own-rent",
@@ -629,7 +1745,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f",
+    "bySignatures": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f",
+    "fresh": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    }
+   }
   },
   {
    "id": "transfer-other-wallets-token-beside-own-rent",
@@ -692,7 +1932,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f",
+    "bySignatures": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f",
+    "fresh": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    }
+   }
   },
   {
    "id": "transfer-other-wallets-token-beside-own-rent",
@@ -755,7 +2119,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f",
+    "bySignatures": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f",
+    "fresh": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "2c1fc6232061dd0021b858184837b2f53f057a21900cacb46c79fd79cebaca30"
+    }
+   }
   },
   {
    "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
@@ -818,7 +2306,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06",
+    "bySignatures": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06",
+    "fresh": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    }
+   }
   },
   {
    "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
@@ -881,7 +2493,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06",
+    "bySignatures": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06",
+    "fresh": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    }
+   }
   },
   {
    "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
@@ -944,7 +2680,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06",
+    "bySignatures": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06",
+    "fresh": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "ce522fe2543e40341098726745a6009e45709ae3f8dbcf422299639c60ba454e"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "4d922e27e81deba577fcc1cf5b80b4cca6c4dc15bced439d7c8ec7ea47640da9"
+    }
+   }
   },
   {
    "id": "neg-swap-plus-closed-sibling-sends-30w-to-carol",
@@ -1029,7 +2889,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "b98dcdf7ea63709730eee4fec9ff9b5dfd233f4b024b660b29ca8aa486de232e",
+    "bySignatures": "b98dcdf7ea63709730eee4fec9ff9b5dfd233f4b024b660b29ca8aa486de232e",
+    "fresh": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "swap"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "swap"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "3cd7e326ef03f532820cf70d9bc2de2b5ed127ac584fe9370335e784c6742bb5"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "3cd7e326ef03f532820cf70d9bc2de2b5ed127ac584fe9370335e784c6742bb5"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "3cd7e326ef03f532820cf70d9bc2de2b5ed127ac584fe9370335e784c6742bb5"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "3cd7e326ef03f532820cf70d9bc2de2b5ed127ac584fe9370335e784c6742bb5"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "3cd7e326ef03f532820cf70d9bc2de2b5ed127ac584fe9370335e784c6742bb5"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "3cd7e326ef03f532820cf70d9bc2de2b5ed127ac584fe9370335e784c6742bb5"
+    }
+   }
   },
   {
    "id": "neg-swap-plus-closed-sibling-sends-30w-to-carol",
@@ -1090,7 +3074,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "0f96dd92b86e701175f894d7b400e576238611ef461eb05c2205383493636d48",
+    "bySignatures": "0f96dd92b86e701175f894d7b400e576238611ef461eb05c2205383493636d48",
+    "fresh": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "be3cd2693179ca32061f1a5cbeadb14c5c2dcac785b1bdf7a297ef477084f6af"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "be3cd2693179ca32061f1a5cbeadb14c5c2dcac785b1bdf7a297ef477084f6af"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "be3cd2693179ca32061f1a5cbeadb14c5c2dcac785b1bdf7a297ef477084f6af"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "be3cd2693179ca32061f1a5cbeadb14c5c2dcac785b1bdf7a297ef477084f6af"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "be3cd2693179ca32061f1a5cbeadb14c5c2dcac785b1bdf7a297ef477084f6af"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "be3cd2693179ca32061f1a5cbeadb14c5c2dcac785b1bdf7a297ef477084f6af"
+    }
+   }
   },
   {
    "id": "neg-buy-missing-pre-snapshot",
@@ -1177,7 +3285,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "944c5973acbe4d050df34eac6f753eb49542d058a3ee2a146b7fc450c9c98b19",
+    "bySignatures": "944c5973acbe4d050df34eac6f753eb49542d058a3ee2a146b7fc450c9c98b19",
+    "fresh": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "swap"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "swap"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "5d5f1e5600300e2247d6bcc9e42e56dda9b9b0d9812aa476298d98e8cf028944"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "5d5f1e5600300e2247d6bcc9e42e56dda9b9b0d9812aa476298d98e8cf028944"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "5d5f1e5600300e2247d6bcc9e42e56dda9b9b0d9812aa476298d98e8cf028944"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "5d5f1e5600300e2247d6bcc9e42e56dda9b9b0d9812aa476298d98e8cf028944"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "5d5f1e5600300e2247d6bcc9e42e56dda9b9b0d9812aa476298d98e8cf028944"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "5d5f1e5600300e2247d6bcc9e42e56dda9b9b0d9812aa476298d98e8cf028944"
+    }
+   }
   },
   {
    "id": "filter-dust-refund-beside-other-transfer",
@@ -1240,7 +3472,135 @@
    },
    "listedFresh": 0,
    "listedFromSerialisedCache": 0,
-   "listedNoEnrichment": 0
+   "listedNoEnrichment": 0,
+   "outputs": {
+    "getTransaction": "0a2da53a865d4954d960e2303ffb745e8421db73a719a15ce6dde73b6b770552",
+    "bySignatures": "0a2da53a865d4954d960e2303ffb745e8421db73a719a15ce6dde73b6b770552",
+    "fresh": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "noEnrich": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null,
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+      "33kveXj6LuW9ZKNJu1fB9kAozse69GsR3nnd9NNADf4nWug2erPjsLQkNCWWeHSoiHpftD8sjr82VQmnwzChmifg"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "766344fac4ccef795cf78d36dd8e0d4405ea85cf03670b1ba0e515a7c6acbfcb"
+     },
+     "selected": [
+      [
+       "33kveXj6LuW9ZKNJu1fB9kAozse69GsR3nnd9NNADf4nWug2erPjsLQkNCWWeHSoiHpftD8sjr82VQmnwzChmifg",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null,
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+      "33kveXj6LuW9ZKNJu1fB9kAozse69GsR3nnd9NNADf4nWug2erPjsLQkNCWWeHSoiHpftD8sjr82VQmnwzChmifg"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "766344fac4ccef795cf78d36dd8e0d4405ea85cf03670b1ba0e515a7c6acbfcb"
+     },
+     "selected": [
+      [
+       "33kveXj6LuW9ZKNJu1fB9kAozse69GsR3nnd9NNADf4nWug2erPjsLQkNCWWeHSoiHpftD8sjr82VQmnwzChmifg",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-off/json": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-on/original": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-on/json": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-off/original": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-off/json": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-on/original": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-on/json": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+   }
   },
   {
    "id": "filter-dust-refund-beside-other-transfer",
@@ -1303,7 +3663,131 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "0a2da53a865d4954d960e2303ffb745e8421db73a719a15ce6dde73b6b770552",
+    "bySignatures": "0a2da53a865d4954d960e2303ffb745e8421db73a719a15ce6dde73b6b770552",
+    "fresh": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "81992d3b48dfc860cf8d504bc0326fc90cd55c8b17595a557cd0a255c6e549bd"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "81992d3b48dfc860cf8d504bc0326fc90cd55c8b17595a557cd0a255c6e549bd"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "81992d3b48dfc860cf8d504bc0326fc90cd55c8b17595a557cd0a255c6e549bd"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "81992d3b48dfc860cf8d504bc0326fc90cd55c8b17595a557cd0a255c6e549bd"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "81992d3b48dfc860cf8d504bc0326fc90cd55c8b17595a557cd0a255c6e549bd"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "81992d3b48dfc860cf8d504bc0326fc90cd55c8b17595a557cd0a255c6e549bd"
+    }
+   }
   },
   {
    "id": "filter-legacy-only-mint",
@@ -1366,7 +3850,135 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 0
+   "listedNoEnrichment": 0,
+   "outputs": {
+    "getTransaction": "a79f5196cd1ef9324bb9eedeb90ca420f33fb6e041cb77a2952217368bd51633",
+    "bySignatures": "a79f5196cd1ef9324bb9eedeb90ca420f33fb6e041cb77a2952217368bd51633",
+    "fresh": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "noEnrich": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null,
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+      "33kveXj6LuW9ZKNJu1fB9kAozse69GsR3nnd9NNADf4nWug2erPjsLQkNCWWeHSoiHpftD8sjr82VQmnwzChmifg"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "766344fac4ccef795cf78d36dd8e0d4405ea85cf03670b1ba0e515a7c6acbfcb"
+     },
+     "selected": [
+      [
+       "33kveXj6LuW9ZKNJu1fB9kAozse69GsR3nnd9NNADf4nWug2erPjsLQkNCWWeHSoiHpftD8sjr82VQmnwzChmifg",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null,
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+      "33kveXj6LuW9ZKNJu1fB9kAozse69GsR3nnd9NNADf4nWug2erPjsLQkNCWWeHSoiHpftD8sjr82VQmnwzChmifg"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "766344fac4ccef795cf78d36dd8e0d4405ea85cf03670b1ba0e515a7c6acbfcb"
+     },
+     "selected": [
+      [
+       "33kveXj6LuW9ZKNJu1fB9kAozse69GsR3nnd9NNADf4nWug2erPjsLQkNCWWeHSoiHpftD8sjr82VQmnwzChmifg",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-off/json": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-on/original": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-off/read-on/json": {
+     "listed": 0,
+     "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    }
+   }
   },
   {
    "id": "filter-legacy-only-mint",
@@ -1429,7 +4041,950 @@
    },
    "listedFresh": 1,
    "listedFromSerialisedCache": 1,
-   "listedNoEnrichment": 1
+   "listedNoEnrichment": 1,
+   "outputs": {
+    "getTransaction": "a79f5196cd1ef9324bb9eedeb90ca420f33fb6e041cb77a2952217368bd51633",
+    "bySignatures": "a79f5196cd1ef9324bb9eedeb90ca420f33fb6e041cb77a2952217368bd51633",
+    "fresh": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "noEnrich": {
+     "listed": 1,
+     "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+    }
+   },
+   "getTransactions": {
+    "off": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    },
+    "on": {
+     "cursors": [
+      null
+     ],
+     "fetched": [
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+     ],
+     "returned": {
+      "listed": 1,
+      "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+     },
+     "selected": [
+      [
+       "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+       "transfer"
+      ]
+     ]
+    }
+   },
+   "cache": {
+    "written-off/read-off/original": {
+     "listed": 1,
+     "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+    },
+    "written-off/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+    },
+    "written-off/read-off/json": {
+     "listed": 1,
+     "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+    },
+    "written-off/read-on/original": {
+     "listed": 1,
+     "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+    },
+    "written-off/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+    },
+    "written-off/read-on/json": {
+     "listed": 1,
+     "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+    },
+    "written-on/read-off/original": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-off/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-off/structuredClone": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-off/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-off/json": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-off/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-on/original": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-on/original/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-on/structuredClone": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-on/structuredClone/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    },
+    "written-on/read-on/json": {
+     "listed": 1,
+     "sha256": "5a791256bd66f57a378c069f1bfeb0011b71d0e9b5a27329d3d0b9bc17e86793"
+    },
+    "written-on/read-on/json/postTokenBalances-stripped": {
+     "listed": 1,
+     "sha256": "f58cc9aeaa55066282695ce22c5403da836ac8ec6d079047022506840cce2d8d"
+    }
+   }
   }
- ]
+ ],
+ "rejectingTokens": {
+  "rejections": 88,
+  "results": [
+   {
+    "id": "accuracy:liquidity-add-damm-v2-by-keeper",
+    "wallet": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "ecd01229ce741e83bd76681c43a38c010a894aa82c7e7837d529d87f0ce28065"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "bcb4edaf2202ff17b1abde4f1f9065203dd1d100244ebd4b4ce7a043808726ee"
+     }
+    }
+   },
+   {
+    "id": "accuracy:liquidity-add-damm-v2-by-keeper",
+    "wallet": "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "ecd01229ce741e83bd76681c43a38c010a894aa82c7e7837d529d87f0ce28065"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "4081d2b534b7975dfb99e008c1b0d42d3a364502ee4ae676e4a479e052cc01d7"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "bcb4edaf2202ff17b1abde4f1f9065203dd1d100244ebd4b4ce7a043808726ee"
+     }
+    }
+   },
+   {
+    "id": "accuracy:swap-pump-amm-sell-all-and-close",
+    "wallet": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "bc396af62d7c947adcd38051f9dd54faac53d55cc06a956a2a1e73a9bb3de234"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "097ae4cc3800910dea62a519beb614dfb912a4caa38e994511849b2ca0465feb"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "5118d2c326ca07bd563772d93b681cefcd19f0dbbd3b69aaba24bd7cb50c96a8"
+     }
+    }
+   },
+   {
+    "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
+    "wallet": "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "79be5fe85c02c01c023b760e8bd0947f1ddaae2a85d44021ad75b8d3bcc53895"
+     }
+    }
+   },
+   {
+    "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
+    "wallet": "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "79be5fe85c02c01c023b760e8bd0947f1ddaae2a85d44021ad75b8d3bcc53895"
+     }
+    }
+   },
+   {
+    "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
+    "wallet": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "a4a894c0de73ab2e6727081fe1b0a8a48852273e6f23f823fed49ec97770f34f"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "5695fe56e01756fff8b860ad60e96109910b34458c8447c9ebeca6f7552f4554"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "79be5fe85c02c01c023b760e8bd0947f1ddaae2a85d44021ad75b8d3bcc53895"
+     }
+    }
+   },
+   {
+    "id": "close-sell",
+    "wallet": "A1ice11111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "00a9e8c960bcb8531e1d9fda5c008f667e6027204ba090b096da85a5a2a556f9"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "ae400ebe1be2d48d73d87e5c73e5c3369bb7db6ca82a63ce978fb9204329d915"
+     }
+    }
+   },
+   {
+    "id": "close-sell",
+    "wallet": "Bob1111111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "00a9e8c960bcb8531e1d9fda5c008f667e6027204ba090b096da85a5a2a556f9"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "8ff299fa91b729227ef4539babb14d77665653b83337389695a14b21d71e8c70"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "ae400ebe1be2d48d73d87e5c73e5c3369bb7db6ca82a63ce978fb9204329d915"
+     }
+    }
+   },
+   {
+    "id": "airdrop-on-dex-plus-burned-junk",
+    "wallet": "A1ice11111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "1897fce4cf8ed9dd9b928234655ccc001a716acbeb6b2e0d1bc6f7b1d073298e"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "6ff737907a1b6d34f6e29edb397daf1687081498396e3a3244aa2285b9d28e8d"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "3e86676250dd77814654b4787b76d10e16f8a9bde6e2f4f64290234751841d08"
+     }
+    }
+   },
+   {
+    "id": "transfer-other-wallets-token-beside-own-rent",
+    "wallet": "A1ice11111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "ee6f19dbefed6c8b396bd8c2d621ee0623b772877268ec8d55700457e415aceb"
+     }
+    }
+   },
+   {
+    "id": "transfer-other-wallets-token-beside-own-rent",
+    "wallet": "Caro1111111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "ee6f19dbefed6c8b396bd8c2d621ee0623b772877268ec8d55700457e415aceb"
+     }
+    }
+   },
+   {
+    "id": "transfer-other-wallets-token-beside-own-rent",
+    "wallet": "Dave1111111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "fd3bee45f60b6f05ded7c336b28d5d71d760453fca979a81a68033adf78c7c1f"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "c67d9269ee0fb7f935e080e344f253be101b8fd5627d5971bcce95477ca5a153"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "ee6f19dbefed6c8b396bd8c2d621ee0623b772877268ec8d55700457e415aceb"
+     }
+    }
+   },
+   {
+    "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
+    "wallet": "A1ice11111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "1ae5f56099929bc25c6964ebbb4a95810e16db0f54668d0f790f5077b207c450"
+     }
+    }
+   },
+   {
+    "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
+    "wallet": "Bob1111111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "1ae5f56099929bc25c6964ebbb4a95810e16db0f54668d0f790f5077b207c450"
+     }
+    }
+   },
+   {
+    "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
+    "wallet": "Caro1111111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "6440a67f7e17a68566f617e6377c9177dd8f28df27875777be36f50829510c06"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "d9f816fc6840257751332640fd1e608d0de1632d76fd9212477ce6410c4bfcf0"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "1ae5f56099929bc25c6964ebbb4a95810e16db0f54668d0f790f5077b207c450"
+     }
+    }
+   },
+   {
+    "id": "neg-swap-plus-closed-sibling-sends-30w-to-carol",
+    "wallet": "A1ice11111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "b98dcdf7ea63709730eee4fec9ff9b5dfd233f4b024b660b29ca8aa486de232e"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "bc04f809ace803621ec2475417ac47ea4f1167bfde746c2a453a82339cc1a522"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "35df5483ec2020ed077c8f5db3c3c2a9d25d0bf2ee4a89acd0c39f267fc90f7a"
+     }
+    }
+   },
+   {
+    "id": "neg-swap-plus-closed-sibling-sends-30w-to-carol",
+    "wallet": "Caro1111111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "0f96dd92b86e701175f894d7b400e576238611ef461eb05c2205383493636d48"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "d88391ea088082d8e7301f82cfaf5c364aa4e6bedb9472d58cb02cf3f24a893d"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "467e1e8bc68b763a4a4c0f7f492e100563f81306657567a2e6e8b14dc3a9dd78"
+     }
+    }
+   },
+   {
+    "id": "neg-buy-missing-pre-snapshot",
+    "wallet": "A1ice11111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "944c5973acbe4d050df34eac6f753eb49542d058a3ee2a146b7fc450c9c98b19"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "589e3068c8175a0a514293a5532593a76c7914b826c29a15a3cc0c346bcb78c3"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "0dfae6878cd220814948c40009f89803e9e85a3d0c6111e38e292f54eb9ce6b2"
+     }
+    }
+   },
+   {
+    "id": "filter-dust-refund-beside-other-transfer",
+    "wallet": "A1ice11111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "0a2da53a865d4954d960e2303ffb745e8421db73a719a15ce6dde73b6b770552"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "766344fac4ccef795cf78d36dd8e0d4405ea85cf03670b1ba0e515a7c6acbfcb"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     }
+    }
+   },
+   {
+    "id": "filter-dust-refund-beside-other-transfer",
+    "wallet": "Caro1111111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "0a2da53a865d4954d960e2303ffb745e8421db73a719a15ce6dde73b6b770552"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "98073561b4e9d00ca3063e7deaecd807e9d1d76ad994c709990861b23b1df44a"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "6f673dd8df3dcada39819010e987ac5ff4572ca1e7dacf5d3425f290a72dc43a"
+     }
+    }
+   },
+   {
+    "id": "filter-legacy-only-mint",
+    "wallet": "A1ice11111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "a79f5196cd1ef9324bb9eedeb90ca420f33fb6e041cb77a2952217368bd51633"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "766344fac4ccef795cf78d36dd8e0d4405ea85cf03670b1ba0e515a7c6acbfcb"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+     }
+    }
+   },
+   {
+    "id": "filter-legacy-only-mint",
+    "wallet": "Caro1111111111111111111111111111111111111111",
+    "getTransaction": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignatures": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "bySignaturesNoFilter": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactions": {
+     "error": "Error: getTokens rejected (test)"
+    },
+    "getTransactionOff": {
+     "result": "a79f5196cd1ef9324bb9eedeb90ca420f33fb6e041cb77a2952217368bd51633"
+    },
+    "bySignaturesOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+     }
+    },
+    "getTransactionsOff": {
+     "result": {
+      "listed": 1,
+      "sha256": "482802c9172dd5804dc39de1791c6ec07ea26ba48105f8e0474ffcbd8b3f8696"
+     }
+    },
+    "cachedReadOn": {
+     "result": {
+      "listed": 3,
+      "sha256": "e3220c15cc37a1a4ba1956d2cb9c3cb507ac710abf15d4c34cf67153ff7a5211"
+     }
+    }
+   }
+  ]
+ }
 }
