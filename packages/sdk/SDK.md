@@ -200,7 +200,7 @@ interface GetTransactionOptions {
 
 **Versioned leg inputs.** The legs you receive are the truthful ones (`"v2-closed-token-accounts"`: token accounts closed in the transaction included, owner and mint changes split, raw-amount signs, `closedTokenAccount` provenance). Each classifier declares which leg input it was calibrated on and reads that one; a classifier moves to the truthful legs only when it is migrated on evidence. Today **no classifier is migrated**: all eleven (Solana Pay, Privacy Cash, bridge, NFT mint, NFT transfer and marketplace, stake deposit and withdraw, swap, airdrop, fee-only, transfer) read `"v1-main"`, the legs as built at commit 3111fd7 (an internal compatibility input from a frozen copy of that mapper), and their source is identical to 3111fd7 (checked with git and with committed sha256 digests). The list spam filter (`filterSpam` in `getTransactions` / `getTransactionsBySignatures`) also reads `"v1-main"`. The debug trace records the input each classifier read (`decisions[].legInput`).
 
-So classification and list filtering are identical to 3111fd7: the repository's oracle test checks every corpus entry (legs, each classifier, final result) with no exception. What changes for you is the returned legs.
+So classification (kind, amounts, participants, relevance, confidence, metadata, selecting classifier) and list filtering through the SDK methods are identical to 3111fd7; evaluated debug-trace decisions now also carry `legInput`. The repository's oracle test checks every corpus entry (legs, each classifier, final result) with no exception, and an SDK-boundary test checks representative entries through the SDK methods with a serialising cache and token enrichment. What changes for you is the returned legs.
 
 > **Warning: custom pipelines must call `classifyTransaction` with four arguments.** `getTransaction` and friends do this for you. If you call it yourself, build both views with `transactionToLegInputs(tx, wallet)` (same wallet for both; never cache by signature alone) and pass `{ legacyLegs: views["v1-main"] }`. With only three arguments every classifier reads the array you pass, so passing the returned (truthful) legs gives results that differ from the SDK pipeline. Do not build a "legacy" array by filtering legs.
 >
@@ -216,7 +216,7 @@ So classification and list filtering are identical to 3111fd7: the repository's 
 
 - `isSpamTransaction(tx: ClassifiedTransaction, config?: SpamFilterConfig): boolean`
 - `filterSpamTransactions(txs: ClassifiedTransaction[], config?: SpamFilterConfig, walletAddress?: string): ClassifiedTransaction[]`
-- Leg input: the SDK's list filter feeds the dust / wallet-involvement rules the `"v1-main"` legs (like the classifiers), not the returned legs. If you call `filterSpamTransactions` yourself with a wallet, pass items whose `legs` are `transactionToLegInputs(tx, wallet)["v1-main"]` to get the SDK's decisions.
+- Leg input: the SDK's list filter (`getTransactions`, `getTransactionsBySignatures`) feeds the dust / wallet-involvement rules the `"v1-main"` legs, like the classifiers, not the returned legs. It rebuilds them from `tx` for the queried wallet on every call (also for transactions returned by `getCached`, whether the original object, a clone or a deserialised copy) and, with token enrichment on, enriches them from their own mints. The standalone `isSpamTransaction` / `filterSpamTransactions` read whatever legs you pass: to get the SDK's decisions, pass `transactionToLegInputs(tx, wallet)["v1-main"]`.
 
 ### Leg Utilities
 

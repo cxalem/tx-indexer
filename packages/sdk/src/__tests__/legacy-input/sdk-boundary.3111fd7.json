@@ -1,0 +1,1435 @@
+{
+ "base": "3111fd7",
+ "results": [
+  {
+   "id": "accuracy:liquidity-add-damm-v2-by-keeper",
+   "wallet": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "FT6bnAW3LrEeDVAJtvWJSPK6XNJ4M4RRiApV4fbar6ea",
+       "symbol": "FT6bnAW3",
+       "decimals": 9,
+       "name": "Unknown Token (FT6bnAW3...)"
+      },
+      "amountRaw": "1817570053",
+      "amountUi": 1.817570053
+     },
+     "secondaryAmount": null,
+     "sender": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
+     "receiver": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC",
+     "counterparty": {
+      "type": "unknown",
+      "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC",
+      "name": "HLnpSz9h..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "FT6bnAW3LrEeDVAJtvWJSPK6XNJ4M4RRiApV4fbar6ea",
+       "symbol": "FT6bnAW3",
+       "decimals": 9,
+       "name": "Unknown Token (FT6bnAW3...)"
+      },
+      "amountRaw": "1817570053",
+      "amountUi": 1.817570053
+     },
+     "secondaryAmount": null,
+     "sender": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
+     "receiver": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC",
+     "counterparty": {
+      "type": "unknown",
+      "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC",
+      "name": "HLnpSz9h..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "accuracy:liquidity-add-damm-v2-by-keeper",
+   "wallet": "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "FT6bnAW3LrEeDVAJtvWJSPK6XNJ4M4RRiApV4fbar6ea",
+       "symbol": "FT6bnAW3",
+       "decimals": 9,
+       "name": "Unknown Token (FT6bnAW3...)"
+      },
+      "amountRaw": "1817570053",
+      "amountUi": 1.817570053
+     },
+     "secondaryAmount": null,
+     "sender": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
+     "receiver": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC",
+     "counterparty": {
+      "type": "unknown",
+      "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC",
+      "name": "HLnpSz9h..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "FT6bnAW3LrEeDVAJtvWJSPK6XNJ4M4RRiApV4fbar6ea",
+       "symbol": "FT6bnAW3",
+       "decimals": 9,
+       "name": "Unknown Token (FT6bnAW3...)"
+      },
+      "amountRaw": "1817570053",
+      "amountUi": 1.817570053
+     },
+     "secondaryAmount": null,
+     "sender": "2r3XPyQZyrtpeHi3fK3ZYrNfB2f1sfAh1dfgxbzj9oZx",
+     "receiver": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC",
+     "counterparty": {
+      "type": "unknown",
+      "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC",
+      "name": "HLnpSz9h..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "accuracy:swap-pump-amm-sell-all-and-close",
+   "wallet": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "8301683",
+      "amountUi": 0.008301683
+     },
+     "secondaryAmount": null,
+     "sender": "FeBNtxMdn6iaSFQh9QX2Fbd7e1KqdSzJJMQFeYb9peP7",
+     "receiver": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+     "counterparty": {
+      "type": "unknown",
+      "address": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+      "name": "32ktkabA..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "8301683",
+      "amountUi": 0.008301683
+     },
+     "secondaryAmount": null,
+     "sender": "FeBNtxMdn6iaSFQh9QX2Fbd7e1KqdSzJJMQFeYb9peP7",
+     "receiver": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+     "counterparty": {
+      "type": "unknown",
+      "address": "32ktkabAVmaoKDRuo7rgQsP38zBB4p8SFyCyogn1yCyt",
+      "name": "32ktkabA..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
+   "wallet": "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1600200",
+      "amountUi": 0.0016002
+     },
+     "secondaryAmount": null,
+     "sender": "GCEXEv9qwvxynJHVcm7d1rqPj7jzhYrdwa24TDSDqEyF",
+     "receiver": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+     "counterparty": {
+      "type": "unknown",
+      "address": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+      "name": "EBBkGATp..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1600200",
+      "amountUi": 0.0016002
+     },
+     "secondaryAmount": null,
+     "sender": "GCEXEv9qwvxynJHVcm7d1rqPj7jzhYrdwa24TDSDqEyF",
+     "receiver": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+     "counterparty": {
+      "type": "unknown",
+      "address": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+      "name": "EBBkGATp..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
+   "wallet": "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1600200",
+      "amountUi": 0.0016002
+     },
+     "secondaryAmount": null,
+     "sender": "GCEXEv9qwvxynJHVcm7d1rqPj7jzhYrdwa24TDSDqEyF",
+     "receiver": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+     "counterparty": {
+      "type": "unknown",
+      "address": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+      "name": "EBBkGATp..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1600200",
+      "amountUi": 0.0016002
+     },
+     "secondaryAmount": null,
+     "sender": "GCEXEv9qwvxynJHVcm7d1rqPj7jzhYrdwa24TDSDqEyF",
+     "receiver": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+     "counterparty": {
+      "type": "unknown",
+      "address": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+      "name": "EBBkGATp..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "accuracy:transfer-token2022-sponsored-fee-then-close",
+   "wallet": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1600200",
+      "amountUi": 0.0016002
+     },
+     "secondaryAmount": null,
+     "sender": "GCEXEv9qwvxynJHVcm7d1rqPj7jzhYrdwa24TDSDqEyF",
+     "receiver": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+     "counterparty": {
+      "type": "unknown",
+      "address": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+      "name": "EBBkGATp..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1600200",
+      "amountUi": 0.0016002
+     },
+     "secondaryAmount": null,
+     "sender": "GCEXEv9qwvxynJHVcm7d1rqPj7jzhYrdwa24TDSDqEyF",
+     "receiver": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+     "counterparty": {
+      "type": "unknown",
+      "address": "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz",
+      "name": "EBBkGATp..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "close-sell",
+   "wallet": "A1ice11111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "2039280",
+      "amountUi": 0.00203928
+     },
+     "secondaryAmount": null,
+     "sender": "A1iceATA111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "2039280",
+      "amountUi": 0.00203928
+     },
+     "secondaryAmount": null,
+     "sender": "A1iceATA111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "close-sell",
+   "wallet": "Bob1111111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "2039280",
+      "amountUi": 0.00203928
+     },
+     "secondaryAmount": null,
+     "sender": "A1iceATA111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "2039280",
+      "amountUi": 0.00203928
+     },
+     "secondaryAmount": null,
+     "sender": "A1iceATA111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "airdrop-on-dex-plus-burned-junk",
+   "wallet": "A1ice11111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "airdrop",
+     "primaryAmount": {
+      "token": {
+       "mint": "XMint111111111111111111111111111111111111111",
+       "symbol": "XMint111",
+       "decimals": 6,
+       "name": "Unknown Token (XMint111...)"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "jupiter:XMint111:Poo1Owner11111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "protocol",
+      "address": "jupiter:XMint111:Poo1Owner11111111111111111111111111111111"
+     },
+     "confidence": 0.85,
+     "isRelevant": true,
+     "metadata": {
+      "airdrop_type": "token",
+      "token": "XMint111",
+      "amount": 5
+     }
+    },
+    "selected": "airdrop"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "airdrop",
+     "primaryAmount": {
+      "token": {
+       "mint": "XMint111111111111111111111111111111111111111",
+       "symbol": "XMint111",
+       "decimals": 6,
+       "name": "Unknown Token (XMint111...)"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "jupiter:XMint111:Poo1Owner11111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "protocol",
+      "address": "jupiter:XMint111:Poo1Owner11111111111111111111111111111111"
+     },
+     "confidence": 0.85,
+     "isRelevant": true,
+     "metadata": {
+      "airdrop_type": "token",
+      "token": "XMint111",
+      "amount": 5
+     }
+    },
+    "selected": "airdrop"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "transfer-other-wallets-token-beside-own-rent",
+   "wallet": "A1ice11111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "transfer-other-wallets-token-beside-own-rent",
+   "wallet": "Caro1111111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "transfer-other-wallets-token-beside-own-rent",
+   "wallet": "Dave1111111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
+   "wallet": "A1ice11111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "10000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "10000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
+   "wallet": "Bob1111111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "10000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "10000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "neg-burn-plus-independent-mint-plus-usdc-receive",
+   "wallet": "Caro1111111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "10000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "10000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "A1ice11111111111111111111111111111111111111",
+      "name": "A1ice111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "neg-swap-plus-closed-sibling-sends-30w-to-carol",
+   "wallet": "A1ice11111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "swap",
+     "primaryAmount": {
+      "token": {
+       "mint": "WrappedW1111111111111111111111111111111111",
+       "symbol": "WrappedW",
+       "decimals": 8,
+       "name": "Unknown Token (WrappedW...)"
+      },
+      "amountRaw": "1000000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "sender": "A1ice11111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": null,
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {
+      "swap_type": "token_to_token",
+      "from_token": "WrappedW",
+      "to_token": "USDC",
+      "from_amount": 10,
+      "to_amount": 5
+     }
+    },
+    "selected": "swap"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "swap",
+     "primaryAmount": {
+      "token": {
+       "mint": "WrappedW1111111111111111111111111111111111",
+       "symbol": "WrappedW",
+       "decimals": 8,
+       "name": "Unknown Token (WrappedW...)"
+      },
+      "amountRaw": "1000000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "sender": "A1ice11111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": null,
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {
+      "swap_type": "token_to_token",
+      "from_token": "WrappedW",
+      "to_token": "USDC",
+      "from_amount": 10,
+      "to_amount": 5
+     }
+    },
+    "selected": "swap"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "neg-swap-plus-closed-sibling-sends-30w-to-carol",
+   "wallet": "Caro1111111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "WrappedW1111111111111111111111111111111111",
+       "symbol": "WrappedW",
+       "decimals": 8,
+       "name": "Unknown Token (WrappedW...)"
+      },
+      "amountRaw": "1000000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": null,
+     "sender": "A1ice11111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "WrappedW1111111111111111111111111111111111",
+       "symbol": "WrappedW",
+       "decimals": 8,
+       "name": "Unknown Token (WrappedW...)"
+      },
+      "amountRaw": "1000000000",
+      "amountUi": 10
+     },
+     "secondaryAmount": null,
+     "sender": "A1ice11111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "neg-buy-missing-pre-snapshot",
+   "wallet": "A1ice11111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "swap",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1000005000",
+      "amountUi": 1.000005
+     },
+     "secondaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "150000000",
+      "amountUi": 150
+     },
+     "sender": "A1ice11111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": null,
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {
+      "swap_type": "token_to_token",
+      "from_token": "SOL",
+      "to_token": "USDC",
+      "from_amount": 1.000005,
+      "to_amount": 150
+     }
+    },
+    "selected": "swap"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "swap",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1000005000",
+      "amountUi": 1.000005
+     },
+     "secondaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "150000000",
+      "amountUi": 150
+     },
+     "sender": "A1ice11111111111111111111111111111111111111",
+     "receiver": "A1ice11111111111111111111111111111111111111",
+     "counterparty": null,
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {
+      "swap_type": "token_to_token",
+      "from_token": "SOL",
+      "to_token": "USDC",
+      "from_amount": 1.000005,
+      "to_amount": 150
+     }
+    },
+    "selected": "swap"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "filter-dust-refund-beside-other-transfer",
+   "wallet": "A1ice11111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 0,
+   "listedFromSerialisedCache": 0,
+   "listedNoEnrichment": 0
+  },
+  {
+   "id": "filter-dust-refund-beside-other-transfer",
+   "wallet": "Caro1111111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+       "symbol": "USDC",
+       "name": "USD Coin",
+       "decimals": 6,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+      },
+      "amountRaw": "5000000",
+      "amountUi": 5
+     },
+     "secondaryAmount": null,
+     "sender": "Dave1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  },
+  {
+   "id": "filter-legacy-only-mint",
+   "wallet": "A1ice11111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1000005000",
+      "amountUi": 1.000005
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1000005000",
+      "amountUi": 1.000005
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 0
+  },
+  {
+   "id": "filter-legacy-only-mint",
+   "wallet": "Caro1111111111111111111111111111111111111111",
+   "getTransaction": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1000005000",
+      "amountUi": 1.000005
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "bySignatures": {
+    "classification": {
+     "primaryType": "transfer",
+     "primaryAmount": {
+      "token": {
+       "mint": "So11111111111111111111111111111111111111112",
+       "symbol": "SOL",
+       "name": "Solana",
+       "decimals": 9,
+       "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+      },
+      "amountRaw": "1000005000",
+      "amountUi": 1.000005
+     },
+     "secondaryAmount": null,
+     "sender": "Bob1111111111111111111111111111111111111111",
+     "receiver": "Caro1111111111111111111111111111111111111111",
+     "counterparty": {
+      "type": "unknown",
+      "address": "Caro1111111111111111111111111111111111111111",
+      "name": "Caro1111..."
+     },
+     "confidence": 0.95,
+     "isRelevant": true,
+     "metadata": {}
+    },
+    "selected": "transfer"
+   },
+   "listedFresh": 1,
+   "listedFromSerialisedCache": 1,
+   "listedNoEnrichment": 1
+  }
+ ]
+}

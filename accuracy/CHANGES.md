@@ -14,7 +14,8 @@ the same prediction as 3111fd7 (kind, amounts, participants, selecting classifie
 What this slice ships: truthful public legs (token accounts closed in the transaction, with
 `closedTokenAccount` provenance), and versioned classifier inputs. All eleven classifiers declare
 `v1-main`, the legs as built at 3111fd7 (frozen mapper), and their source is byte-identical to 3111fd7
-(git check plus committed sha256 digests). The list spam filter also reads `v1-main`.
+(git check plus committed sha256 digests). The SDK list spam filter also reads `v1-main` (rebuilt from `tx` for the queried wallet, enriched from its own
+mints), so list decisions are unchanged too, including for cached and deserialised transactions.
 
 What was built, measured and deliberately not shipped:
 - `swap` on the truthful legs (branch `feat/swap-closed-accounts`). On this set it turned

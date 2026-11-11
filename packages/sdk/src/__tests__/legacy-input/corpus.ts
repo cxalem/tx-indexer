@@ -16,6 +16,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import {
   SOL,
+  SYSTEM_PROGRAM,
   TOKEN_PROGRAM,
   WSOL_MINT,
   syntheticResponse,
@@ -780,6 +781,41 @@ export const SWAP_NEGATIVES: SyntheticItem[] = [
   },
 ];
 
+/** The list spam filter repros of review round 7 (also run through the SDK in sdk-boundary.test.ts). */
+export const FILTER_REPROS: SyntheticItem[] = [
+  {
+    id: "filter-dust-refund-beside-other-transfer",
+    kind: "synthetic",
+    // Dave sends Carol 5 USDC; Alice burns and closes 1,000 JUNK and receives 0.0005 SOL of the refund.
+    input: {
+      staticKeys: [DAVE, ALICE, D_USDC, C_USDC, A_JUNK, TOKEN_PROGRAM],
+      pre: [SOL, SOL, RENT, RENT, RENT, 1n],
+      post: [SOL - 5000n + RENT - 500_000n, SOL + 500_000n, RENT, RENT, 0n, 1n],
+      instructions: [{ programIdIndex: 5, accounts: [2, 3, 0] }],
+      preTokenBalances: [tb(2, USDC, DAVE, 9_000_000n, 6), tb(3, USDC, CAROL, 0n, 6), tb(4, JUNK, ALICE, 1_000_000_000n, 6)],
+      postTokenBalances: [tb(2, USDC, DAVE, 4_000_000n, 6), tb(3, USDC, CAROL, 5_000_000n, 6)],
+    },
+    perspectives: [ALICE, CAROL],
+  },
+  {
+    id: "filter-legacy-only-mint",
+    kind: "synthetic",
+    // Bob sends Carol 1 SOL; Alice's token account ends with 0.005 JUNK; preTokenBalances missing.
+    input: {
+      staticKeys: [BOB, CAROL, ALICE, A_JUNK, SYSTEM_PROGRAM],
+      pre: [10n * SOL, SOL, SOL, RENT, 1n],
+      post: [9n * SOL - 5000n, 2n * SOL, SOL, RENT, 1n],
+      instructions: [{ programIdIndex: 4, accounts: [0, 1] }],
+      preTokenBalances: [],
+      postTokenBalances: [tb(3, JUNK, ALICE, 5_000_000n, 9)],
+    },
+    mutate: (r) => {
+      delete r.meta.preTokenBalances;
+    },
+    perspectives: [ALICE, CAROL],
+  },
+];
+
 /** Recorded mainnet fixtures (packages/solana/src/__fixtures__/mainnet). */
 export function mainnetFixtureItems(): BodyItem[] {
   const dir = join(REPO, "packages/solana/src/__fixtures__/mainnet");
@@ -826,7 +862,7 @@ export function accuracyItems(): BodyItem[] {
 }
 
 export function corpus(): CorpusItem[] {
-  return [...mainnetFixtureItems(), ...accuracyItems(), ...SYNTHETIC, ...SWAP_NEGATIVES];
+  return [...mainnetFixtureItems(), ...accuracyItems(), ...SYNTHETIC, ...SWAP_NEGATIVES, ...FILTER_REPROS];
 }
 
 /** Every registered classifier: all read "v1-main" and must equal 3111fd7 one by one. */

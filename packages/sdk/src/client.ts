@@ -22,6 +22,7 @@ import type {
 export type { FetchTransactionsConfig } from "@tx-indexer/solana/fetcher/transactions";
 import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
 import { transactionToLegInputs } from "@tx-indexer/solana/mappers/leg-inputs";
+import { transactionToLegs as transactionToLegsV1Main } from "@tx-indexer/solana/mappers/legacy-v1-main/transaction-to-legs";
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import {
@@ -547,38 +548,48 @@ function classifyWithLegInputs(
   const classification = classifyTransaction(legs, tx, walletAddress, {
     legacyLegs: inputs["v1-main"],
   });
-  spamFilterLegs.set(tx, inputs["v1-main"]);
   return { legs, classification };
 }
 
 /**
- * The spam filter reads the "v1-main" legs (the input its dust and wallet-involvement rules
- * were calibrated on) until it is explicitly migrated; callers still receive the truthful
- * legs. Keyed by the RawTransaction object, which enrichment keeps.
+ * The list spam filter reads the "v1-main" legs (the input its dust and wallet-involvement
+ * rules were calibrated on) until it is explicitly migrated; callers still receive the
+ * truthful legs. The filter legs are always rebuilt from `tx` for the queried wallet with the
+ * frozen 3111fd7 mapper and the same protocol detection as a fresh fetch, so a cached,
+ * cloned or deserialised transaction is filtered exactly like a freshly fetched one.
  */
-const spamFilterLegs = new WeakMap<RawTransaction, TxLeg[]>();
-
-/** The "v1-main" legs with the token info enrichment gave the returned legs (same mint). */
-function legsForSpamFilter(classified: ClassifiedTransaction): TxLeg[] {
-  const legacy = spamFilterLegs.get(classified.tx);
-  if (!legacy) return classified.legs;
-  const tokens = new Map<string, TxLeg["amount"]["token"]>();
-  for (const leg of classified.legs) tokens.set(leg.amount.token.mint, leg.amount.token);
-  return legacy.map((leg) => {
-    const token = tokens.get(leg.amount.token.mint);
-    if (!token || token.symbol === leg.amount.token.symbol) return leg;
-    return { ...leg, amount: { ...leg.amount, token: { ...token, decimals: leg.amount.token.decimals } } };
-  });
+function legacyFilterLegs(tx: RawTransaction, walletAddress: string | undefined): TxLeg[] {
+  return transactionToLegsV1Main({ ...tx, protocol: detectProtocol(tx.programIds) }, walletAddress);
 }
 
-/** As `filterSpamTransactions`, with the filter's own leg input; returns the callers' objects. */
-function filterSpamOnFilterLegs(
+/**
+ * As `filterSpamTransactions`, on the filter's own leg input; returns the callers' objects.
+ * With token enrichment on, the filter legs are enriched from their own mints exactly as
+ * 1.6.x enriched its legs (token info replaced when the symbol differs, decimals kept).
+ */
+async function filterSpamOnFilterLegs(
   transactions: ClassifiedTransaction[],
   config: SpamFilterConfig | undefined,
   walletAddress: string | undefined,
-): ClassifiedTransaction[] {
+  tokenFetcher: TokenFetcher | null,
+): Promise<ClassifiedTransaction[]> {
+  let filterLegs = transactions.map((t) => legacyFilterLegs(t.tx, walletAddress));
+  if (tokenFetcher) {
+    const mints = new Set<string>();
+    for (const legs of filterLegs) for (const leg of legs) mints.add(leg.amount.token.mint);
+    if (mints.size > 0) {
+      const info = await tokenFetcher.getTokens(Array.from(mints), 9);
+      filterLegs = filterLegs.map((legs) =>
+        legs.map((leg) => {
+          const token = info.get(leg.amount.token.mint);
+          if (!token || token.symbol === leg.amount.token.symbol) return leg;
+          return { ...leg, amount: { ...leg.amount, token: { ...token, decimals: leg.amount.token.decimals } } };
+        }),
+      );
+    }
+  }
   return transactions.filter(
-    (t) => !isSpamTransaction(t.tx, t.classification, config, legsForSpamFilter(t), walletAddress),
+    (t, i) => !isSpamTransaction(t.tx, t.classification, config, filterLegs[i], walletAddress),
   );
 }
 
@@ -1101,7 +1112,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
           if (newSigs.length > 0) {
             const classified = await fetchAndClassify(newSigs);
             const nonSpam = filterSpam
-              ? filterSpamOnFilterLegs(classified, spamConfig, walletAddressStr)
+              ? await filterSpamOnFilterLegs(classified, spamConfig, walletAddressStr, enrichTokens ? tokenFetcher : null)
               : classified;
             accumulated.push(...nonSpam);
           }
@@ -1431,10 +1442,11 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       // Apply spam filter
       let finalResults = results;
       if (filterSpam) {
-        finalResults = filterSpamOnFilterLegs(
+        finalResults = await filterSpamOnFilterLegs(
           results,
           spamConfig,
           walletAddressStr,
+          enrichTokens ? tokenFetcher : null,
         );
       }
 
