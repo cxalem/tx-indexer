@@ -165,6 +165,8 @@ export function transactionToCompleteLegs(
     );
 
     const isPositive = delta > 0n;
+    const closedAccountAddress =
+      change.tokenAccount ?? tx.accountKeys?.[change.accountIndex];
     legs.push({
       accountId,
       side: isPositive ? "credit" : "debit",
@@ -175,14 +177,12 @@ export function transactionToCompleteLegs(
       },
       role: ownerRole(owner, isPositive, tx, feePayer, walletAddress),
       // Provenance for classifiers: only a proven closure (see
-      // TokenBalanceChange.accountClosed) marks its debit.
-      ...(change.accountClosed && !isPositive
-        ? {
-            closedTokenAccount:
-              change.tokenAccount ??
-              tx.accountKeys?.[change.accountIndex] ??
-              `account-index-${change.accountIndex}`,
-          }
+      // TokenBalanceChange.accountClosed) marks its debit, and only when the
+      // token account's address is known. The field promises an address, so
+      // it is omitted (the debit stays) when the transaction has no account
+      // keys to resolve it from.
+      ...(change.accountClosed && !isPositive && closedAccountAddress
+        ? { closedTokenAccount: closedAccountAddress }
         : {}),
     });
   }

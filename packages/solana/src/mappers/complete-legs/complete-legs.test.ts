@@ -347,6 +347,19 @@ describe("closure provenance on the leg (closedTokenAccount)", () => {
     expect(flagged[0]!.accountId).toBe(`external:${ALICE}`);
   });
 
+  test("a proven closure without account keys keeps its debit but carries no fabricated address", async () => {
+    const { tx } = await fetchWith(closeInput());
+    const withoutKeys: RawTransaction = { ...tx, accountKeys: undefined };
+    const legs = transactionToLegs(withoutKeys);
+    // The field promises the token account's address: unknown address, no field.
+    expect(closedLegs(legs)).toEqual([]);
+    expect(JSON.stringify(legs)).not.toContain("account-index-");
+    // The closed account's debit itself is still reported.
+    const debit = legs.find((l) => l.side === "debit" && l.amount.amountRaw === "750000");
+    expect(debit).toBeDefined();
+    expect(debit!.closedTokenAccount).toBeUndefined();
+  });
+
   test("a pre-only entry whose account still holds lamports is not flagged (closure not proven)", async () => {
     const input = closeInput();
     const { tx, legs } = await fetchWith({ ...input, post: [SOL - 5000n, 1n, RENT, RENT] });
