@@ -1,8 +1,8 @@
 /**
- * Closed-account debits through the routed pipeline (truthful legs for swap and transfer,
- * the "v1-main" legs for every other classifier). Legacy classifiers must answer as at
+ * Closed-account debits through the routed pipeline (truthful legs for swap, the "v1-main"
+ * legs for every other classifier, transfer included). Legacy classifiers must answer as at
  * 3111fd7 (proven case by case in packages/sdk/src/legacy-input.test.ts); swap must not
- * use a burned-and-closed debit as evidence; transfer only pairs the wallet's own transfers.
+ * use a burned-and-closed debit as evidence.
  */
 import { describe, test, expect } from "bun:test";
 import type { Signature } from "@solana/kit";
@@ -483,8 +483,11 @@ describe("swap risks with closed-account debits (migrated classifier)", () => {
   });
 });
 
-describe("transfer: the wallet's own transfer only", () => {
-  test("a wallet that only receives rent is not given another wallet's token transfer", async () => {
+describe("transfer keeps 3111fd7's behaviour (v1-main) in this slice", () => {
+  // Known limitation carried from 3111fd7: transfer pairs the transaction-wide transfer, so a
+  // wallet that only receives rent is shown another wallet's token transfer. The perspective
+  // rule that fixes it lives on branch feat/transfer-perspective (the next slice).
+  test("a wallet that only receives rent still gets the transaction-wide pair", async () => {
     const DAVE_CLOSED = "DaveC1osed111111111111111111111111111111111";
     const input: SyntheticTxInput = {
       staticKeys: [DAVE, ALICE, D_USDC, C_USDC, DAVE_CLOSED, TOKEN_PROGRAM],
@@ -494,11 +497,9 @@ describe("transfer: the wallet's own transfer only", () => {
       preTokenBalances: [tb(2, USDC, DAVE, 9_000_000n, 6), tb(3, USDC, CAROL, 0n, 6)],
       postTokenBalances: [tb(2, USDC, DAVE, 4_000_000n, 6), tb(3, USDC, CAROL, 5_000_000n, 6)],
     };
-    const alice = await classify(input, ALICE);
-    expect(alice.c.primaryType).toBe("transfer");
-    expect(alice.c.receiver).toBe(ALICE);
-    expect(alice.c.primaryAmount?.amountRaw).toBe(RENT.toString());
-    const carol = await classify(input, CAROL);
-    expect([carol.c.sender, carol.c.receiver, carol.c.primaryAmount?.amountRaw]).toEqual([DAVE, CAROL, "5000000"]);
+    for (const wallet of [ALICE, CAROL]) {
+      const { c } = await classify(input, wallet);
+      expect([c.primaryType, c.sender, c.receiver, c.primaryAmount?.amountRaw]).toEqual(["transfer", DAVE, CAROL, "5000000"]);
+    }
   });
 });

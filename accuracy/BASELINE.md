@@ -21,22 +21,22 @@ Overall
   cases where the primary action is correct for every selected perspective,
     and fee and execution status agree                          6/43 (14.0%) *
   perspectives with the primary action correct (kind, amounts
-    and non-null participants all match): outcome correct       15/72 (20.8%) *
+    and non-null participants all match): outcome correct       13/72 (18.1%) *
   perspectives with the primary kind right (correct + kind_only;
-    = per-kind TP)                                              42/72 (58.3%) *
+    = per-kind TP)                                              43/72 (59.7%) *
   Outcomes (one per perspective; they sum to 72)
-    correct                                                     15
-    kind_only (kind right, amounts or participants wrong)       27
+    correct                                                     13
+    kind_only (kind right, amounts or participants wrong)       30
     secondary_hit (a secondary action exactly, not the primary) 2
     disputed_alternative (a reported reading exactly; a miss)   0
-    abstained (other, or fee_only where an action was expected) 7
-    wrong_label (false positives)                               21
+    abstained (other, or fee_only where an action was expected) 4
+    wrong_label (false positives)                               23
     error (replay errors)                                       0
-  forbidden-label violations                                    8
+  forbidden-label violations                                    10
   amounts exact, over perspectives with the kind right and the
-    amounts known (mint, raw, decimals; direction where exposed) 15/42 (35.7%)
+    amounts known (mint, raw, decimals; direction where exposed) 13/43 (30.2%)
   participants exact, over perspectives with the kind right and
-    a non-null expected sender or receiver                      28/30 (93.3%)
+    a non-null expected sender or receiver                      24/31 (77.4%)
   fee agreement (fee leg = meta.fee), per case                  43/43 (100.0%)
   execution status agreement, per case                          43/43 (100.0%)
   secondary actions found (recall; the SDK reports one action)  2/93 (2.2%)
@@ -65,7 +65,7 @@ outcome, FP = wrong_label for the predicted kind)
   tip                 0   0   3       n/a    0.0%
   token_burn          0   0   1       n/a    0.0%
   token_mint          0   0   1       n/a    0.0%
-  transfer           29  19   4      60.4%   87.9%
+  transfer           30  21   3      58.8%   90.9%
 
 Secondary actions per kind (found / expected)
   account_close     0/13
@@ -90,7 +90,9 @@ Forbidden-label violations
   keeper-bot-executes-sell-for-user @AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51: transfer
   lending-kamino-borrow-usds @3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb: transfer
   lending-kamino-withdraw-usdc @E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr: transfer
+  lifecycle-burn-and-close-four-accounts-rent-to-sponsor @J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD: transfer
   lifecycle-create-ata-only-token2022 @3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a: transfer
+  lifecycle-create-ata-only-token2022 @EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz: transfer
   lifecycle-pump-create-mint-and-first-buy @HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU: transfer
   nft-sale-buyback-for-usdc @BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th: transfer
 
@@ -112,10 +114,10 @@ Failing cases (37); [d] = disputed case
   keeper-bot-executes-sell-for-user :: H9Ef..gHX1: kind only (swap); amounts got [out 198452020869 9VZe, in 76936031 EPjF] want [out 198452020869 9VZe, in 77886031 EPjF] | AgmL..zN51: FORBIDDEN transfer; predicted transfer, expected fee_only
   lending-kamino-borrow-usds :: 3x1R..KrNb: FORBIDDEN transfer; predicted transfer, expected lending_borrow
   lending-kamino-withdraw-usdc :: E354..86Gr: FORBIDDEN transfer; predicted transfer, expected lending_withdraw
-  lifecycle-burn-and-close-four-accounts-rent-to-sponsor :: J2A8..96aD: predicted other, expected token_burn | 8dBo..SMfG: predicted transfer, expected account_close
-  lifecycle-create-ata-only-token2022 :: 3YyU..Ug6a: FORBIDDEN transfer; predicted transfer, expected account_create | EBHd..ZrXz: predicted other, expected account_create
+  lifecycle-burn-and-close-four-accounts-rent-to-sponsor :: J2A8..96aD: FORBIDDEN transfer; predicted transfer, expected token_burn | 8dBo..SMfG: predicted transfer, expected account_close
+  lifecycle-create-ata-only-token2022 :: 3YyU..Ug6a: FORBIDDEN transfer; predicted transfer, expected account_create | EBHd..ZrXz: FORBIDDEN transfer; predicted transfer, expected account_create
   lifecycle-pump-create-mint-and-first-buy :: 4mZu..ojng: kind only (swap); amounts got [out 58029245 So11, in 1788384000000 BnyQ] want [out 50710956 So11, in 1788384000000 BnyQ] | HwRJ..o4iU: FORBIDDEN transfer; predicted transfer, expected token_mint
-  liquidity-add-damm-v2-by-keeper :: 2r3X..9oZx: predicted transfer, expected liquidity_add | ATdp..fgzF: predicted other, expected transfer
+  liquidity-add-damm-v2-by-keeper :: 2r3X..9oZx: predicted transfer, expected liquidity_add | ATdp..fgzF: kind only (transfer); amounts got [1817570053 FT6b] want [in 19442 So11]; participants got 2r3X..9oZx->HLnp..TLcC want 2r3X..9oZx->ATdp..fgzF
   [d] nft-sale-buyback-for-usdc :: BTq5..s1th: FORBIDDEN transfer; predicted transfer, expected nft_sale | miDt..7WPt: predicted transfer, expected nft_receive
   nft-transfer-sponsored-programmable :: miDt..7WPt: predicted transfer, expected nft_send | BTq5..s1th: predicted transfer, expected nft_receive | Gach..xJq3: predicted transfer, expected account_create
   stake-create-and-delegate :: HuZa..1JDL: kind only (stake_deposit); amounts got [out 7427745701 So11] want [out 7427731966 So11]; participants got HuZa..1JDL->null want HuZa..1JDL->B9XM..H3rX
@@ -132,13 +134,13 @@ Failing cases (37); [d] = disputed case
   swap-v1-router-sol-to-token-with-memo :: Dha7..miye: predicted transfer, expected swap
   transfer-four-tokens-one-recipient-sweep :: 5Z1Z..YMcA: predicted a secondary action (transfer #7), expected primary transfer | AEp8..ssFL: predicted a secondary action (transfer #7), expected primary transfer
   transfer-sol-durable-nonce-two-signers :: 95ip..nDW5: kind only (transfer); amounts got [out 56524094 So11] want [out 56483000 So11] | 5tzF..uAi9: kind only (transfer); amounts got [in 56524094 So11] want [in 56483000 So11]
-  transfer-sol-dust-twenty-one-recipients :: 54SR..bunW: kind only (transfer); amounts got [out 5021 So11] want [out 1 So11] | 5VCw..NmcD: kind only (transfer); amounts got [in 5021 So11] want [in 1 So11]
+  transfer-sol-dust-twenty-one-recipients :: 54SR..bunW: kind only (transfer); amounts got [out 5021 So11] want [out 1 So11] | 5VCw..NmcD: kind only (transfer); amounts got [5021 So11] want [in 1 So11]; participants got 54SR..bunW->AAAh..RBwb want 54SR..bunW->5VCw..NmcD
   transfer-sol-fee-paid-by-receiver-with-tip :: HLDi..6DWh: kind only (transfer); amounts got [out 50061798 So11] want [out 50000000 So11] | G5GF..Gyph: kind only (transfer); amounts got [in 50061798 So11] want [in 50000000 So11]
   transfer-sol-legacy-exchange-withdrawal :: H8sM..3WjS: kind only (transfer); amounts got [out 83921000 So11] want [out 83913000 So11] | 7jAD..8XMd: kind only (transfer); amounts got [in 83921000 So11] want [in 83913000 So11]
   transfer-sol-to-self-plus-jito-tip :: 2dbo..C2MW: predicted transfer, expected tip
   transfer-sol-v0-small :: mveQ..Qg1u: kind only (transfer); amounts got [out 113656 So11] want [out 108600 So11] | 5tzF..uAi9: kind only (transfer); amounts got [in 113656 So11] want [in 108600 So11]
   transfer-sol-with-jito-tip :: 5tK7..Uoi9: kind only (transfer); amounts got [out 1610400 So11] want [out 1400000 So11] | 5tzF..uAi9: kind only (transfer); amounts got [in 1610400 So11] want [in 1400000 So11]
   transfer-sol-with-memo-v1-program :: 2UPz..Mt4s: kind only (transfer); amounts got [out 1470049163 So11] want [out 1470041000 So11] | GgLn..S9Nq: kind only (transfer); amounts got [in 1470049163 So11] want [in 1470041000 So11]
-  transfer-token2022-multi-recipient-distribution :: 5UdR..2Gqn: kind only (transfer); amounts got [out 867299215780000 7q5E] want [out 163580645280000 7q5E]; participants got 5UdR..2Gqn->Ekey..MuXd want 5UdR..2Gqn->53un..GLyr | 5VCw..NmcD: kind only (transfer); amounts got [in 867299215780000 7q5E] want [in 130576608620000 7q5E]
-  transfer-token2022-sponsored-fee-then-close :: EBBk..YhVz: predicted transfer, expected account_close
+  transfer-token2022-multi-recipient-distribution :: 5UdR..2Gqn: kind only (transfer); amounts got [out 867299215780000 7q5E] want [out 163580645280000 7q5E]; participants got 5UdR..2Gqn->Ekey..MuXd want 5UdR..2Gqn->53un..GLyr | 5VCw..NmcD: kind only (transfer); amounts got [867299215780000 7q5E] want [in 130576608620000 7q5E]; participants got 5UdR..2Gqn->Ekey..MuXd want 5UdR..2Gqn->5VCw..NmcD
+  transfer-token2022-sponsored-fee-then-close :: 35y6..CsJb: kind only (transfer); amounts got [1600200 So11] want [out 199000000 2b1k]; participants got GCEX..qEyF->EBBk..YhVz want 35y6..CsJb->Hg9d..o7Fa | Hg9d..o7Fa: kind only (transfer); amounts got [1600200 So11] want [in 199000000 2b1k]; participants got GCEX..qEyF->EBBk..YhVz want 35y6..CsJb->Hg9d..o7Fa | EBBk..YhVz: predicted transfer, expected account_close
 ```

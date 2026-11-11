@@ -6,22 +6,22 @@
   "disputedPerspectives": 7,
   "overall": {
     "casesPassed": 6,
-    "primaryCorrect": 15,
-    "kindOnly": 27,
-    "primaryKindRight": 42,
-    "wrongLabels": 21,
-    "abstentions": 7,
+    "primaryCorrect": 13,
+    "kindOnly": 30,
+    "primaryKindRight": 43,
+    "wrongLabels": 23,
+    "abstentions": 4,
     "secondaryHits": 2,
     "disputedAlternatives": 0,
     "errors": 0,
-    "forbiddenViolations": 8,
+    "forbiddenViolations": 10,
     "amountsExact": [
-      15,
-      42
+      13,
+      43
     ],
     "participantsExact": [
-      28,
-      30
+      24,
+      31
     ],
     "feeAgreement": [
       43,
@@ -160,11 +160,11 @@
       "recall": 0
     },
     "transfer": {
-      "tp": 29,
-      "fp": 19,
-      "fn": 4,
-      "precision": 0.6042,
-      "recall": 0.8788
+      "tp": 30,
+      "fp": 21,
+      "fn": 3,
+      "precision": 0.5882,
+      "recall": 0.9091
     }
   },
   "secondaryPerKind": {
@@ -229,7 +229,9 @@
     "keeper-bot-executes-sell-for-user @AgmLJBMDCqWynYnQiPCuj9ewsNNsBJXyzoUhD9LJzN51: transfer",
     "lending-kamino-borrow-usds @3x1RsTx3a7idphqBXvjL7YD2bm6shHUF6HMEhAYiKrNb: transfer",
     "lending-kamino-withdraw-usdc @E354kEZjES9BiLjKnb97NjSxVgLXrt7UDY23Fjvj86Gr: transfer",
+    "lifecycle-burn-and-close-four-accounts-rent-to-sponsor @J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD: transfer",
     "lifecycle-create-ata-only-token2022 @3YyU2RKQSdns4qf21oTQnuLykbDG5xY8x8uAmAiCUg6a: transfer",
+    "lifecycle-create-ata-only-token2022 @EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz: transfer",
     "lifecycle-pump-create-mint-and-first-buy @HwRJBApsauj7PqyW9wsaU94FkQbXdRV2vrhPV4Cto4iU: transfer",
     "nft-sale-buyback-for-usdc @BTq5uRfTEAjKTwKkqDzSAXLAUstMX3kT2v6SzGBZs1th: transfer"
   ],
@@ -443,12 +445,12 @@
       "executionAgrees": true,
       "perspectives": {
         "J2A8tQeQTouDpsjeiEx55FAc7VnoXkWBHCe9kGcx96aD": {
-          "outcome": "abstained",
-          "predictedKind": "other",
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
           "amountsExact": null,
           "participantsExact": null,
           "components": {},
-          "forbiddenViolation": false,
+          "forbiddenViolation": true,
           "pass": false,
           "secondaryHit": null
         },
@@ -482,12 +484,12 @@
           "secondaryHit": null
         },
         "EBHdJGE7cn7UXhZFG94p8p3f9qDxZM9XQk2LLbUjZrXz": {
-          "outcome": "abstained",
-          "predictedKind": "other",
+          "outcome": "wrong_label",
+          "predictedKind": "transfer",
           "amountsExact": null,
           "participantsExact": null,
           "components": {},
-          "forbiddenViolation": false,
+          "forbiddenViolation": true,
           "pass": false,
           "secondaryHit": null
         }
@@ -543,11 +545,15 @@
           "secondaryHit": null
         },
         "ATdpV5tREm12gEK4cPSHm6wK7GteoRCDofRTeDCXfgzF": {
-          "outcome": "abstained",
-          "predictedKind": "other",
-          "amountsExact": null,
-          "participantsExact": null,
-          "components": {},
+          "outcome": "kind_only",
+          "predictedKind": "transfer",
+          "amountsExact": false,
+          "participantsExact": false,
+          "components": {
+            "actions[0] amount in So11111111111111111111111111111111111111112": false,
+            "actions[0] sender": true,
+            "actions[0] receiver": false
+          },
           "forbiddenViolation": false,
           "pass": false,
           "secondaryHit": null
@@ -1031,11 +1037,11 @@
           "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
-          "participantsExact": true,
+          "participantsExact": false,
           "components": {
             "actions[0] amount in So11111111111111111111111111111111111111112": false,
             "actions[0] sender": true,
-            "actions[0] receiver": true
+            "actions[0] receiver": false
           },
           "forbiddenViolation": false,
           "pass": false,
@@ -1309,11 +1315,11 @@
           "outcome": "kind_only",
           "predictedKind": "transfer",
           "amountsExact": false,
-          "participantsExact": true,
+          "participantsExact": false,
           "components": {
             "actions[0] amount in 7q5EyfGurbHs3unuYexNkJacarcAvhQD9acjTX66xL3f": false,
             "actions[0] sender": true,
-            "actions[0] receiver": true
+            "actions[0] receiver": false
           },
           "forbiddenViolation": false,
           "pass": false,
@@ -1403,31 +1409,31 @@
       "executionAgrees": true,
       "perspectives": {
         "35y6MEFoH36qwFrvteQqW96NZkGttPQq64vKNSFVCsJb": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
-          "amountsExact": true,
-          "participantsExact": true,
+          "amountsExact": false,
+          "participantsExact": false,
           "components": {
-            "actions[0] amount out 2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo": true,
-            "actions[0] sender": true,
-            "actions[0] receiver": true
+            "actions[0] amount out 2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo": false,
+            "actions[0] sender": false,
+            "actions[0] receiver": false
           },
           "forbiddenViolation": false,
-          "pass": true,
+          "pass": false,
           "secondaryHit": null
         },
         "Hg9dpcEmhbhVKy3iGmsPLvBzXnBRWzPsyvF117hdo7Fa": {
-          "outcome": "correct",
+          "outcome": "kind_only",
           "predictedKind": "transfer",
-          "amountsExact": true,
-          "participantsExact": true,
+          "amountsExact": false,
+          "participantsExact": false,
           "components": {
-            "actions[0] amount in 2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo": true,
-            "actions[0] sender": true,
-            "actions[0] receiver": true
+            "actions[0] amount in 2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo": false,
+            "actions[0] sender": false,
+            "actions[0] receiver": false
           },
           "forbiddenViolation": false,
-          "pass": true,
+          "pass": false,
           "secondaryHit": null
         },
         "EBBkGATp92XDao4Ph4v6M7TmzYKTNYdMa2dKL1NuYhVz": {

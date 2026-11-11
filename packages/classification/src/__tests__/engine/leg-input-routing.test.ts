@@ -1,7 +1,7 @@
 /**
  * Routing of versioned leg inputs in the ONE classification engine: each classifier
- * receives the input version it declares (swap and transfer: "v2-closed-token-accounts";
- * all others: "v1-main"), chosen immediately before it runs; priorities, the
+ * receives the input version it declares (swap: "v2-closed-token-accounts"; all others,
+ * transfer included: "v1-main"), chosen immediately before it runs; priorities, the
  * registration-order tie-break and the isRelevant arbitration are unchanged.
  */
 import { describe, expect, test } from "bun:test";
@@ -20,7 +20,7 @@ import {
 const ALICE = "A1ice11111111111111111111111111111111111111";
 const BOB = "Bob1111111111111111111111111111111111111111";
 const CAROL = "Caro1111111111111111111111111111111111111111";
-const MIGRATED = new Set(["swap", "transfer"]);
+const MIGRATED = new Set(["swap"]);
 
 type Registered = Array<{ classifier: Classifier; order: number }>;
 
@@ -50,7 +50,7 @@ const semantic = (trace: { decisions: Array<Record<string, unknown>> }) =>
 const fee = createMockLeg({ accountId: "fee:network", side: "credit", role: "fee", amount: createSolAmount(0.000005) });
 
 describe("each classifier receives the input version it declares", () => {
-  test("declared versions: swap and transfer migrated, every other classifier v1-main", () => {
+  test("declared versions: swap migrated, every other classifier (transfer included) v1-main", () => {
     const service = new ClassificationService();
     const versions = Object.fromEntries(
       (service as unknown as { classifiers: Registered }).classifiers.map(({ classifier }) => [
@@ -69,7 +69,7 @@ describe("each classifier receives the input version it declares", () => {
       swap: "v2-closed-token-accounts",
       airdrop: "v1-main",
       "fee-only": "v1-main",
-      transfer: "v2-closed-token-accounts",
+      transfer: "v1-main",
     });
   });
 
@@ -153,16 +153,23 @@ describe("arbitration is unchanged", () => {
     expect(service.classify(v2, createMockTransaction({ accountKeys: [ALICE] }), ALICE).primaryType).toBe("swap");
   });
 
-  test("relevant vs non-relevant: transfer (v2) replaces a non-relevant fee-only (v1); without a pair fee-only stays", () => {
-    const v1 = [fee];
-    const v2 = [
+  test("relevant vs non-relevant: a later transfer (v1) replaces a non-relevant fee-only (v1); without a pair fee-only stays", () => {
+    // fee-only and transfer both read v1-main and cannot both match one real array (any
+    // external non-fee leg stops fee-only), so fee-only is forced to a non-relevant match to
+    // exercise the arbitration; transfer finds its pair in the legacy array, never in v2.
+    const v1 = [
       fee,
       createMockLeg({ accountId: `external:${BOB}`, side: "debit", role: "sent", amount: createUsdcAmount(5) }),
       createMockLeg({ accountId: `external:${ALICE}`, side: "credit", role: "received", amount: createUsdcAmount(5) }),
     ];
     const service = new ClassificationService();
+    const feeOnly = (service as unknown as { classifiers: Registered }).classifiers.find(
+      (c) => c.classifier.name === "fee-only",
+    )!.classifier;
+    const realFeeOnly = feeOnly.classify.bind(feeOnly);
+    feeOnly.classify = () => realFeeOnly({ legs: [fee], tx: createMockTransaction() });
     const tx = createMockTransaction({ accountKeys: [BOB, ALICE] });
-    const routed = service.classifyWithTrace(v2, tx, ALICE, { legacyLegs: v1 });
+    const routed = service.classifyWithTrace([fee], tx, ALICE, { legacyLegs: v1 });
     expect(routed.debugTrace.selectedClassifier).toBe("transfer");
     expect(routed.classification.sender).toBe(BOB);
     expect(semantic(routed.debugTrace).find((d) => d.classifier === "fee-only")).toEqual({
@@ -173,7 +180,9 @@ describe("arbitration is unchanged", () => {
       reason: "Matched non-relevant fee_only",
       legInput: "v1-main",
     });
-    const noPair = service.classifyWithTrace([fee], tx, ALICE, { legacyLegs: v1 });
+    expect(semantic(routed.debugTrace).find((d) => d.classifier === "transfer")!.legInput).toBe("v1-main");
+    // the pair only in the truthful array: transfer (v1) sees no pair, fee-only stays
+    const noPair = new ClassificationService().classifyWithTrace(v1, tx, ALICE, { legacyLegs: [fee] });
     expect(noPair.classification.primaryType).toBe("fee_only");
     expect(noPair.debugTrace.selectedClassifier).toBe("fee-only");
   });
@@ -198,7 +207,7 @@ describe("arbitration is unchanged", () => {
       createMockLeg({ accountId: `external:${BOB}`, side: "debit", role: "sent", amount: createUsdcAmount(5) }),
       createMockLeg({ accountId: `external:${CAROL}`, side: "credit", role: "received", amount: createUsdcAmount(5) }),
     ];
-    // Alice is in no transfer pair: the perspective constraint makes transfer return null.
+    // The pair is only in the truthful array; transfer reads v1-main (empty) and does not match.
     const trace = service.classifyWithTrace(v2, createMockTransaction(), ALICE, { legacyLegs: [] }).debugTrace;
     expect(trace.selectedClassifier).toBeNull();
     expect(semantic(trace).map((d) => [d.classifier, d.matched, d.legInput])).toEqual([
@@ -212,9 +221,11 @@ describe("arbitration is unchanged", () => {
       ["swap", false, "v2-closed-token-accounts"],
       ["airdrop", false, "v1-main"],
       ["fee-only", false, "v1-main"],
-      ["transfer", false, "v2-closed-token-accounts"],
+      ["transfer", false, "v1-main"],
     ]);
-    // without a wallet, the transaction-wide pair is used, as before
-    expect(service.classify(v2, createMockTransaction(), undefined, { legacyLegs: [] }).sender).toBe(BOB);
+    // the same pair on v1-main is matched by transfer, as at 3111fd7 (another wallet's pair included)
+    const onV1 = service.classifyWithTrace([], createMockTransaction(), ALICE, { legacyLegs: v2 });
+    expect(onV1.debugTrace.selectedClassifier).toBe("transfer");
+    expect([onV1.classification.sender, onV1.classification.receiver]).toEqual([BOB, CAROL]);
   });
 });

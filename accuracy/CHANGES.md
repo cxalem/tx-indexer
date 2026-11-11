@@ -3,48 +3,46 @@
 Every regeneration of `baseline.json` / `BASELINE.md` adds one entry here, in the same commit:
 date, what changed, why. `bun run accuracy` fails if `baseline.json` changed without this file.
 
-## 2026-11-11: versioned leg inputs; transfer only pairs the wallet's own transfers (no case or label change)
+## 2026-11-11: versioned leg inputs; only `swap` reads the truthful legs (no case or label change)
 
-Classifiers now read a declared leg input. `swap` and `transfer` are migrated to the truthful legs
-(`v2-closed-token-accounts`); the nine others read the legs as built at 3111fd7 (`v1-main`) and return
-exactly what 3111fd7 returns (proven per classifier, see `packages/sdk/src/legacy-input.test.ts`).
-`transfer`, given a wallet, only considers pairs in which that wallet is the sender or the receiver, and
-returns nothing when there is none. No `case.json`, `rpc.json` or `expected.json` changed.
+Classifiers now read a declared leg input. `swap` is the only classifier migrated to the truthful legs
+(`v2-closed-token-accounts`); the ten others, `transfer` included, read the legs as built at 3111fd7
+(`v1-main`, vendored verbatim), their source is byte-identical to 3111fd7, and each returns exactly
+what 3111fd7 returns on every oracle entry (`packages/sdk/src/legacy-input.test.ts`, which also checks
+the FINAL result of every entry). `swap` ignores closed-account debits of a mint whose credits do not
+cover its debits (conservation rule). No `case.json`, `rpc.json` or `expected.json` changed.
 
-Versus the previous baseline (4acdb61), 5 perspectives changed; every other outcome, component and
-predicted kind is identical. All 5 come from the transfer perspective constraint:
-- `liquidity-add-damm-v2-by-keeper` @ATdpV5tR…: `kind_only` `transfer` → `abstained` (`other`). **A
-  regression of the primary-kind count.** The keeper's expected action is the 19,442-lamport fee
-  reimbursement; its net lamport change is 0 (reimbursement minus `meta.fee`), so it has no leg of its
-  own. The `transfer` before was another wallet's 1,817,570,053 FT6b… movement 2r3X… → HLnp…: right kind
-  and sender only by coincidence (2r3X… is also the reimbursement payer), receiver wrong. With the
-  constraint no pair involves the keeper. Seeing the reimbursement needs fee-separated legs (a future
-  `v3-fee-separated` input).
-- `lifecycle-burn-and-close-four-accounts-rent-to-sponsor` @J2A8tQeQ…: `wrong_label` (forbidden `transfer`
-  of 1,513,840 lamports between two other accounts) → `abstained` (`other`). Expected `token_burn`.
-- `lifecycle-create-ata-only-token2022` @EBHdJGE7…: `wrong_label` (forbidden `transfer` of 1,605,200
-  lamports 3YyU… → 35ET…) → `abstained` (`other`). Expected `account_create`.
-- `transfer-sol-dust-twenty-one-recipients` @5VCwKtCX…: still `kind_only`; the receiver is now the wallet
-  itself instead of another recipient (participants exact false → true).
-- `transfer-token2022-multi-recipient-distribution` @5VCwKtCX…: same, participants exact false → true.
+What was tried and split out. A previous version of this entry migrated `transfer` as well, with a
+perspective rule (given a wallet, only pairs in which it is the sender or the receiver). On this set it
+fixed the two sponsored Token-2022 perspectives and two forbidden labels, but the keeper perspective
+`liquidity-add-damm-v2-by-keeper` @ATdpV5tR… lost its (coincidentally right) `transfer` kind, and on the
+8,280-transaction traffic sample it changed 934 predictions (594 stop describing another wallet's
+transfer, 276 become `other`, 494 list-filter decisions change, 488 of them newly filtered). That is a separate behaviour change, so
+it was moved to the next slice, branch `feat/transfer-perspective`. Its numbers are not in this baseline.
 
-Predictions that changed without an outcome change: `transfer-token2022-sponsored-fee-then-close`
-@EBBkGATp… is `transfer` of its own incoming rent, 1,600,200 lamports GCEX… → EBBk… (as at 3111fd7;
-still `wrong_label`, expected `account_close`), no longer another wallet's PYUSD transfer.
-`keeper-bot-executes-sell-for-user` @AgmLJBMD… is `transfer` of 1,908,154 lamports AgmL… → AwtZ… (its
-own SOL movement) instead of another wallet's 198,452,020,869 9VZe… transfer (still forbidden
-`wrong_label`, expected `fee_only`).
+Versus 3111fd7's baseline, exactly one perspective changed; every other outcome and prediction (kind,
+amounts, participants) is identical, proven on all 72 perspectives by the oracle test:
+- `swap-pump-amm-sell-all-and-close` @32ktkabA…: `wrong_label` `transfer` (forbidden) → `kind_only`
+  `swap`. The closed account's 365,053,940 2uQw…pump debit now reaches `swap`. Token-out leg exact; the
+  SOL in is 9,746,453 versus the expected 8,247,613: the closed account's 1,513,840-lamport rent refund
+  minus the 15,000-lamport network fee is still counted in the swap's SOL side (as before this work;
+  rent and fee handling are out of scope).
 
-Versus 3111fd7's baseline: the 5 changes above, plus the closed-account changes of the earlier entry
-(`swap-pump-amm-sell-all-and-close` @32kt… `wrong_label` → `kind_only` swap; both perspectives of
-`transfer-token2022-sponsored-fee-then-close` 35y6…/Hg9d… `kind_only` → `correct`). The only perspective
-worse than at 3111fd7 is the keeper above.
+Versus the previous baseline (51d0792, `transfer` migrated), reverted with `transfer`: both perspectives
+of `transfer-token2022-sponsored-fee-then-close` (35y6…, Hg9d…) `correct` → `kind_only` (the 1,600,200-
+lamport rent movement is paired again, as at 3111fd7); @EBBkGATp… back to its 3111fd7 prediction
+(`transfer` of its own incoming rent, still `wrong_label`); `lifecycle-burn-and-close-four-accounts-rent-to-sponsor`
+@J2A8tQeQ… and `lifecycle-create-ata-only-token2022` @EBHdJGE7… `abstained` → forbidden `wrong_label`
+`transfer`; `liquidity-add-damm-v2-by-keeper` @ATdpV5tR… `abstained` → `kind_only`; the receiver of the
+two 5VCwKtCX… distribution perspectives is again another recipient. The previous `keeper-bot-executes-sell-for-user`
+@AgmLJBMD… prediction change is reverted too (no score change).
 
-Before → after (versus 4acdb61): primary action correct 15 → 15 of 72; kind_only 28 → 27; abstained
-4 → 7; wrong_label 23 → 21; secondary_hit 2, disputed_alternative 0, error 0 unchanged; primary kind
-right 43 → 42; forbidden-label violations 10 → 8; amounts exact 15/43 → 15/42; participants exact
-26/31 → 28/30; cases passed 6/43 unchanged; `transfer` TP 30 → 29, FP 21 → 19, FN 3 → 4 (precision
-58.8% → 60.4%, recall 90.9% → 87.9%).
+Before → after, versus 3111fd7: primary action correct 13 → 13 of 72; kind_only 29 → 30; wrong_label
+24 → 23; abstained 4, secondary_hit 2, disputed_alternative 0, error 0 unchanged; primary kind right
+42 → 43; forbidden-label violations 11 → 10; amounts exact 13/42 → 13/43; participants exact 24/31
+unchanged; cases passed 6/43 unchanged; `swap` TP 10 → 11, FN 4 → 3 (recall 71.4% → 78.6%);
+`transfer` FP 22 → 21 (precision 57.7% → 58.8%). Versus 51d0792: correct 15 → 13; kind_only 27 → 30;
+abstained 7 → 4; wrong_label 21 → 23; primary kind right 42 → 43; forbidden 8 → 10.
 
 ## 2026-11-11: SDK fix, token accounts closed in the transaction (no case or label change)
 
@@ -55,9 +53,10 @@ were read and the closed account's token was lost. Native wSOL accounts and fees
 No `case.json`, `rpc.json` or `expected.json` changed (case hashes identical).
 
 Later commits on the same branch first applied a burn-and-close rule in several classifiers; that was
-replaced by versioned leg inputs (see the entry above): only `swap` and `transfer` read the legs with
-closed-account debits, `swap` ignores closed-account debits of a mint that is not conserved in the legs,
-and every other classifier reads the 3111fd7 legs. The scores in this entry are unaffected.
+replaced by versioned leg inputs (see the entry above): only `swap` reads the legs with closed-account
+debits, and every other classifier, `transfer` included, reads the 3111fd7 legs. As a result the two
+`transfer-token2022-sponsored-fee-then-close` changes below (and the EBBk… one) are reverted by the
+entry above; only the `swap-pump-amm-sell-all-and-close` change remains.
 
 Score records that changed: 3 of 72. Predictions that changed: 4 of 72 (the fourth is a
 `wrong_label` before and after, so no score moved). Every other perspective, outcome, component and

@@ -5,7 +5,7 @@
  * mode "base":   legs = transactionToLegs (the 3111fd7 builder); final = classifyTransaction.
  * mode "routed": legs = transactionToLegInputs()["v1-main"]; final = classifyTransaction with
  *                the truthful legs and `{ legacyLegs }` (the SDK path).
- * Per-classifier outputs are the nine legacy classifiers called directly on `legs`.
+ * Per-classifier outputs are the ten legacy classifiers called directly on `legs`.
  */
 import { join } from "node:path";
 import {

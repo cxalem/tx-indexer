@@ -53,11 +53,6 @@ export interface SyntheticItem {
   /** Edits the response the synthetic builder cannot express (missing owners, snapshots, UI strings). */
   mutate?: (response: { meta: Record<string, unknown> }) => void;
   perspectives: Perspective[];
-  /**
-   * Perspectives for which the routed pipeline's FINAL classification must equal 3111fd7's
-   * (the review counterexamples). Elsewhere only per-classifier equality is required.
-   */
-  finalEqualsBase?: Perspective[];
 }
 
 export type CorpusItem = BodyItem | SyntheticItem;
@@ -312,7 +307,6 @@ export const SYNTHETIC: SyntheticItem[] = [
     kind: "synthetic",
     input: usdcPlusBurnedPosition,
     perspectives: [BOB, ALICE],
-    finalEqualsBase: [BOB],
   },
   {
     id: "burn-close-zero-decimal-alone",
@@ -326,7 +320,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [],
     },
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "genuine-nft-send-from-closed-account",
@@ -340,7 +333,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(2, POS, BOB, 1n, 0)],
     },
     perspectives: [ALICE, BOB],
-    finalEqualsBase: [ALICE, BOB],
   },
   {
     id: "unrelated-recipient-beside-closed-nft",
@@ -354,7 +346,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(2, USDC, DAVE, 4_000_000n, 6), tb(3, USDC, CAROL, 5_000_000n, 6)],
     },
     perspectives: [CAROL, DAVE, ALICE],
-    finalEqualsBase: [CAROL, DAVE],
   },
   {
     id: "bridge-burn-open-plus-burned-junk",
@@ -368,7 +359,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(2, W, ALICE, 0n, 8)],
     },
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "bridge-in-mint-plus-burned-junk",
@@ -382,28 +372,24 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(2, W, ALICE, 1_000_000_000n, 8)],
     },
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "bridge-burn-open-plus-burned-sibling-same-mint",
     kind: "synthetic",
     input: wormholeSibling(2_000_000_000n),
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "bridge-burn-open-plus-closed-empty-sibling",
     kind: "synthetic",
     input: wormholeSibling(0n),
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "bridge-burn-open-plus-closed-sibling-5w",
     kind: "synthetic",
     input: wormholeSibling(500_000_000n),
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "marketplace-royalty-before-seller",
@@ -419,7 +405,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(4, POS, BOB, 1n, 0)],
     },
     perspectives: [ALICE, BOB],
-    finalEqualsBase: [ALICE, BOB],
   },
   {
     id: "marketplace-escrow-sale-plus-unrelated-burned-nft",
@@ -433,7 +418,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(2, POS, ESCROW, 0n, 0), tb(3, POS, BOB, 1n, 0)],
     },
     perspectives: [ALICE, BOB],
-    finalEqualsBase: [ALICE, BOB],
   },
   {
     id: "marketplace-sale-seller-account-closes",
@@ -447,7 +431,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(3, POS, BOB, 1n, 0)],
     },
     perspectives: [ALICE, BOB],
-    finalEqualsBase: [ALICE, BOB],
   },
   {
     id: "stake-sponsored-deposit-plus-burned-junk",
@@ -461,7 +444,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(2, POOL_MINT, ALICE, 900_000_000n, 9)],
     },
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "privacy-deposit-plus-burned-junk",
@@ -475,7 +457,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(2, USDC, PRIVACY_CASH_SPL_POOL, 10_000_000n, 6), tb(3, USDC, ALICE, 40_000_000n, 6)],
     },
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "airdrop-on-dex-plus-burned-junk",
@@ -489,7 +470,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(1, X, POOL_OWNER, 45_000_000n, 6), tb(2, X, ALICE, 5_000_000n, 6)],
     },
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
   {
     id: "bridge-custody-usdc-plus-burned-junk",
@@ -503,7 +483,6 @@ export const SYNTHETIC: SyntheticItem[] = [
       postTokenBalances: [tb(2, USDC, CUSTODY, 80_000_000n, 6), tb(3, USDC, ALICE, 10_000_000n, 6)],
     },
     perspectives: [ALICE],
-    finalEqualsBase: [ALICE],
   },
 
   // --- migrated classifiers (swap, transfer): reported, not required equal -----------
@@ -698,7 +677,7 @@ export function corpus(): CorpusItem[] {
   return [...mainnetFixtureItems(), ...accuracyItems(), ...SYNTHETIC];
 }
 
-/** The nine classifiers that read "v1-main" and must equal 3111fd7 one by one. */
+/** The ten classifiers that read "v1-main" and must equal 3111fd7 one by one. */
 export const LEGACY_CLASSIFIERS = [
   ["solana-pay", "solana-pay-classifier", "SolanaPayClassifier"],
   ["privacy-cash", "privacy-cash-classifier", "PrivacyCashClassifier"],
@@ -709,4 +688,5 @@ export const LEGACY_CLASSIFIERS = [
   ["stake-withdraw", "stake-withdraw-classifier", "StakeWithdrawClassifier"],
   ["airdrop", "airdrop-classifier", "AirdropClassifier"],
   ["fee-only", "fee-only-classifier", "FeeOnlyClassifier"],
+  ["transfer", "transfer-classifier", "TransferClassifier"],
 ] as const;
