@@ -15,6 +15,21 @@ Not published yet. Breaking for SDK consumers: see the first section.
 - Transactions are requested with `maxSupportedTransactionVersion: 1`, so v1 transactions (live on mainnet since 2026-09-15) are fetched and classified instead of throwing `UnsupportedTransactionVersionError` / being skipped as `unsupported_version`. v1 messages have no lookup tables, so `tx.accountKeys` is the static key list and `tx.loadedAddresses` is empty; fee leg and reconciliation work as for v0.
 - `UnsupportedTransactionVersionError` now means a version **above 1**; its `maxSupportedTransactionVersion` is `1`.
 
+### Fixed: token accounts closed in the transaction are no longer dropped
+
+- Token balance changes (`extractTokenBalanceChanges`, and therefore the legs) are built from the **union** of `preTokenBalances` and `postTokenBalances`, keyed by `accountIndex`. A non-native token account that existed before the transaction and is closed in it (pre entry only) now produces a **debit of its full pre amount, attributed to its pre owner**. Before, only post entries were read, so selling a whole balance and closing the account (common on PumpSwap and the Pump.fun bonding curve) lost the sold token and left only the SOL side.
+- When the same account index has a different owner before and after (authority change) or a different mint (closed and reinitialised), the two sides are no longer netted: the pre owner / mint is debited and the post owner / mint credited separately.
+- Debit vs credit is decided from the raw integer amounts (`bigint`), never from the floating-point UI amounts (`amountUi` is display only).
+- A token movement whose balance metadata has no owner is attributed to the token **account** address (`accountKeys[accountIndex]`), no longer to the mint.
+- `TokenBalanceChange` gains optional `preOwner`, `postOwner`, `tokenAccount` and `programId`; `owner` is the pre owner for a closed account's debit.
+- **Unchanged on purpose:** native-mint (wSOL) accounts. A closed wSOL account keeps its ordinary lamport leg on the account address and gets no token leg; the rent refund of any closed account stays an ordinary lamport movement. Fees, fee roles and classifiers are unchanged.
+- Missing token balance snapshots are no longer read as empty: when `meta.preTokenBalances` or `meta.postTokenBalances` is absent, the fetch paths keep it `undefined` (an empty array still means "no token accounts"), no token balance change or new-ATA detection is derived, and the new optional `tx.tokenBalanceStatus` (`{ status: "available" | "unavailable", reason? }`) says so. A hand-built `RawTransaction` that omits one of the two arrays now gets no token legs (before, the missing side was treated as zero).
+- **Observable changes:** transactions that close a non-empty token account gain a token debit leg, and their classification can change. On the repository's accuracy set: `swap-pump-amm-sell-all-and-close` goes from a wrong `transfer` to `swap` (amounts still off: the SOL received includes the rent refund), and both perspectives of `transfer-token2022-sponsored-fee-then-close` become fully correct (primary action correct 13 → 15 of 72). On a frozen sample of 8,280 mainnet transactions (unlabelled; a distribution diff, not a correctness measure) 127 classifications changed: 90 `transfer` → `swap`, 36 `transfer` → `transfer` with the closed token as the amount, and 1 `transfer` → `nft_send` (a Meteora DAMM v2 position NFT closed while removing liquidity; neither label is right).
+
+### Fixed: exact address comparison
+
+- `getWalletTokenChanges` and `getWalletSolChange` compared addresses case-insensitively. Solana addresses are case-sensitive base58, so two different addresses that differ only by letter case could match. They now compare exactly. Callers passing an address with different letter case than the on-chain key no longer get a match (such an address is a different account).
+
 ## 1.6.0
 
 Released 2026-11-10. Everything merged since 1.5.0 (2026-02-01). No change to `TxPrimaryType`; existing code keeps working. `tx-indexer/advanced` users should read the migration notes below.

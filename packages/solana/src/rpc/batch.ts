@@ -13,6 +13,7 @@ import {
   normalizeLoadedAddresses,
 } from "../mappers/account-keys";
 import { reconcileLamports } from "../mappers/lamport-reconciliation";
+import { tokenBalanceStatusOf } from "../mappers/balance-parser";
 import {
   MAX_SUPPORTED_TRANSACTION_VERSION,
   UNSUPPORTED_TRANSACTION_VERSION_RPC_CODE,
@@ -198,7 +199,8 @@ function responseToRawTransaction(
     loadedAddresses,
   );
 
-  const preTokenBalances = (resp.meta?.preTokenBalances ?? []).map((bal) => ({
+  // A missing array stays undefined (unavailable), never an empty snapshot.
+  const preTokenBalances = resp.meta?.preTokenBalances?.map((bal) => ({
     accountIndex: bal.accountIndex,
     mint: bal.mint,
     owner: bal.owner,
@@ -210,7 +212,8 @@ function responseToRawTransaction(
     },
   }));
 
-  const postTokenBalances = (resp.meta?.postTokenBalances ?? []).map((bal) => ({
+  // A missing array stays undefined (unavailable), never an empty snapshot.
+  const postTokenBalances = resp.meta?.postTokenBalances?.map((bal) => ({
     accountIndex: bal.accountIndex,
     mint: bal.mint,
     owner: bal.owner,
@@ -246,6 +249,7 @@ function responseToRawTransaction(
   rawTx.reconciliation = reconcileLamports(rawTx, {
     rewards: resp.meta?.rewards,
   });
+  rawTx.tokenBalanceStatus = tokenBalanceStatusOf(rawTx);
 
   return rawTx;
 }

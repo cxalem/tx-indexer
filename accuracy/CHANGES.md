@@ -3,6 +3,35 @@
 Every regeneration of `baseline.json` / `BASELINE.md` adds one entry here, in the same commit:
 date, what changed, why. `bun run accuracy` fails if `baseline.json` changed without this file.
 
+## 2026-11-11: SDK fix, token accounts closed in the transaction (no case or label change)
+
+The SDK now builds token balance changes from the union of `preTokenBalances` and
+`postTokenBalances`: a non-native token account closed in the transaction (pre entry only)
+produces a debit of its full pre amount, attributed to its pre owner. Before, only post entries
+were read and the closed account's token was lost. Native wSOL accounts, fees and classifiers are
+unchanged. No `case.json`, `rpc.json` or `expected.json` changed (case hashes identical).
+
+Perspectives that changed (3 of 72; every other perspective, outcome and component is identical):
+- `swap-pump-amm-sell-all-and-close` @32ktkabA…: `wrong_label` `transfer` (forbidden) → `kind_only`
+  `swap`. The wallet sells all of 2uQw…pump and closes the account (index 7). The 365,053,940 token
+  debit now exists, so the swap classifier pairs it with the SOL credit. Token-out leg exact; the SOL
+  in is 9,746,453 versus the expected 8,247,613 (+1,498,840: the closed account's rent refund, 1,513,840
+  lamports, still folds into the SOL side; rent handling is out of scope for this change).
+- `transfer-token2022-sponsored-fee-then-close` @35y6MEFo…: `kind_only` → `correct`. The sender's
+  2b1k… account is emptied and closed; its 199,000,000 debit now exists, so the transfer pairs it with
+  the receiver's credit (amount, sender and receiver exact) instead of the 1,600,200-lamport rent
+  movement between the fee payer and the rent receiver.
+- `transfer-token2022-sponsored-fee-then-close` @Hg9dpcEm…: `kind_only` → `correct`, same reason.
+  (The case still fails: the third perspective, EBBk…, is still a `transfer` where `account_close`
+  is expected.)
+
+Before → after: primary action correct 13 → 15 of 72; kind_only 29 → 28; wrong_label 24 → 23;
+secondary_hit 2, abstained 4, disputed_alternative 0, error 0 unchanged; primary kind right 42 → 43;
+forbidden-label violations 11 → 10; amounts exact 13/42 → 15/43; participants exact 24/31 → 26/31;
+cases passed 6/43 unchanged; fee 43/43, execution 43/43, reconciliation balanced 43 unchanged;
+per kind: `swap` TP 10 → 11, FN 4 → 3 (recall 71.4% → 78.6%), `transfer` FP 22 → 21 (precision
+57.7% → 58.8%); per category unchanged.
+
 ## 2026-11-11: scorer v4, exactness per component; secondary synonym bucket; baseline schema 4 (no SDK or label change)
 
 No case file and no SDK code changed. Every headline number, per-kind count, per-category count and

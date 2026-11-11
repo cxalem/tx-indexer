@@ -86,6 +86,18 @@ export const LamportReconciliationSchema = z.object({
   reason: z.string().optional(),
 });
 
+/**
+ * Whether the transaction's token balance snapshots (`meta.preTokenBalances`
+ * and `meta.postTokenBalances`) were present. An empty array is an available
+ * snapshot; a missing one is `unavailable`, and then no token balance change is
+ * derived (missing data is never read as zero balances).
+ */
+export const TokenBalanceStatusSchema = z.object({
+  status: z.enum(["available", "unavailable"]),
+  /** Which snapshot is missing, when status is "unavailable" */
+  reason: z.string().optional(),
+});
+
 /** Addresses loaded from address lookup tables (v0 transactions). */
 export const LoadedAddressesSchema = z.object({
   writable: z.array(z.string()),
@@ -120,6 +132,8 @@ export const RawTransactionSchema = z.object({
   memo: z.string().nullable().optional(),
   /** Independent lamport reconciliation diagnostics (see LamportReconciliation) */
   reconciliation: LamportReconciliationSchema.optional(),
+  /** Availability of the token balance snapshots (see TokenBalanceStatus) */
+  tokenBalanceStatus: TokenBalanceStatusSchema.optional(),
 });
 
 const TxLegSideSchema = z.enum(["debit", "credit"]);
@@ -150,6 +164,7 @@ export type TokenBalance = z.infer<typeof TokenBalanceSchema>;
 export type RawTransaction = z.infer<typeof RawTransactionSchema>;
 export type LamportReconciliation = z.infer<typeof LamportReconciliationSchema>;
 export type LamportReconciliationStatus = LamportReconciliation["status"];
+export type TokenBalanceStatus = z.infer<typeof TokenBalanceStatusSchema>;
 export type LoadedAddresses = z.infer<typeof LoadedAddressesSchema>;
 export type TxLegSide = z.infer<typeof TxLegSideSchema>;
 export type TxLegRole = z.infer<typeof TxLegRoleSchema>;

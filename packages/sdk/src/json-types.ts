@@ -21,6 +21,7 @@ import type { ClassifiedTransaction } from "./client";
 import type {
   RawTransaction,
   LamportReconciliation,
+  TokenBalanceStatus,
   LoadedAddresses,
   TxLeg,
   TokenBalance,
@@ -115,6 +116,8 @@ export interface JsonRawTransaction {
   memo?: string | null;
   /** Lamport reconciliation diagnostics (all lamport values are strings) */
   reconciliation?: JsonLamportReconciliation;
+  /** Availability of the token balance snapshots */
+  tokenBalanceStatus?: TokenBalanceStatus;
 }
 
 /**
@@ -264,6 +267,7 @@ function toJsonRawTransaction(tx: RawTransaction): JsonRawTransaction {
       : {}),
     memo: tx.memo,
     ...(tx.reconciliation ? { reconciliation: { ...tx.reconciliation } } : {}),
+    ...(tx.tokenBalanceStatus ? { tokenBalanceStatus: { ...tx.tokenBalanceStatus } } : {}),
   };
 }
 

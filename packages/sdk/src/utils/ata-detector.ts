@@ -45,6 +45,11 @@ export interface DetectedATA {
  * ```
  */
 export function detectNewATAs(tx: RawTransaction): DetectedATA[] {
+  // A missing snapshot is unavailable data, not "no accounts": without the pre
+  // snapshot every post account would look new.
+  if (tx.preTokenBalances == null || tx.postTokenBalances == null) {
+    return [];
+  }
   const {
     preTokenBalances = [],
     postTokenBalances = [],
