@@ -11,11 +11,14 @@ produces a debit of its full pre amount, attributed to its pre owner. Before, on
 were read and the closed account's token was lost. Native wSOL accounts and fees are unchanged.
 No `case.json`, `rpc.json` or `expected.json` changed (case hashes identical).
 
-A second commit on the same branch adds one classifier rule: a debit from an account closed in the
-transaction with no credit of the same mint anywhere (burn and close) is accounting only, never the
-evidence for an NFT send, swap input, bridge or privacy deposit, or "another token sent" (airdrop,
-stake sponsored deposit). It changes no score, outcome, component or prediction in this set, so the
-baseline was not regenerated for it.
+Later commits on the same branch add one classifier rule: the debit of an account the transaction
+closed (marked by the new optional `TxLeg.closedTokenAccount`, set only when the account has a pre
+entry, no post entry and zero lamports after) whose mint has no credit on any leg (burn and close) is
+accounting only, never the evidence for a simple NFT send, a swap input, a Privacy Cash deposit, or
+"another token sent" (airdrop, stake sponsored deposit); bridge and NFT marketplace handling do not
+apply it. A marketplace sale whose seller's NFT account closes names the buyer as receiver again.
+None of this changes a score, outcome, component or case hash in this set (`bun run accuracy` passes
+against the baseline unchanged), so the baseline was not regenerated for it.
 
 Score records that changed: 3 of 72. Predictions that changed: 4 of 72 (the fourth is a
 `wrong_label` before and after, so no score moved). Every other perspective, outcome, component and

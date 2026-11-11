@@ -78,7 +78,7 @@ export class SwapClassifier implements Classifier {
     const { tx, walletAddress } = context;
     // A debit from a token account closed in this transaction that nothing
     // receives (e.g. burn and close) is accounting, not evidence of an action.
-    const legs = withoutUnmatchedClosedDebits(context.legs, tx);
+    const legs = withoutUnmatchedClosedDebits(context.legs);
 
     const initiator = walletAddress ?? tx.accountKeys?.[0] ?? null;
 

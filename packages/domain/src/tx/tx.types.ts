@@ -155,6 +155,15 @@ export const TxLegSchema = z.object({
   side: TxLegSideSchema,
   amount: z.custom<MoneyAmount>(),
   role: TxLegRoleSchema,
+  /**
+   * Provenance, set by the SDK mapper ONLY on the debit of a non-native token
+   * account that this transaction closed: the account has a pre token balance
+   * entry and no post entry (both snapshots available) and its post lamport
+   * balance is zero. The value is that token account's address. Absent on
+   * every other leg, including the pre side of an owner or mint change and a
+   * pre-only entry whose account still holds lamports (not proven closed).
+   */
+  closedTokenAccount: z.string().optional(),
 });
 
 export type TxDirection = z.infer<typeof TxDirectionSchema>;

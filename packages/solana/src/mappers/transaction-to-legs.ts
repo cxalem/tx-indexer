@@ -163,6 +163,16 @@ export function transactionToLegs(
         amountUi: Math.abs(change.change.ui),
       },
       role: ownerRole(owner, isPositive, tx, feePayer, walletAddress),
+      // Provenance for classifiers: only a proven closure (see
+      // TokenBalanceChange.accountClosed) marks its debit.
+      ...(change.accountClosed && !isPositive
+        ? {
+            closedTokenAccount:
+              change.tokenAccount ??
+              tx.accountKeys?.[change.accountIndex] ??
+              `account-index-${change.accountIndex}`,
+          }
+        : {}),
     });
   }
 

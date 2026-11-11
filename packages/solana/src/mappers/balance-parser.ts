@@ -31,6 +31,18 @@ export interface TokenBalanceChange {
   tokenAccount?: string;
   /** Token program that owns the account (SPL Token or Token-2022), if reported */
   programId?: string;
+  /**
+   * True only when this transaction closed the token account: a pre entry and
+   * no post entry at the same index (both snapshots available) AND a post
+   * lamport balance of zero at that index. Not set for:
+   * - the pre side of an owner change (authority moved; the account lives on);
+   * - the pre side of a mint change at the same index (closed and
+   *   reinitialised in the same transaction: the address is still in use);
+   * - a pre-only entry whose account still holds lamports, or whose post
+   *   lamport balance is unknown (the snapshot omitted it; closure unproven).
+   * Those keep their debit as an ordinary movement.
+   */
+  accountClosed?: true;
   preBalance: {
     raw: string;
     ui: number;
@@ -168,6 +180,7 @@ export function extractTokenBalanceChanges(
     owner: string | undefined,
     pre: TokenBalance | undefined,
     post: TokenBalance | undefined,
+    accountClosed = false,
   ) => {
     if (!included(mint)) return;
     const preAmount = pre?.uiTokenAmount.amount ?? "0";
@@ -185,6 +198,7 @@ export function extractTokenBalanceChanges(
       ...(post?.owner !== undefined ? { postOwner: post.owner } : {}),
       ...(tokenAccountOf(accountIndex) ? { tokenAccount: tokenAccountOf(accountIndex) } : {}),
       ...((post ?? pre)?.programId ? { programId: (post ?? pre)!.programId } : {}),
+      ...(accountClosed ? { accountClosed: true as const } : {}),
       preBalance: { raw: preAmount, ui: preUi },
       postBalance: { raw: postAmount, ui: postUi },
       change: { raw: delta.toString(), ui: postUi - preUi },
@@ -235,10 +249,18 @@ export function extractTokenBalanceChanges(
       preBal.owner,
       preBal,
       undefined,
+      lamportsZeroAfter(tx, preBal.accountIndex),
     );
   }
 
   return changes;
+}
+
+/** True when the account at `index` is known to hold zero lamports after the transaction. */
+function lamportsZeroAfter(tx: RawTransaction, index: number): boolean {
+  const post = tx.postBalances?.[index];
+  if (post === undefined || post === null) return false;
+  return BigInt(post) === 0n;
 }
 
 /**

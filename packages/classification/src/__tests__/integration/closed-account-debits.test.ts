@@ -14,6 +14,8 @@ import {
   PRIVACY_CASH_PROGRAM_ID,
   PRIVACY_CASH_SPL_POOL,
   STAKE_POOL_PROGRAM_ID,
+  WORMHOLE_TOKEN_BRIDGE_ID,
+  MAGIC_EDEN_V2_PROGRAM_ID,
 } from "@tx-indexer/solana/constants/program-ids";
 import { classifyTransaction } from "../../engine/classification-service";
 import { unmatchedClosedAccountDebits } from "../../engine/leg-helpers";
@@ -50,6 +52,10 @@ const JUNK = "Junk111111111111111111111111111111111111111";
 const X = "XMint111111111111111111111111111111111111111";
 const POOL_MINT = "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn";
 const RENT = 2039280n;
+const W = "WrappedW1111111111111111111111111111111111";
+const A_W = "A1iceW11111111111111111111111111111111111111";
+const B_W = "A1iceWB1111111111111111111111111111111111111";
+const B_POS2 = "A1icePosB111111111111111111111111111111111";
 
 const tb = (accountIndex: number, mint: string, owner: string, amount: bigint, decimals: number) => ({
   accountIndex,
@@ -92,7 +98,7 @@ describe("NFT transfer: a burned/closed zero-decimal debit with no same-mint cre
     const { legs, tx, c } = await classify(usdcPlusBurnedPosition("alice"), BOB);
     // the accounting debit is kept
     expect(legs.some((l) => l.side === "debit" && l.amount.token.mint === POS && l.accountId === `external:${ALICE}`)).toBe(true);
-    expect([...unmatchedClosedAccountDebits(legs, tx)].map((l) => l.amount.token.mint)).toEqual([POS]);
+    expect([...unmatchedClosedAccountDebits(legs)].map((l) => l.amount.token.mint)).toEqual([POS]);
     expect(c.primaryType).toBe("transfer");
     expect(c.primaryAmount?.amountRaw).toBe("10000000");
     expect(c.primaryAmount?.token.mint).toBe(USDC);
@@ -210,7 +216,8 @@ describe("sibling classifiers ignore unmatched closed-account debits", () => {
       {
         staticKeys: [BOB, ALICE, A_POOL, RESERVE, A_JUNK, STAKE_POOL_PROGRAM_ID],
         pre: [10n * SOL, SOL, RENT, 100n * SOL, RENT, 1n],
-        post: [9n * SOL - 5000n, SOL, RENT, 101n * SOL, RENT, 1n],
+        // JUNK account closed: zero lamports after, its rent refunded to the sponsor
+        post: [9n * SOL - 5000n + RENT, SOL, RENT, 101n * SOL, 0n, 1n],
         instructions: [{ programIdIndex: 5, accounts: [0, 2, 3] }],
         preTokenBalances: [tb(2, POOL_MINT, ALICE, 0n, 9), tb(4, JUNK, ALICE, 1_000_000_000n, 6)],
         postTokenBalances: [tb(2, POOL_MINT, ALICE, 900_000_000n, 9)],
@@ -270,9 +277,136 @@ describe("sibling classifiers ignore unmatched closed-account debits", () => {
       ALICE,
       { id: "jupiter", name: "Jupiter" },
     );
-    expect(unmatchedClosedAccountDebits(legs, tx).size).toBe(0);
+    expect(unmatchedClosedAccountDebits(legs).size).toBe(0);
     expect(c.primaryType).toBe("swap");
     expect(c.primaryAmount?.token.mint).toBe(JUNK);
     expect(c.primaryAmount?.amountRaw).toBe("1000000000");
+  });
+});
+
+describe("only a proven closure is excluded, identified by its own token account", () => {
+  /** Alice burns 10 W through Wormhole from A (stays open, zero balance) and closes B of W; B's rent goes to a sponsor. */
+  const wormhole = (bPre: bigint): SyntheticTxInput => ({
+    staticKeys: [SPONSOR, ALICE, A_W, B_W, WORMHOLE_TOKEN_BRIDGE_ID],
+    pre: [SOL, SOL, RENT, RENT, 1n],
+    post: [SOL - 5000n + RENT, SOL, RENT, 0n, 1n],
+    instructions: [{ programIdIndex: 4, accounts: [2, 3, 1] }],
+    preTokenBalances: [tb(2, W, ALICE, 1_000_000_000n, 8), tb(3, W, ALICE, bPre, 8)],
+    postTokenBalances: [tb(2, W, ALICE, 0n, 8)],
+  });
+
+  test("Wormhole burn from an open account beside a closed EMPTY sibling: bridge_out of the 10 tokens, as before", async () => {
+    const { legs, c } = await classify(wormhole(0n), ALICE, { id: "wormhole-token-bridge", name: "Wormhole Token Bridge" });
+    expect(unmatchedClosedAccountDebits(legs).size).toBe(0);
+    expect(c.primaryType).toBe("bridge_out");
+    expect(c.primaryAmount?.token.mint).toBe(W);
+    expect(c.primaryAmount?.amountRaw).toBe("1000000000");
+    expect(c.sender).toBe(ALICE);
+  });
+
+  test("same, with the closed sibling holding tokens: still bridge_out of the 10 tokens from Alice", async () => {
+    const { legs, c } = await classify(wormhole(500_000_000n), ALICE, { id: "wormhole-token-bridge", name: "Wormhole Token Bridge" });
+    // only the closed sibling's debit is an unmatched closed-account debit
+    expect([...unmatchedClosedAccountDebits(legs)].map((l) => [l.closedTokenAccount, l.amount.amountRaw])).toEqual([[B_W, "500000000"]]);
+    expect(c.primaryType).toBe("bridge_out");
+    expect(c.primaryAmount?.token.mint).toBe(W);
+    expect(c.primaryAmount?.amountRaw).toBe("1000000000");
+    expect(c.sender).toBe(ALICE);
+  });
+
+  test("swap: the debit of an account that goes to zero but stays open is kept beside a closed sibling of the same owner and mint", async () => {
+    const { legs, c } = await classify(
+      {
+        staticKeys: [ALICE, A_W, B_W, A_USDC, POOL_USDC, JUPITER_V6_PROGRAM_ID],
+        pre: [SOL, RENT, RENT, RENT, RENT, 1n],
+        post: [SOL - 5000n + RENT, RENT, 0n, RENT, RENT, 1n],
+        instructions: [{ programIdIndex: 5, accounts: [1, 2, 3, 4, 0] }],
+        preTokenBalances: [
+          tb(1, W, ALICE, 1_000_000_000n, 8),
+          tb(2, W, ALICE, 300_000_000n, 8),
+          tb(3, USDC, ALICE, 0n, 6),
+          tb(4, USDC, POOL_OWNER, 50_000_000n, 6),
+        ],
+        postTokenBalances: [tb(1, W, ALICE, 0n, 8), tb(3, USDC, ALICE, 5_000_000n, 6), tb(4, USDC, POOL_OWNER, 45_000_000n, 6)],
+      },
+      ALICE,
+      { id: "jupiter", name: "Jupiter" },
+    );
+    expect([...unmatchedClosedAccountDebits(legs)].map((l) => l.closedTokenAccount)).toEqual([B_W]);
+    expect(c.primaryType).toBe("swap");
+    expect(c.primaryAmount?.token.mint).toBe(W);
+    expect(c.primaryAmount?.amountRaw).toBe("1000000000");
+    expect(c.secondaryAmount?.token.mint).toBe(USDC);
+  });
+
+  test("nft: a send from an account that stays open is kept beside a burned and closed sibling of the same mint", async () => {
+    const { c } = await classify(
+      {
+        staticKeys: [ALICE, A_POS, B_POS2, TOKEN_PROGRAM],
+        pre: [SOL, RENT, RENT, 1n],
+        post: [SOL - 5000n + RENT, RENT, 0n, 1n],
+        instructions: [{ programIdIndex: 3, accounts: [1, 2, 0] }],
+        preTokenBalances: [tb(1, POS, ALICE, 1n, 0), tb(2, POS, ALICE, 1n, 0)],
+        postTokenBalances: [tb(1, POS, ALICE, 0n, 0)],
+      },
+      ALICE,
+    );
+    expect(c.primaryType).toBe("nft_send");
+    expect(c.sender).toBe(ALICE);
+    expect(c.metadata?.quantity).toBe(1);
+  });
+
+  test("a burn whose account keeps its lamports is not a proven closure: its debit stays evidence (as before)", async () => {
+    const { legs } = await classify(
+      {
+        staticKeys: [ALICE, A_JUNK, TOKEN_PROGRAM],
+        pre: [SOL, RENT, 1n],
+        post: [SOL - 5000n, RENT, 1n],
+        instructions: [{ programIdIndex: 2, accounts: [1, 0] }],
+        preTokenBalances: [tb(1, JUNK, ALICE, 1_000_000_000n, 6)],
+        postTokenBalances: [],
+      },
+      ALICE,
+    );
+    expect(legs.some((l) => l.side === "debit" && l.amount.token.mint === JUNK)).toBe(true);
+    expect(unmatchedClosedAccountDebits(legs).size).toBe(0);
+  });
+
+  test("hand-built legs without provenance are never excluded", () => {
+    const leg = {
+      accountId: `external:${ALICE}`,
+      side: "debit" as const,
+      role: "sent" as const,
+      amount: { token: { mint: JUNK, symbol: "JUNK", decimals: 6 }, amountRaw: "1", amountUi: 0.000001 },
+    };
+    expect(unmatchedClosedAccountDebits([leg]).size).toBe(0);
+    expect(unmatchedClosedAccountDebits([{ ...leg, closedTokenAccount: A_JUNK }]).size).toBe(1);
+  });
+});
+
+describe("marketplace sale where the seller's NFT account closes", () => {
+  /** Bob buys Alice's NFT for 2 SOL on Magic Eden; Alice's NFT account closes and its rent returns to her. */
+  const sale: SyntheticTxInput = {
+    staticKeys: [BOB, ALICE, A_POS, B_POS, MAGIC_EDEN_V2_PROGRAM_ID],
+    pre: [10n * SOL, SOL, RENT, 0n, 1n],
+    post: [8n * SOL - 5000n - RENT, 3n * SOL + RENT, 0n, RENT, 1n],
+    instructions: [{ programIdIndex: 4, accounts: [2, 3, 0, 1] }],
+    preTokenBalances: [tb(2, POS, ALICE, 1n, 0)],
+    postTokenBalances: [tb(3, POS, BOB, 1n, 0)],
+  };
+  const ME = { id: "magic-eden", name: "Magic Eden" };
+
+  test("seller: nft_sale with the buyer as receiver (as before the closed debit was visible)", async () => {
+    const { c } = await classify(sale, ALICE, ME);
+    expect(c.primaryType).toBe("nft_sale");
+    expect(c.primaryAmount?.token.mint).toBe(POS);
+    expect(c.sender).toBe(ALICE);
+    expect(c.receiver).toBe(BOB);
+  });
+
+  test("buyer: nft_purchase, unchanged", async () => {
+    const { c } = await classify(sale, BOB, ME);
+    expect(c.primaryType).toBe("nft_purchase");
+    expect(c.receiver).toBe(BOB);
   });
 });

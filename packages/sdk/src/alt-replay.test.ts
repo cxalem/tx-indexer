@@ -238,3 +238,41 @@ describe("SDK replay of recorded v1 transactions", () => {
     expect(classification.primaryAmount?.amountRaw).not.toBe("7559");
   });
 });
+
+describe("closed token account provenance survives JSON", () => {
+  test("closedTokenAccount is on the closed account's debit leg only, after JSON round-trip", async () => {
+    const { SOL, TOKEN_PROGRAM, mockRpc, syntheticResponse } = await import(
+      "@tx-indexer/solana/__fixtures__/synthetic"
+    );
+    const ALICE = "A1ice11111111111111111111111111111111111111";
+    const BOB = "Bob1111111111111111111111111111111111111111";
+    const ALICE_ATA = "A1iceATA111111111111111111111111111111111111";
+    const BOB_ATA = "BobATA11111111111111111111111111111111111111";
+    const MINT = "MintA11111111111111111111111111111111111111";
+    const RENT = 2039280n;
+    const { rpc } = mockRpc(() =>
+      syntheticResponse({
+        staticKeys: [ALICE, ALICE_ATA, BOB_ATA, TOKEN_PROGRAM],
+        pre: [SOL, RENT, RENT, 1n],
+        post: [SOL + RENT - 5000n, 0n, RENT, 1n],
+        instructions: [{ programIdIndex: 3, accounts: [1, 2, 0] }],
+        preTokenBalances: [
+          { accountIndex: 1, mint: MINT, owner: ALICE, amount: 750_000n, decimals: 6 },
+          { accountIndex: 2, mint: MINT, owner: BOB, amount: 0n, decimals: 6 },
+        ],
+        postTokenBalances: [{ accountIndex: 2, mint: MINT, owner: BOB, amount: 750_000n, decimals: 6 }],
+      }),
+    );
+    const indexer = createIndexer({ client: { rpc: rpc as never } });
+    const result = await indexer.getTransaction(
+      "Sweep1111111111111111111111111111111111111111111111111111111111111111111111111111111111" as never,
+      { walletAddress: ALICE as never, enrichNftMetadata: false, enrichTokenMetadata: false },
+    );
+    const json = JSON.parse(JSON.stringify(toJsonClassifiedTransaction(result!)));
+    const flagged = json.legs.filter((l: { closedTokenAccount?: string }) => "closedTokenAccount" in l);
+    expect(flagged).toHaveLength(1);
+    expect(flagged[0].closedTokenAccount).toBe(ALICE_ATA);
+    expect(flagged[0].side).toBe("debit");
+    expect(flagged[0].amount.amountRaw).toBe("750000");
+  });
+});

@@ -328,3 +328,82 @@ describe("exact address comparison (base58 is case-sensitive)", () => {
     expect(getWalletSolChange(tx, UPPER as Address)).toBeNull();
   });
 });
+
+describe("closure provenance on the leg (closedTokenAccount)", () => {
+  const closedLegs = (legs: TxLeg[]) => legs.filter((l) => l.closedTokenAccount !== undefined);
+
+  test("set exactly on the debit of an account closed in the transaction (pre entry only, zero lamports after)", async () => {
+    const { tx, legs } = await fetchWith(closeInput());
+    expect(extractTokenBalanceChanges(tx).map((c) => [c.accountIndex, c.accountClosed])).toEqual([
+      [3, undefined],
+      [2, true],
+    ]);
+    const flagged = closedLegs(legs);
+    expect(flagged.length).toBe(1);
+    expect(flagged[0]!.closedTokenAccount).toBe(ALICE_ATA);
+    expect(flagged[0]!.side).toBe("debit");
+    expect(flagged[0]!.amount.amountRaw).toBe("750000");
+    expect(flagged[0]!.accountId).toBe(`external:${ALICE}`);
+  });
+
+  test("a pre-only entry whose account still holds lamports is not flagged (closure not proven)", async () => {
+    const input = closeInput();
+    const { tx, legs } = await fetchWith({ ...input, post: [SOL - 5000n, 1n, RENT, RENT] });
+    // the debit is still emitted, as an ordinary movement
+    expect(fmt(legs.filter((l) => l.amount.token.mint === MINT_A))).toContain(`external:${ALICE} debit 750000 MintA sent`);
+    expect(extractTokenBalanceChanges(tx).some((c) => c.accountClosed)).toBe(false);
+    expect(closedLegs(legs)).toEqual([]);
+  });
+
+  test("a pre-only entry whose post lamport balance is unknown is not flagged", async () => {
+    const { legs } = await fetchWith(closeInput(), (r) => {
+      (r.meta.postBalances as unknown[]).length = 2;
+    });
+    expect(closedLegs(legs)).toEqual([]);
+  });
+
+  test("an owner change is not a closure, even when the account ends with zero lamports", async () => {
+    const { legs } = await fetchWith({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [ALICE_ATA], readonly: [] },
+      pre: [SOL, 1n, RENT],
+      post: [SOL - 5000n + RENT, 1n, 0n],
+      preTokenBalances: [{ accountIndex: 2, mint: MINT_A, owner: ALICE, amount: 500n, decimals: 6 }],
+      postTokenBalances: [{ accountIndex: 2, mint: MINT_A, owner: BOB, amount: 500n, decimals: 6 }],
+    });
+    expect(legs.some((l) => l.side === "debit" && l.amount.token.mint === MINT_A)).toBe(true);
+    expect(closedLegs(legs)).toEqual([]);
+  });
+
+  test("a mint change on the same index (close and reinitialise) is not flagged", async () => {
+    const { legs } = await fetchWith({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [ALICE_ATA], readonly: [] },
+      pre: [SOL, 1n, RENT],
+      post: [SOL - 5000n, 1n, RENT],
+      preTokenBalances: [{ accountIndex: 2, mint: MINT_A, owner: ALICE, amount: 900n, decimals: 6 }],
+      postTokenBalances: [{ accountIndex: 2, mint: MINT_B, owner: ALICE, amount: 300n, decimals: 2 }],
+    });
+    expect(closedLegs(legs)).toEqual([]);
+  });
+
+  test("an account that goes to zero but stays open is not flagged; its closed sibling of the same owner and mint is", async () => {
+    const SIBLING = "A1iceSib1ing1111111111111111111111111111111";
+    const { legs } = await fetchWith({
+      staticKeys: [ALICE, TOKEN_PROGRAM],
+      loaded: { writable: [ALICE_ATA, SIBLING], readonly: [] },
+      pre: [SOL, 1n, RENT, RENT],
+      post: [SOL - 5000n + RENT, 1n, RENT, 0n],
+      preTokenBalances: [
+        { accountIndex: 2, mint: MINT_A, owner: ALICE, amount: 1_000n, decimals: 6 },
+        { accountIndex: 3, mint: MINT_A, owner: ALICE, amount: 300n, decimals: 6 },
+      ],
+      postTokenBalances: [{ accountIndex: 2, mint: MINT_A, owner: ALICE, amount: 0n, decimals: 6 }],
+    });
+    const debits = legs.filter((l) => l.side === "debit" && l.amount.token.mint === MINT_A);
+    expect(debits.map((l) => [l.amount.amountRaw, l.closedTokenAccount]).sort()).toEqual([
+      ["1000", undefined],
+      ["300", SIBLING],
+    ]);
+  });
+});

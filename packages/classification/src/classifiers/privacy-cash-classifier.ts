@@ -92,7 +92,7 @@ export class PrivacyCashClassifier implements Classifier {
     const { tx } = context;
     // A debit from a token account closed in this transaction that nothing
     // receives (e.g. burn and close) is accounting, not evidence of an action.
-    const legs = withoutUnmatchedClosedDebits(context.legs, tx);
+    const legs = withoutUnmatchedClosedDebits(context.legs);
 
     // Detect Privacy Cash transactions by:
     // 1. Protocol ID match (shield/deposit transactions)

@@ -144,13 +144,23 @@ export class NftTransferClassifier implements Classifier {
         const proceedsLeg = findPaymentLeg(legs, "credit");
         const primaryNft = walletDebits[0]!;
         const seller = primaryNft.accountId.replace("external:", "");
+        // When the seller's NFT account closes in the sale, the buyer is the
+        // account credited the same mint (before closed-account debits were
+        // visible, this sale was read from the payment flow, which named the
+        // buyer). Other direct sales keep their previous receiver (null).
+        const buyerLeg =
+          primaryNft.closedTokenAccount !== undefined
+            ? nftCredits.find(
+                (c) => c.amount.token.mint === primaryNft.amount.token.mint,
+              )
+            : undefined;
 
         return {
           primaryType: "nft_sale",
           primaryAmount: primaryNft.amount,
           secondaryAmount: proceedsLeg?.amount ?? null,
           sender: seller,
-          receiver: null,
+          receiver: buyerLeg?.accountId.replace("external:", "") ?? null,
           counterparty: {
             type: "protocol",
             address: tx.protocol?.id ?? "marketplace",
@@ -298,7 +308,7 @@ export class NftTransferClassifier implements Classifier {
     // the same mint anywhere (burn and close) is not a send: it can neither
     // become a unilateral `nft_send` nor pair with an unrelated credit. Other
     // debits keep today's handling.
-    const unmatchedClosed = unmatchedClosedAccountDebits(legs, tx);
+    const unmatchedClosed = unmatchedClosedAccountDebits(legs);
     const sendDebits = nftDebits.filter((d) => !unmatchedClosed.has(d));
     if (nftCredits.length === 0 && sendDebits.length === 0) {
       return null;

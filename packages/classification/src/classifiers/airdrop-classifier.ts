@@ -31,7 +31,7 @@ export class AirdropClassifier implements Classifier {
     const { tx } = context;
     // A debit from a token account closed in this transaction that nothing
     // receives (e.g. burn and close) is accounting, not evidence of an action.
-    const legs = withoutUnmatchedClosedDebits(context.legs, tx);
+    const legs = withoutUnmatchedClosedDebits(context.legs);
 
     const facilitator = tx.accountKeys
       ? detectFacilitator(tx.accountKeys)

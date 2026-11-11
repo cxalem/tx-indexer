@@ -5,7 +5,6 @@ import type {
 import type { TransactionClassification } from "@tx-indexer/core/tx/classification.types";
 import type { TxLeg } from "@tx-indexer/core/tx/tx.types";
 import { isBridgeProtocolById } from "../protocols/detector";
-import { withoutUnmatchedClosedDebits } from "../engine/leg-helpers";
 
 function getRawAmount(amountRaw: string): bigint {
   try {
@@ -33,10 +32,7 @@ export class BridgeClassifier implements Classifier {
   priority = 88;
 
   classify(context: ClassifierContext): TransactionClassification | null {
-    const { tx } = context;
-    // A debit from a token account closed in this transaction that nothing
-    // receives (e.g. burn and close) is accounting, not evidence of an action.
-    const legs = withoutUnmatchedClosedDebits(context.legs, tx);
+    const { legs, tx } = context;
 
     const hasBridgeProtocol = isBridgeProtocolById(tx.protocol?.id);
     if (!hasBridgeProtocol) {

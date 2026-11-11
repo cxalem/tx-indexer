@@ -186,6 +186,8 @@ export interface JsonTxLeg {
   side: TxLegSide;
   amount: JsonMoneyAmount;
   role: TxLegRole;
+  /** Token account closed in this transaction, on its debit leg only (see TxLeg) */
+  closedTokenAccount?: string;
 }
 
 // =============================================================================
@@ -280,6 +282,9 @@ function toJsonTxLeg(leg: TxLeg): JsonTxLeg {
     side: leg.side,
     amount: toJsonMoneyAmount(leg.amount),
     role: leg.role,
+    ...(leg.closedTokenAccount !== undefined
+      ? { closedTokenAccount: leg.closedTokenAccount }
+      : {}),
   };
 }
 
