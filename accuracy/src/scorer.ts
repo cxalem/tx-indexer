@@ -231,6 +231,16 @@ export interface SecondaryHit {
   participantsExact: boolean | null;
 }
 
+/**
+ * Exactness per component of the expectation the prediction was measured against: one entry per
+ * expected amount leg (`<expectation> amount <direction> <mint>`) and per non-null participant field
+ * (`<expectation> sender` / `<expectation> receiver`). `<expectation>` is `actions[i]` or
+ * `actions[i].alternatives[j]`. Empty when nothing was measured (abstained, wrong_label, error, ...).
+ * The per-perspective booleans stay for the headline; the gate compares these components so a leg
+ * that was exact cannot go wrong unnoticed inside a perspective that is already inexact.
+ */
+export type ComponentExactness = Record<string, boolean>;
+
 export interface PerspectiveResult {
   address: string;
   expectedKind: string;
@@ -240,7 +250,12 @@ export interface PerspectiveResult {
   forbiddenViolation: boolean;
   amountsExact: boolean | null;
   participantsExact: boolean | null;
-  /** kind of the non-primary expected action the prediction equals completely, if any */
+  components: ComponentExactness;
+  /**
+   * kind of the non-primary expected action the prediction equals completely, if any. Always the
+   * expected action's own kind (the bucket it is counted in), also when an accepted synonym matched;
+   * the matched kind is in `secondaryHit.kind` for display.
+   */
   secondaryHitKind: string | null;
   secondaryHit: SecondaryHit | null;
   /** reported (disputed) alternatives and whether the prediction equals each completely */
@@ -266,6 +281,8 @@ export interface CaseResult {
 
 /** A complete expectation: kind, participants, amounts (null amounts = not checked). */
 interface Expectation {
+  /** `actions[i]` or `actions[i].alternatives[j]` */
+  label: string;
   kind: string;
   sender: string | null;
   receiver: string | null;
@@ -301,13 +318,49 @@ function participantsMatch(e: { sender: string | null; receiver: string | null }
   return true;
 }
 
+/**
+ * Per-component exactness of a prediction against one expectation: each expected amount leg is
+ * exact when an unused predicted amount has the same mint, raw amount and decimals (and direction
+ * where the prediction exposes one); each non-null participant field is exact when it is equal.
+ */
+export function componentExactness(
+  e: { label: string; sender: string | null; receiver: string | null; amounts: ExpectedAmount[] | null },
+  p: Pick<Prediction, "sender" | "receiver" | "amounts">,
+): ComponentExactness {
+  const out: ComponentExactness = {};
+  if (e.amounts !== null) {
+    const used = new Set<number>();
+    for (const leg of e.amounts) {
+      const base = `${e.label} amount ${leg.direction} ${leg.mint}`;
+      let key = base;
+      for (let n = 2; key in out; n++) key = `${base} #${n}`;
+      const i = p.amounts.findIndex(
+        (m, j) =>
+          !used.has(j) &&
+          m.mint === leg.mint &&
+          m.amountRaw === leg.amountRaw &&
+          m.decimals === leg.decimals &&
+          (m.direction === undefined || m.direction === leg.direction),
+      );
+      if (i >= 0) used.add(i);
+      out[key] = i >= 0;
+    }
+  }
+  if (e.sender !== null) out[`${e.label} sender`] = e.sender === p.sender;
+  if (e.receiver !== null) out[`${e.label} receiver`] = e.receiver === p.receiver;
+  return out;
+}
+
 function completeMatch(e: Expectation, p: Prediction): boolean {
   return e.kind === p.kind && (e.amounts === null || amountsMatch(e.amounts, p.amounts)) && participantsMatch(e, p);
 }
 
-function asExpectations(a: ExpectedAction, scoring: "accepted" | "reported"): Expectation[] {
-  const own = scoring === "accepted" ? [{ kind: a.kind, sender: a.sender, receiver: a.receiver, amounts: a.amounts }] : [];
-  return [...own, ...(a.alternatives ?? []).filter((x) => x.scoring === scoring)];
+function asExpectations(a: ExpectedAction, index: number, scoring: "accepted" | "reported"): Expectation[] {
+  const own = scoring === "accepted" ? [{ label: `actions[${index}]`, kind: a.kind, sender: a.sender, receiver: a.receiver, amounts: a.amounts }] : [];
+  const alts = (a.alternatives ?? []).flatMap((x, j) =>
+    x.scoring === scoring ? [{ label: `actions[${index}].alternatives[${j}]`, kind: x.kind, sender: x.sender, receiver: x.receiver, amounts: x.amounts }] : [],
+  );
+  return [...own, ...alts];
 }
 
 function short(a: string | null) {
@@ -325,12 +378,13 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
   const secondaryExpected: Record<string, number> = {};
   for (const ep of lc.expected.perspectives) {
     const p = preds.find((x) => x.address === ep.address)!;
-    const prim = ep.actions.find((a) => a.primary)!;
+    const primIndex = ep.actions.findIndex((a) => a.primary);
+    const prim = ep.actions[primIndex]!;
     const others = ep.actions.filter((a) => !a.primary);
     for (const o of others) secondaryExpected[o.kind] = (secondaryExpected[o.kind] ?? 0) + 1;
-    const primaryCandidates = asExpectations(prim, "accepted");
+    const primaryCandidates = asExpectations(prim, primIndex, "accepted");
     const accepted = primaryCandidates.map((c) => c.kind);
-    const reportedAlts = ep.actions.flatMap((a) => asExpectations(a, "reported"));
+    const reportedAlts = ep.actions.flatMap((a, i) => asExpectations(a, i, "reported"));
     const forbidden = new Set(ep.actions.flatMap((a) => a.forbidden ?? []));
     const detail: string[] = [];
     if (p.feeLamports !== lc.expected.fee) {
@@ -344,6 +398,7 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
     let outcome: Outcome;
     let amountsExact: boolean | null = null;
     let participantsExact: boolean | null = null;
+    let components: ComponentExactness = {};
     let secondaryHitKind: string | null = null;
     let secondaryHit: SecondaryHit | null = null;
     // Matching order (README "Scoring"):
@@ -356,7 +411,7 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
     if (!full) {
       for (const [index, a] of ep.actions.entries()) {
         if (a.primary) continue;
-        const matched = asExpectations(a, "accepted").find((c) => completeMatch(c, p));
+        const matched = asExpectations(a, index, "accepted").find((c) => completeMatch(c, p));
         if (matched) {
           secondary = { index, action: a, matched };
           break;
@@ -373,9 +428,12 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
       outcome = "correct";
       amountsExact = full.amounts === null ? null : true;
       participantsExact = full.sender === null && full.receiver === null ? null : true;
+      components = componentExactness(full, p);
     } else if (secondary) {
       outcome = "secondary_hit";
-      secondaryHitKind = secondary.matched.kind;
+      // Count the hit in the expected action's bucket, not the matched synonym's.
+      secondaryHitKind = secondary.action.kind;
+      components = componentExactness(secondary.matched, p);
       secondaryHit = {
         action: `actions[${secondary.index}] ${secondary.action.kind} ${instr(secondary.action)}`,
         kind: secondary.matched.kind,
@@ -387,6 +445,7 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
       outcome = "disputed_alternative";
       detail.push(`predicted ${p.kind} matching a disputed reading completely, expected ${accepted.join("|")}`);
     } else if (kindOnly) {
+      components = componentExactness(kindOnly, p);
       if (kindOnly.amounts !== null) {
         amountsExact = amountsMatch(kindOnly.amounts, p.amounts);
         if (!amountsExact) detail.push(`amounts got [${fmtAmounts(p.amounts)}] want [${fmtAmounts(kindOnly.amounts)}]`);
@@ -419,6 +478,7 @@ export function scoreCase(lc: LoadedCase, preds: Prediction[]): CaseResult {
       forbiddenViolation,
       amountsExact,
       participantsExact,
+      components,
       secondaryHitKind,
       secondaryHit,
       reported: reportedAlts.map((r) => ({ kind: r.kind, predictedKind: p.kind, completeMatch: completeMatch(r, p) })),
@@ -458,6 +518,8 @@ export interface PerspectiveRecord {
   predictedKind: string;
   amountsExact: boolean | null;
   participantsExact: boolean | null;
+  /** exactness per expected amount leg and per participant field (see ComponentExactness) */
+  components: ComponentExactness;
   forbiddenViolation: boolean;
   pass: boolean;
   /** set for a secondary hit: which expected action it equals, and its exactness */
@@ -474,7 +536,7 @@ export interface CaseRecord {
 }
 
 export interface Baseline {
-  schemaVersion: 3;
+  schemaVersion: 4;
   sdkVersion: string;
   cases: number;
   perspectives: number;
@@ -572,6 +634,7 @@ export function aggregate(results: CaseResult[], sdkVersion: string): Baseline {
         predictedKind: p.predictedKind,
         amountsExact: p.amountsExact,
         participantsExact: p.participantsExact,
+        components: p.components,
         forbiddenViolation: p.forbiddenViolation,
         pass: p.pass,
         secondaryHit: p.secondaryHit,
@@ -629,7 +692,7 @@ export function aggregate(results: CaseResult[], sdkVersion: string): Baseline {
     s.recall = ratio(s.tp, s.tp + s.fn);
   }
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     sdkVersion,
     cases: results.length,
     perspectives,
@@ -774,6 +837,15 @@ export function compareToBaseline(base: Baseline, now: Baseline): string[] {
       }
       if (bp.amountsExact === true && np.amountsExact === false) out.push(`${at}: amounts were exact, now wrong`);
       if (bp.participantsExact === true && np.participantsExact === false) out.push(`${at}: participants were exact, now wrong`);
+      // Per component: a leg or participant field that was exact must stay exact wherever it is
+      // measured, also inside a perspective that is already inexact. Only a complete primary match
+      // (`correct`) may stop measuring it.
+      for (const [component, wasExact] of Object.entries(bp.components)) {
+        if (!wasExact || np.outcome === "correct") continue;
+        const nowExact = np.components[component];
+        if (nowExact === false) out.push(`${at}: ${component} was exact, now wrong`);
+        else if (nowExact === undefined) out.push(`${at}: ${component} was exact, now not measured (${np.outcome} ${np.predictedKind})`);
+      }
     }
     for (const addr of Object.keys(n.perspectives)) {
       if (!b.perspectives[addr]) out.push(`${id} @${addr}: perspective not in the baseline: regenerate`);

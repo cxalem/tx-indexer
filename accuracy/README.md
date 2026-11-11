@@ -29,8 +29,9 @@ are off.
   `expected.json`, fee and execution agreement, and per perspective the outcome
   (`correct`, `kind_only`, `secondary_hit`, `disputed_alternative`, `abstained`, `wrong_label`,
   `error`; see [Scoring](#scoring)), the predicted kind, whether amounts and participants were
-  exact, and for a secondary hit which expected action it matched (`actions[<index>] <kind>
-  <refs>`) with that match's exactness. The gate (`bun run accuracy`) fails when, compared with
+  exact, the exactness of each component (every expected amount leg and every non-null sender /
+  receiver of the expectation it was measured against), and for a secondary hit which expected
+  action it matched (`actions[<index>] <kind> <refs>`) with that match's exactness. The gate (`bun run accuracy`) fails when, compared with
   `baseline.json`:
   - a case that passed now fails;
   - a perspective that was `correct` is no longer `correct` (including `correct` → `kind_only`);
@@ -42,6 +43,10 @@ are off.
     abstention that became a wrong label);
   - amounts, participants, fee or execution that were exact become wrong, also inside cases
     that already fail;
+  - a single component (an expected amount leg, keyed by mint and direction, or a sender /
+    receiver field) that was exact becomes wrong or stops being measured, in any outcome class
+    where it is measured, also inside a perspective that is already inexact (only becoming
+    `correct` may stop measuring it);
   - a forbidden-label violation appears that was not there before;
   - a per-kind precision or recall drops, compared on raw counts, or moves between a
     number and n/a in a way that hides new false positives or lost true positives;
@@ -59,6 +64,21 @@ are off.
   test is shown as skipped with `UNAVAILABLE: <reason>` in its name, never as passed.
 - The vocabulary check (the literal kind list in `src/schema.ts` must equal `TxPrimaryType`)
   is a compile-time check. `bun run accuracy` runs `tsc` first, so it cannot drift silently.
+- **Changing `legs`, a classifier or the list filter is deliberate.** The code that builds `legs`,
+  every classifier, its helpers, the protocol detector and the spam filter are pinned twice:
+  `packages/classification/src/__tests__/legacy-input/source-identity.test.ts` (`git diff 3111fd7`
+  must be empty) and `packages/sdk/src/legacy-digests.test.ts` (committed sha256 digests of their
+  runtime closure, no git needed; it fails on any mismatch or new runtime import). The oracle test
+  (`packages/sdk/src/legacy-input.test.ts`) requires the ordered `legs`, each classifier's output and
+  the final result of every corpus entry to equal 3111fd7, and `packages/sdk/src/sdk-boundary.test.ts`
+  compares the SDK methods (pagination, cache, enrichment, token-lookup failure) with a 3111fd7
+  checkout. To migrate a classifier to `completeLegs`: set its `inputVersion` to
+  `"v2-closed-token-accounts"` and make the SDK pass `{ completeLegs }`, regenerate the digests with
+  `bun packages/sdk/src/__tests__/legacy-input/generate-digests.ts --allow-changed <path>` for each
+  file you intend to change (the JSON records them under `changedFromBase`, and the digest test's
+  "no file changed" assertion must be updated in the same commit), update the source-identity list
+  and the oracle and boundary expectations with a reason per changed entry, and regenerate the
+  baseline with an `accuracy/CHANGES.md` entry in the same commit.
 - Known failures do not fail the gate: they are the baseline.
 - `other` is better than a wrong label. An abstention (`other`, or `fee_only` where a real
   action was expected) counts as a miss. A wrong label counts as a false positive, which
@@ -232,7 +252,7 @@ What each number counts (the outcomes always sum to the number of perspectives; 
 | per-kind TP (for the expected primary kind) | `correct` or `kind_only` |
 | per-kind FN (for the expected primary kind) | `secondary_hit`, `disputed_alternative`, `abstained`, `wrong_label`, `error` |
 | per-kind FP (for the predicted kind) | `wrong_label` only |
-| secondary hits / secondary recall | `secondary_hit`, per matched kind, over all expected non-primary actions |
+| secondary hits / secondary recall | `secondary_hit`, per expected action kind (an accepted synonym is counted in the action's own kind), over all expected non-primary actions |
 | amounts exact | over `correct` + `kind_only` perspectives whose expected amounts are not `null` |
 | participants exact | over `correct` + `kind_only` perspectives with a non-null expected sender or receiver |
 

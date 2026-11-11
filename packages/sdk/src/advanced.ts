@@ -86,11 +86,21 @@ export { type RetryConfig } from "@tx-indexer/solana/rpc/retry";
 
 // Transaction leg mapping - for custom classification pipelines
 export { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+// Complete legs (input contract "v2-closed-token-accounts", additive): all balance movements
+// including token accounts closed in the transaction. Not read by any classifier yet.
+export { transactionToCompleteLegs } from "@tx-indexer/solana/mappers/complete-legs/transaction-to-legs";
+export {
+  getWalletTokenChangesExact,
+  getWalletSolChangeExact,
+} from "@tx-indexer/solana/mappers/complete-legs/balance-parser";
+export type { LegInputVersion } from "@tx-indexer/core/tx/leg-inputs";
 
 // Classification engine - for custom classification logic
 export {
   classifyTransaction,
+  classifyTransactionWithTrace,
   type ClassificationService,
+  type ClassifyOptions,
 } from "@tx-indexer/classification/engine/classification-service";
 
 // Protocol detection

@@ -3,6 +3,114 @@
 Every regeneration of `baseline.json` / `BASELINE.md` adds one entry here, in the same commit:
 date, what changed, why. `bun run accuracy` fails if `baseline.json` changed without this file.
 
+## 2026-11-11: complete legs as an additive field; `legs` and classification unchanged (no prediction change)
+
+`baseline.json` equals 3111fd7's apart from the scorer-v4 fields (`schemaVersion` and the per-component
+exactness records); `BASELINE.md` is byte-identical to 3111fd7's. Every one of the 72 perspectives has
+the same prediction as 3111fd7 (kind, amounts, participants, selecting classifier); the oracle test
+(`packages/sdk/src/legacy-input.test.ts`) checks this, plus the ordered `legs` and the output of each
+classifier, on 162 corpus entries with no exception. No `case.json`, `rpc.json` or `expected.json` changed.
+
+What this slice ships: `legs`, every classifier, the protocol detector and the list spam filter are
+byte-identical to 3111fd7 (git check plus committed sha256 digests of their runtime closure). The
+accounting with token accounts closed in the transaction ships as a new optional field, `completeLegs`
+(input contract `v2-closed-token-accounts`, closed-account debits flagged with `closedTokenAccount`),
+not yet read by any classifier or by the list filter.
+
+Publishing that accounting as `legs` itself was tried first, over six review rounds on this branch
+(preserved as `wip/legs-v2-public`), and replaced by the additive field. `legs` is not only returned
+data: the list spam filter, token enrichment, `getCached` objects and `getTransactions` pagination all
+read it. Keeping classification identical meant routing every classifier to a frozen copy of the old
+legs; keeping list decisions identical meant rebuilding and re-enriching those legs inside the filter,
+and each review still found a path where they differed (a cached object filtered by the state it was
+written with, a page filtered with enriched legs ending pagination one page early, a cached read that
+threw when the token lookup failed). With an additive field nothing that reads `legs` changes, by
+construction rather than by compensation, and an SDK-boundary test compares all those paths with a
+3111fd7 checkout.
+
+What was built, measured and deliberately not shipped:
+- `swap` on the complete legs (branch `feat/swap-closed-accounts`). On this set it turned
+  `swap-pump-amm-sell-all-and-close` @32ktkabA… from a forbidden `transfer` into `kind_only` `swap`; on the
+  8,280-transaction traffic sample, 52 `transfer` → `swap` changes (47 of them Pump sell-and-close). Rejected
+  because balances cannot tell a sale from a transfer-and-close or a burn plus an unrelated mint: review
+  counterexamples produced a fictitious swap (burn 1,000 JUNK + mint 1,000 JUNK to Carol + receive 10 USDC),
+  turned a correct airdrop into a swap, and changed correct swaps (a closed sibling sending 30 W to Carol,
+  a sibling's authority change, burn/reinitialise/mint, a separate send from a closed account, a buy with
+  no pre snapshot). Three of its six accepted changes were rent-only `close-sell` fixtures read as
+  token → SOL swaps. Sell-and-close goes to an instruction-backed recognizer (PumpSwap / Pump.fun first).
+- `transfer` restricted to the wallet's own pairs (branch `feat/transfer-perspective`): 934 changed
+  predictions on the traffic sample, 494 list-filter decisions changed, and the keeper perspective
+  `liquidity-add-damm-v2-by-keeper` @ATdpV5tR… lost its (coincidental) `transfer` kind.
+- complete legs published as `legs` (branch `wip/legs-v2-public`), see above.
+
+Earlier versions of this entry (commits 51d0792 and 7b7a018 on this branch) recorded those migrations'
+score changes; this version replaces them and all of those changes are reverted.
+
+## 2026-11-11: SDK fix, token accounts closed in the transaction (no case or label change)
+
+The SDK now builds token balance changes from the union of `preTokenBalances` and
+`postTokenBalances`: a non-native token account closed in the transaction (pre entry only)
+produces a debit of its full pre amount, attributed to its pre owner. Before, only post entries
+were read and the closed account's token was lost. Native wSOL accounts and fees are unchanged.
+No `case.json`, `rpc.json` or `expected.json` changed (case hashes identical).
+
+Later commits on the same branch first applied a burn-and-close rule in several classifiers, then
+versioned leg inputs; in the end `legs` and every classifier are as at 3111fd7 (see the entry above), so
+all score and prediction changes listed in this entry are reverted. The leg-level fix (the closed
+account's debit) ships in the additive `completeLegs` field, not in `legs`.
+
+Score records that changed: 3 of 72. Predictions that changed: 4 of 72 (the fourth is a
+`wrong_label` before and after, so no score moved). Every other perspective, outcome, component and
+prediction is identical:
+- `swap-pump-amm-sell-all-and-close` @32ktkabA…: `wrong_label` `transfer` (forbidden) → `kind_only`
+  `swap`. The wallet sells all of 2uQw…pump and closes the account (index 7). The 365,053,940 token
+  debit now exists, so the swap classifier pairs it with the SOL credit. Token-out leg exact; the SOL
+  in is 9,746,453 versus the expected 8,247,613. The difference, 1,498,840, is the closed account's
+  1,513,840-lamport rent refund minus the 15,000-lamport network fee, both still folded into the SOL
+  side; rent and fee handling are out of scope for this change.
+- `transfer-token2022-sponsored-fee-then-close` @35y6MEFo…: `kind_only` → `correct`. The sender's
+  2b1k… account is emptied and closed; its 199,000,000 debit now exists, so the transfer pairs it with
+  the receiver's credit (amount, sender and receiver exact) instead of the 1,600,200-lamport rent
+  movement between the fee payer and the rent receiver.
+- `transfer-token2022-sponsored-fee-then-close` @Hg9dpcEm…: `kind_only` → `correct`, same reason.
+- `transfer-token2022-sponsored-fee-then-close` @EBBkGATp…: still `wrong_label` `transfer` (no score
+  change; expected `account_close`), but the prediction got worse for this wallet. Before: `transfer`
+  of 1,600,200 SOL lamports GCEX… → EBBk… (its own incoming rent). After: `transfer` of 199,000,000
+  PYUSD 35y6… → Hg9d…, another wallet's transfer. Cause: transfer pairing picks the best pair over the
+  whole transaction and ignores the requested perspective
+  (`packages/classification/src/engine/transfer-pairing.ts`, `findBestExternalTransferPair`). Tracked
+  for the next slice. The gate cannot see it, because no component is measured for `wrong_label`
+  predictions (also tracked). The case still fails on this perspective.
+
+Before → after: primary action correct 13 → 15 of 72; kind_only 29 → 28; wrong_label 24 → 23;
+secondary_hit 2, abstained 4, disputed_alternative 0, error 0 unchanged; primary kind right 42 → 43;
+forbidden-label violations 11 → 10; amounts exact 13/42 → 15/43; participants exact 24/31 → 26/31;
+cases passed 6/43 unchanged; fee 43/43, execution 43/43, reconciliation balanced 43 unchanged;
+per kind: `swap` TP 10 → 11, FN 4 → 3 (recall 71.4% → 78.6%), `transfer` FP 22 → 21 (precision
+57.7% → 58.8%); per category unchanged.
+
+## 2026-11-11: scorer v4, exactness per component; secondary synonym bucket; baseline schema 4 (no SDK or label change)
+
+No case file and no SDK code changed. Every headline number, per-kind count, per-category count and
+per-perspective outcome is identical to the previous baseline (13 correct, 29 kind_only, 2 secondary_hit,
+0 disputed_alternative, 4 abstained, 24 wrong_label, 0 error of 72; cases passed 6/43); `BASELINE.md`
+is byte-identical. Only the shape of `baseline.json` changed.
+
+- Exactness per component. Each perspective record now also stores `components`: one boolean per
+  expected amount leg (`actions[i] amount <direction> <mint>`) and per non-null participant field
+  (`actions[i] sender` / `receiver`), measured against the expectation the prediction was scored on
+  (`actions[i]` or `actions[i].alternatives[j]`) for `correct`, `kind_only` and `secondary_hit`. The
+  gate now fails when a component that was exact is wrong or no longer measured, unless the perspective
+  became `correct`. Before, exactness was one boolean per perspective, so inside a perspective that was
+  already inexact a previously exact leg could go wrong without failing the gate (example, now a test:
+  in `swap-v0-jupiter-sol-to-token` the SOL leg is wrong and the FUSE leg exact; FUSE 1994890919495 →
+  1994890919496 passed the gate, now it fails). The per-perspective `amountsExact` / `participantsExact`
+  stay and still drive the headline.
+- Secondary synonym bucket. A secondary hit on an accepted synonym of a secondary action is now counted
+  in the expected action's kind (`secondaryPerKind`), not the synonym's; the matched kind stays in
+  `secondaryHit.kind` for display. No secondary hit in the set matched a synonym, so no count moved;
+  a synthetic test covers it.
+
 ## 2026-11-11: scorer v3, stricter outcome classes; baseline schema 3 (no SDK or label change)
 
 No case file and no SDK code changed; every delta below comes from the scoring rules.

@@ -13,6 +13,7 @@ import {
   normalizeLoadedAddresses,
 } from "../mappers/account-keys";
 import { reconcileLamports } from "../mappers/lamport-reconciliation";
+import { tokenBalanceStatusOf } from "../mappers/complete-legs/balance-parser";
 import {
   MAX_SUPPORTED_TRANSACTION_VERSION,
   UNSUPPORTED_TRANSACTION_VERSION_RPC_CODE,
@@ -246,6 +247,9 @@ function responseToRawTransaction(
   rawTx.reconciliation = reconcileLamports(rawTx, {
     rewards: resp.meta?.rewards,
   });
+  // Additive metadata for the complete legs: whether the RPC returned the token snapshots
+  // (the arrays above keep defaulting to [] as in 1.6.x).
+  rawTx.tokenBalanceStatus = tokenBalanceStatusOf(resp.meta ?? {});
 
   return rawTx;
 }

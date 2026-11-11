@@ -21,6 +21,7 @@ import type { ClassifiedTransaction } from "./client";
 import type {
   RawTransaction,
   LamportReconciliation,
+  TokenBalanceStatus,
   LoadedAddresses,
   TxLeg,
   TokenBalance,
@@ -115,6 +116,8 @@ export interface JsonRawTransaction {
   memo?: string | null;
   /** Lamport reconciliation diagnostics (all lamport values are strings) */
   reconciliation?: JsonLamportReconciliation;
+  /** Availability of the token balance snapshots */
+  tokenBalanceStatus?: TokenBalanceStatus;
 }
 
 /**
@@ -183,6 +186,8 @@ export interface JsonTxLeg {
   side: TxLegSide;
   amount: JsonMoneyAmount;
   role: TxLegRole;
+  /** Token account closed in this transaction, on its debit leg only (see TxLeg) */
+  closedTokenAccount?: string;
 }
 
 // =============================================================================
@@ -199,6 +204,8 @@ export interface JsonClassifiedTransaction {
   tx: JsonRawTransaction;
   classification: JsonTransactionClassification;
   legs: JsonTxLeg[];
+  /** Complete legs (optional, see ClassifiedTransaction.completeLegs) */
+  completeLegs?: JsonTxLeg[];
 }
 
 // =============================================================================
@@ -264,6 +271,7 @@ function toJsonRawTransaction(tx: RawTransaction): JsonRawTransaction {
       : {}),
     memo: tx.memo,
     ...(tx.reconciliation ? { reconciliation: { ...tx.reconciliation } } : {}),
+    ...(tx.tokenBalanceStatus ? { tokenBalanceStatus: { ...tx.tokenBalanceStatus } } : {}),
   };
 }
 
@@ -276,6 +284,9 @@ function toJsonTxLeg(leg: TxLeg): JsonTxLeg {
     side: leg.side,
     amount: toJsonMoneyAmount(leg.amount),
     role: leg.role,
+    ...(leg.closedTokenAccount !== undefined
+      ? { closedTokenAccount: leg.closedTokenAccount }
+      : {}),
   };
 }
 
@@ -344,6 +355,7 @@ export function toJsonClassifiedTransaction(
     tx: toJsonRawTransaction(tx.tx),
     classification: toJsonTransactionClassification(tx.classification),
     legs: tx.legs.map(toJsonTxLeg),
+    ...(tx.completeLegs ? { completeLegs: tx.completeLegs.map(toJsonTxLeg) } : {}),
   };
 }
 

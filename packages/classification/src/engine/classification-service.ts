@@ -5,6 +5,17 @@ import type {
   TransactionClassification,
 } from "@tx-indexer/core/tx/classification.types";
 import type { Classifier, ClassifierContext } from "./classifier.interface";
+
+/**
+ * Optional context for classification. `completeLegs` is the "v2-closed-token-accounts"
+ * input of the same transaction and wallet (all balance movements, including token accounts
+ * closed in it). It is read ONLY by classifiers that declare `inputVersion:
+ * "v2-closed-token-accounts"`; today none does, so passing it changes nothing but the trace.
+ * The `legs` argument is the "v1-main" input and keeps its 1.6.x meaning.
+ */
+export interface ClassifyOptions {
+  completeLegs?: TxLeg[];
+}
 import { TransferClassifier } from "../classifiers/transfer-classifier";
 import { SwapClassifier } from "../classifiers/swap-classifier";
 import { AirdropClassifier } from "../classifiers/airdrop-classifier";
@@ -49,19 +60,36 @@ export class ClassificationService {
     legs: TxLeg[],
     tx: RawTransaction,
     walletAddress?: string,
+    options?: ClassifyOptions,
   ): TransactionClassification {
-    return this.classifyWithTrace(legs, tx, walletAddress).classification;
+    return this.classifyWithTrace(legs, tx, walletAddress, options).classification;
   }
 
   classifyWithTrace(
     legs: TxLeg[],
     tx: RawTransaction,
     walletAddress?: string,
+    options?: ClassifyOptions,
   ): {
     classification: TransactionClassification;
     debugTrace: ClassificationDebugTrace;
   } {
     const context: ClassifierContext = { legs, tx, walletAddress };
+    const completeLegs = options?.completeLegs;
+    const completeContext: ClassifierContext | null = completeLegs
+      ? { legs: completeLegs, tx, walletAddress }
+      : null;
+    // Without options nothing below differs from 1.6.x: every classifier reads `legs` and
+    // the trace has no `legInput`.
+    const inputFor = (
+      classifier: Classifier,
+    ): { context: ClassifierContext; trace: Pick<ClassifierDecisionTrace, "legInput"> } => {
+      if (!options) return { context, trace: {} };
+      if (completeContext && classifier.inputVersion === "v2-closed-token-accounts") {
+        return { context: completeContext, trace: { legInput: "v2-closed-token-accounts" } };
+      }
+      return { context, trace: { legInput: "v1-main" } };
+    };
     const decisions: ClassifierDecisionTrace[] = [];
     let firstNonRelevant: TransactionClassification | null = null;
     let firstNonRelevantClassifier: string | null = null;
@@ -82,8 +110,9 @@ export class ClassificationService {
         continue;
       }
 
+      const input = inputFor(classifier);
       const startedAt = Date.now();
-      const result = classifier.classify(context);
+      const result = classifier.classify(input.context);
       const elapsedMs = Date.now() - startedAt;
 
       if (!result) {
@@ -94,6 +123,7 @@ export class ClassificationService {
           relevant: false,
           reason: "No match",
           elapsedMs,
+          ...input.trace,
         });
         continue;
       }
@@ -111,6 +141,7 @@ export class ClassificationService {
           relevant: true,
           reason: `Matched ${result.primaryType}`,
           elapsedMs,
+          ...input.trace,
         });
         continue;
       }
@@ -122,6 +153,7 @@ export class ClassificationService {
         relevant: false,
         reason: `Matched non-relevant ${result.primaryType}`,
         elapsedMs,
+        ...input.trace,
       });
 
       if (!firstNonRelevant) {
@@ -177,23 +209,27 @@ export const classificationService = new ClassificationService();
  * @param legs - Transaction legs representing all balance movements
  * @param tx - Raw transaction data for additional context (protocol, memo, etc.)
  * @param walletAddress - Optional wallet address for perspective-aware classification (e.g., swap direction)
+ * @param options - Optional `{ completeLegs }` ("v2-closed-token-accounts" input), read only by
+ *   classifiers that declare it (none today). `legs` keeps its 1.6.x meaning.
  * @returns Classification result with type, amounts, sender, receiver, and confidence
  */
 export function classifyTransaction(
   legs: TxLeg[],
   tx: RawTransaction,
   walletAddress?: string,
+  options?: ClassifyOptions,
 ): TransactionClassification {
-  return classificationService.classify(legs, tx, walletAddress);
+  return classificationService.classify(legs, tx, walletAddress, options);
 }
 
 export function classifyTransactionWithTrace(
   legs: TxLeg[],
   tx: RawTransaction,
   walletAddress?: string,
+  options?: ClassifyOptions,
 ): {
   classification: TransactionClassification;
   debugTrace: ClassificationDebugTrace;
 } {
-  return classificationService.classifyWithTrace(legs, tx, walletAddress);
+  return classificationService.classifyWithTrace(legs, tx, walletAddress, options);
 }

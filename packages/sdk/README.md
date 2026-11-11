@@ -292,6 +292,8 @@ import {
 import type { ClassifiedTransaction, TxLeg } from "tx-indexer/types";
 ```
 
+> **New in 2.0 (additive): `completeLegs`.** `legs` and classification are unchanged from 1.6. Freshly classified transactions also carry an optional `completeLegs`: all balance movements, including token accounts closed in the transaction (their debit carries `closedTokenAccount`); `tx.tokenBalanceStatus` says whether the token snapshots were available. It is not used by any classifier or by the list filter yet, and objects from older caches do not have it. To build it yourself: `transactionToCompleteLegs(tx, wallet)` from `tx-indexer/advanced`.
+
 See [STABILITY.md](./STABILITY.md) for API stability guarantees.
 
 ## Error Handling

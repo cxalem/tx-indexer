@@ -21,6 +21,7 @@ import type {
 
 export type { FetchTransactionsConfig } from "@tx-indexer/solana/fetcher/transactions";
 import { transactionToLegs } from "@tx-indexer/solana/mappers/transaction-to-legs";
+import { transactionToCompleteLegs } from "@tx-indexer/solana/mappers/complete-legs/transaction-to-legs";
 import { classifyTransaction } from "@tx-indexer/classification/engine/classification-service";
 import { detectProtocol } from "@tx-indexer/classification/protocols/detector";
 import {
@@ -203,6 +204,11 @@ async function enrichTokenMetadata(
     tx: classified.tx,
     legs: enrichedLegs,
     classification: enrichedClassification,
+    // Additive: the same token-info replacement on the complete legs, from the map fetched
+    // above (no extra lookup). A mint present only in `completeLegs` keeps its fallback info.
+    ...(classified.completeLegs
+      ? { completeLegs: classified.completeLegs.map(enrichLeg) }
+      : {}),
   };
 }
 
@@ -536,6 +542,36 @@ export interface ClassifiedTransaction {
   tx: RawTransaction;
   classification: TransactionClassification;
   legs: ReturnType<typeof transactionToLegs>;
+  /**
+   * Optional, additive (input contract "v2-closed-token-accounts"): all balance movements,
+   * including token accounts closed in the transaction (their debit carries
+   * `closedTokenAccount` on proven closures); no token movement when a snapshot is
+   * unavailable (`tx.tokenBalanceStatus`). Not yet used by any classifier or by the list
+   * filter. Set on freshly classified transactions; absent on objects from older caches, and
+   * nothing in the SDK depends on its presence.
+   */
+  completeLegs?: TxLeg[];
+}
+
+/**
+ * The complete legs of a freshly classified transaction. Never allowed to change the
+ * result or error behaviour of the 1.6.x pipeline: a failure leaves the field absent.
+ */
+function completeLegsOf(tx: RawTransaction, walletAddress: string | undefined): TxLeg[] | undefined {
+  try {
+    return transactionToCompleteLegs(tx, walletAddress);
+  } catch {
+    return undefined;
+  }
+}
+
+/** Attaches `completeLegs` when available (additive; the other fields are untouched). */
+function withCompleteLegs(
+  classified: ClassifiedTransaction,
+  walletAddress: string | undefined,
+): ClassifiedTransaction {
+  const completeLegs = completeLegsOf(classified.tx, walletAddress);
+  return completeLegs ? { ...classified, completeLegs } : classified;
 }
 
 /**
@@ -886,7 +922,7 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
             tx,
             walletAddressStr,
           );
-          return { tx, classification, legs };
+          return withCompleteLegs({ tx, classification, legs }, walletAddressStr);
         });
       }
 
@@ -1099,7 +1135,10 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
       const legs = transactionToLegs(tx, walletAddressStr);
       const classification = classifyTransaction(legs, tx, walletAddressStr);
 
-      let classified: ClassifiedTransaction = { tx, classification, legs };
+      let classified: ClassifiedTransaction = withCompleteLegs(
+        { tx, classification, legs },
+        walletAddressStr,
+      );
 
       if (enrichTokens) {
         classified = await enrichTokenMetadata(tokenFetcher, classified);
@@ -1370,7 +1409,10 @@ export function createIndexer(options: TxIndexerOptions): TxIndexer {
             tx,
             walletAddressStr,
           );
-          let classified: ClassifiedTransaction = { tx, classification, legs };
+          let classified: ClassifiedTransaction = withCompleteLegs(
+            { tx, classification, legs },
+            walletAddressStr,
+          );
 
           // Enrich token metadata
           if (enrichTokens) {
